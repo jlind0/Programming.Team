@@ -1,0 +1,32 @@
+@inherits ReactiveInjectableComponentBase<ImpersonatorViewModel>
+@if (ViewModel != null && ViewModel.ImpersonatedUser != null)
+{
+    <MudElement Class="mud-nav-item" @onclick="ViewModel.EndImpersonation.BindCommand<MouseEventArgs>()">
+        <MudElement Class="@NavItemClass" Style="cursor: pointer;">
+            <MudIcon Icon="@Icons.Material.Filled.RemoveRedEye"
+                Class="mud-icon-default mud-nav-link-icon mud-nav-link-icon-default" Color="Color.Warning" />
+            <MudElement Class="mud-nav-link-text" Color="Color.Warning">End Impersonation</MudElement>
+        </MudElement>
+    </MudElement>
+}
+@code {
+    override protected async Task OnInitializedAsync()
+    {
+        if (ViewModel != null)
+            await ViewModel.Load.Execute().GetAwaiter();
+        await base.OnInitializedAsync();
+    }
+
+    string NavItemClass { get; set; } = "mud-nav-link mud-ripple";
+
+    // Use it when expression "ViewModel == null" is not reliable
+    void ShowNavItem()
+    {
+        NavItemClass = "mud-nav-link mud-ripple";
+    }
+
+    void HideNavItem()
+    {
+        NavItemClass = "mud-nav-link mud-ripple d-none";
+    }
+}

@@ -1,6 +1,7 @@
 ﻿@inject AuthenticationStateProvider AuthState
 
 <MudNavMenu>
+    <ImpersonatorNavItemView />
     <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
     @if (isAdmin)
     {

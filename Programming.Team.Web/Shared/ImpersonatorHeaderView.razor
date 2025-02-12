@@ -1,15 +1,26 @@
 ﻿@inherits ReactiveInjectableComponentBase<ImpersonatorViewModel>
-@if(ViewModel != null && ViewModel.ImpersonatedUser != null)
+
+@if (ViewModel == null || ViewModel.ImpersonatedUser == null)
 {
-    <MudStack Row="true">
-        <MudSpacer />
-        <MudText> Impersonating: @ViewModel.ImpersonatedUser.EmailAddress! &nbsp;</MudText>
-        <MudButton class="fw-bold" OnClick="ViewModel.EndImpersonation.BindCommand<MouseEventArgs>()" Variant="Variant.Filled"
-        Color="Color.Primary">End Impersonation</MudButton>
-        <MudSpacer />
-    </MudStack>
+    @ChildContent
 }
+else
+{
+    @* Laptop, Desktop *@
+    <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+        <MudText Color="Color.Warning">Impersonating: @ViewModel.ImpersonatedUser.EmailAddress</MudText>
+    </MudHidden>
+
+    @* Smaller devices *@        
+    <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+        <MudText Class="fs-body2 fw-bold" Color="Color.Warning">@ViewModel.ImpersonatedUser.EmailAddress</MudText>
+    </MudHidden>
+}
+
 @code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
     override protected async Task OnInitializedAsync()
     {
         if (ViewModel != null)
