@@ -93,7 +93,7 @@ builder.Services.AddServerSideBlazor().AddCircuitOptions(options =>
     })
     .AddMicrosoftIdentityConsentHandler();
 builder.Services.AddMudServices();
-builder.Services.AddBlazorBootstrap();
+builder.Services.AddSincere();
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:APIKey"];
 builder.Services.AddTransient<PriceService>();
 builder.Services.AddTransient<ProductService>();
