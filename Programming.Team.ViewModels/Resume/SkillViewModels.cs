@@ -13,6 +13,10 @@ using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Programming.Team.AI.Core;
+using System.Collections.ObjectModel;
+using DynamicData;
+using System.Windows.Input;
 
 namespace Programming.Team.ViewModels.Resume
 {
@@ -226,18 +230,95 @@ namespace Programming.Team.ViewModels.Resume
     }
     public class PositionSkillsViewModel : EntitiesDefaultViewModel<Guid, PositionSkill, PositionSkillViewModel, AddPositionSkillViewModel>
     {
+        public ReactiveCommand<Unit, Unit> ExtractSkills { get; }
+        public ReactiveCommand<Unit, Unit> AssociateSkills { get; }
+        public ICommand ToggleOpen => ReactiveCommand.Create(() => IsOpen = !IsOpen);
+        protected IResumeEnricher Enricher { get; }
+        protected IBusinessRepositoryFacade<Skill, Guid> SkillFacade { get; }
         public Guid PositionId
         {
             get => AddViewModel.PositionId;
             set => AddViewModel.PositionId = value;
         }
-        public PositionSkillsViewModel(AddPositionSkillViewModel addViewModel, IBusinessRepositoryFacade<PositionSkill, Guid> facade, ILogger<EntitiesViewModel<Guid, PositionSkill, PositionSkillViewModel, IBusinessRepositoryFacade<PositionSkill, Guid>>> logger) : base(addViewModel, facade, logger)
+        private string description = string.Empty;
+        public string Description
         {
+            get => description;
+            set => this.RaiseAndSetIfChanged(ref description, value);
         }
-
+        public PositionSkillsViewModel(AddPositionSkillViewModel addViewModel, 
+            IBusinessRepositoryFacade<PositionSkill, Guid> facade, IBusinessRepositoryFacade<Skill, Guid> skillFacade, 
+            ILogger<EntitiesViewModel<Guid, PositionSkill, PositionSkillViewModel, IBusinessRepositoryFacade<PositionSkill, Guid>>> logger, 
+            IResumeEnricher enricher) : base(addViewModel, facade, logger)
+        {
+            ExtractSkills = ReactiveCommand.CreateFromTask(DoExtractSkills);
+            AssociateSkills = ReactiveCommand.CreateFromTask(DoAssociateSkills);
+            Enricher = enricher;
+            SkillFacade = skillFacade;
+            
+        }
+        private bool isOpen;
+        public bool IsOpen
+        {
+            get => isOpen;
+            set => this.RaiseAndSetIfChanged(ref isOpen, value);
+        }
+        public ObservableCollection<RawSkillViewModel> RawSkills { get; } = new ObservableCollection<RawSkillViewModel>();
+        protected async Task DoAssociateSkills(CancellationToken token)
+        {
+            try
+            {
+                foreach(var raw in RawSkills.Where(r => r.IsSelected).ToArray())
+                {
+                    var skillRes = await SkillFacade.Get(page: new Pager() { Page = 1, Size = 1 }, filter: q => q.Name == raw.Name, token: token);
+                    var skill = skillRes.Entities.FirstOrDefault();
+                    if (skill == null)
+                    {
+                        skill = new Skill()
+                        {
+                            Name = raw.Name
+                        };
+                        await SkillFacade.Add(skill, token: token);
+                    }
+                    var ps = new PositionSkill()
+                    {
+                        PositionId = PositionId,
+                        SkillId = skill.Id
+                    };
+                    await Facade.Add(ps, token: token);
+                    RawSkills.Remove(raw);
+                }
+                await Load.Execute().GetAwaiter();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
+                await Alert.Handle(ex.Message);
+            }
+        }
+        protected async Task DoExtractSkills(CancellationToken token)
+        {
+            RawSkills.Clear();
+            try
+            {
+                var skills = await Enricher.ExtractSkills(Description, token);
+                if (skills?.Length > 0)
+                {
+                    var sks = skills.ToList();
+                    sks.RemoveAll(s => Entities.Any(e => string.Compare(e.Skill.Name, s, StringComparison.OrdinalIgnoreCase) == 0));
+                    RawSkills.AddRange(sks.Select(s => new RawSkillViewModel(Logger, PositionId, s)));
+                }
+            }
+            catch(Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
+                await Alert.Handle(ex.Message);
+            }
+        }
         protected override async Task<PositionSkillViewModel> Construct(PositionSkill entity, CancellationToken token)
         {
             var vm = new PositionSkillViewModel(Logger, Facade, entity);
+           
             return vm;
         }
         protected override Func<IQueryable<PositionSkill>, IOrderedQueryable<PositionSkill>>? OrderBy()
@@ -251,6 +332,27 @@ namespace Programming.Team.ViewModels.Resume
         protected override async Task<Expression<Func<PositionSkill, bool>>?> FilterCondition()
         {
             return e => e.PositionId == PositionId;
+        }
+    }
+    public class RawSkillViewModel : ReactiveObject
+    {
+        private string name = string.Empty;
+        public string Name
+        {
+            get => name;
+            set => this.RaiseAndSetIfChanged(ref name, value);
+        }
+        private bool isSelected;
+        public bool IsSelected
+        {
+            get => isSelected;
+            set => this.RaiseAndSetIfChanged(ref isSelected, value);
+        }
+        public Guid PositionId { get; set; }
+        public RawSkillViewModel(ILogger logger, Guid positionId, string name)
+        {
+            Name = name.Trim();
+            PositionId = positionId;
         }
     }
     public class SearchSelectSkillViewModel : EntitySelectSearchViewModel<Guid, Skill, AddSkillViewModel>

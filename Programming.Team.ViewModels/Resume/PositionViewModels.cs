@@ -166,6 +166,7 @@ namespace Programming.Team.ViewModels.Resume
         {
             var vm = new PositionViewModel(Logger, Facade,
                 ServiceProvider.GetRequiredService<PositionSkillsViewModel>(), entity);
+
             return Task.FromResult(vm);
         }
     }
@@ -251,15 +252,31 @@ namespace Programming.Team.ViewModels.Resume
             get => userId;
             set => this.RaiseAndSetIfChanged(ref userId, value);
         }
+        protected readonly CompositeDisposable disposable = new CompositeDisposable();
         public PositionSkillsViewModel SkillsViewModel { get; }
         public PositionViewModel(ILogger logger, IBusinessRepositoryFacade<Position, Guid> facade, PositionSkillsViewModel skillsViewModel, Guid id) : base(logger, facade, id)
         {
             SkillsViewModel = skillsViewModel;
+            WireupSkillsVM();
         }
 
         public PositionViewModel(ILogger logger, IBusinessRepositoryFacade<Position, Guid> facade, PositionSkillsViewModel skillsViewModel, Position entity) : base(logger, facade, entity)
         {
             SkillsViewModel = skillsViewModel;
+            
+            WireupSkillsVM();
+        }
+        protected void WireupSkillsVM()
+        {
+            SkillsViewModel.WhenPropertyChanged(p => p.Description).Subscribe(p =>
+            {
+                if (p.Sender != null)
+                    SkillsViewModel.Description = p.Sender.Description ?? "";
+            }).DisposeWith(disposable);
+        }
+        ~PositionViewModel()
+        {
+            disposable.Dispose();
         }
         protected override Func<IQueryable<Position>, IQueryable<Position>>? PropertiesToLoad()
         {
@@ -295,6 +312,7 @@ namespace Programming.Team.ViewModels.Resume
             Company = entity.Company;
             SkillsViewModel.PositionId = entity.Id;
             SkillsViewModel.InitialEntities = entity.PositionSkills;
+            SkillsViewModel.Description = entity.Description ?? "";
             await SkillsViewModel.Load.Execute().GetAwaiter();
         }
     }

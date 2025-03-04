@@ -1,0 +1,6 @@
+﻿@inherits ReactiveComponentBase<RawSkillViewModel>
+@if (ViewModel != null)
+{
+    <h5>@ViewModel.Name</h5>
+    <MudCheckBox Label="Add Skill" @bind-Value="ViewModel.IsSelected" />
+}
