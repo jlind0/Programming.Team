@@ -2,6 +2,8 @@
 
 Term                                                  | Meaning
 ------------------------------------------------------|--------
+<span id="business-facade">Business Facade</span> | Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+<span id="helper">Helper</span> | Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
 <span id="package">Package</span> | Pricing given in number of uses(generations).
 <span id="plumbing">Plumbing</span> | Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
 <span id="position">Position</span> | History of experience.
