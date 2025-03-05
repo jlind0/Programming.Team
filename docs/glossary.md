@@ -2,7 +2,7 @@
 
 Term                                                  | Meaning
 ------------------------------------------------------|--------
-<span id="position">Package</span> | Pricing given in number of uses(generations).
+<span id="package">Package</span> | Pricing given in number of uses(generations).
 <span id="position">Position</span> | History of experience.
 <span id="posting">Posting</span> | Set of forms to generate the resume or the save of the outcome.
 <span id="purchase">Purchase</span> | History of payments for package item.
