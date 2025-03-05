@@ -3,6 +3,7 @@
 Term                                                  | Meaning
 ------------------------------------------------------|--------
 <span id="business-facade">Business Facade</span> | Wrapper class related to business.
+<span id="data">Data</span> | CRUD operations.
 <span id="facade">Facade</span> | C# wrapper class.
 <span id="helper">Helper</span> | Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
 <span id="package">Package</span> | Pricing given in number of uses(generations).
