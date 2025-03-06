@@ -20,6 +20,6 @@ Term                                                  | Meaning
 <span id="raw-skill">Raw Skill</span> | Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
 <span id="section-template">Section Template</span> | Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
 <span id="template">Template</span> | LaTeX skeleton or the processor.
-<span id="viewmodel">ViewModel</span> | Derived class from ReactiveObject(ReactiveUI).
+<span id="viewmodel">ViewModel</span> | Derived class from ReactiveObject(ReactiveUI), which may have ReactiveCommand(s) created from Task(Not from Observable).
 <span id="foo">Foo</span> | Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
 <span id="bar">Bar</span> |  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
