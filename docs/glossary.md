@@ -5,7 +5,7 @@ Term                                                  | Meaning
 <span id="business-facade">Business Facade</span> | Wrapper class that may be related to business.
 <span id="controller">Controller</span> | Route-wise CRUD entry.
 <span id="facade">Enrich</span> | Format LaTeX.
-<span id="facade">Facade</span> | C# wrapper class.
+<span id="facade">Facade</span> | C# wrapper class. It groups methods from here and there.
 <span id="helper">Helper</span> | Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
 <span id="package">Package</span> | Pricing given in number of uses(generations).
 <span id="plumbing">Plumbing</span> | Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
