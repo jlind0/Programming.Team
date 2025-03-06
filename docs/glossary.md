@@ -15,8 +15,8 @@ Term                                                  | Meaning
 <span id="purchase">Purchase</span> | History of payments for package item.
 <span id="programming-team-ai">Programming.Team.AI</span> | Set of preprompted APIs on ChatGPT.
 <span id="programming-team-data">Programming.Team.Data</span> | CRUD operations.
-<span id="programming-team-web-rest">Programming.Team.Web.REST</span> | A separate client, that is a LaTex generator as a separate Linux instance.
-<span id="repository">Repository</span> | API(s) of database operation with in C# Tasks. entity type does not come with  "EntityTypeConfigurationAttribute" or "EntityTypeConfiguration".
+<span id="programming-team-web-rest">Programming.Team.Web.REST</span> | A separate client, that is a LaTex generator as Linux instance.
+<span id="repository">Repository</span> | API(s) of database operation in C# Tasks. Entity type does not come with  "EntityTypeConfigurationAttribute" or "EntityTypeConfiguration".
 <span id="raw-skill">Raw Skill</span> | Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
 <span id="section-template">Section Template</span> | Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
 <span id="template">Template</span> | LaTeX skeleton or the processor.
