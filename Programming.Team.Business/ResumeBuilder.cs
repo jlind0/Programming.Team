@@ -63,6 +63,7 @@ namespace Programming.Team.Business
             try
             {
                 Resume resume = new Resume();
+                Dictionary<Guid, SkillRollup> rollups = new Dictionary<Guid, SkillRollup>();
                 await using (var uow = UserFacade.CreateUnitOfWork())
                 {
                     progress?.Report("Building Resume");
@@ -82,7 +83,7 @@ namespace Programming.Team.Business
                         filter: q => q.UserId == userId, token: token);
                     resume.Certificates.AddRange(certs.Entities);
                     resume.Reccomendations = resume.Positions.SelectMany(e => e.Reccomendations).OrderBy(c => c.SortOrder).ThenBy(c => c.Name).ToList();
-                    Dictionary<Guid, SkillRollup> rollups = new Dictionary<Guid, SkillRollup>();
+                    
                     foreach(var position in resume.Positions)
                     {
                         foreach(var posskill in position.PositionSkills)
@@ -105,6 +106,10 @@ namespace Programming.Team.Business
                         }
                     }
                     resume.Skills = rollups.Values.OrderByDescending(e => e.YearsOfExperience).ToList();
+                }
+                foreach(var position in resume.Positions)
+                {
+                    position.PositionSkills = position.PositionSkills.OrderByDescending(e => rollups[e.SkillId].YearsOfExperience).ThenBy(e => e.Skill.Name).ToList();
                 }
                 return resume;
             }
