@@ -27,4 +27,9 @@ namespace Programming.Team.Business.Core
         Task<SectionTemplate[]> GetBySection(ResumePart sectionId, IUnitOfWork? work = null, CancellationToken token = default);
         Task<SectionTemplate?> GetDefaultSection(ResumePart sectionId, IUnitOfWork? work = null, string defaultName = "Default", CancellationToken token = default);
     }
+    public interface ISkillsBusinessFacade : IBusinessRepositoryFacade<Skill, Guid>
+    {
+        Task<Skill[]> GetSkillsExcludingPosition(Guid positionId, IUnitOfWork? work = null,
+            CancellationToken token = default);
+    }
 }

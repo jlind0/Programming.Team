@@ -305,6 +305,7 @@ namespace Programming.Team.ViewModels.Resume
             HideSkillsNotInJD = config.HideSkillsNotInJD;
             BulletsPer20Percent = config.BulletsPer20Percent;
             HidePositionsNotInJD = config.HidePositionsNotInJD;
+            SkillsPer20Percent = config.SkillsPer20Percent;
             Parts = config.Parts;
             SectionTemplates = config.SectionTemplates;
             ResumeParts.Clear();
@@ -333,7 +334,8 @@ namespace Programming.Team.ViewModels.Resume
                 BulletsPer20Percent = BulletsPer20Percent,
                 HidePositionsNotInJD = HidePositionsNotInJD,
                 Parts = ResumeParts.Where(p => p.Selected).OrderBy(p => p.Order).Select(p => p.Part).ToArray(),
-                SectionTemplates = ResumeParts.Where(p => p.Selected).ToDictionary(p => p.Part, p => p.SelectedTemplate?.Id)
+                SectionTemplates = ResumeParts.Where(p => p.Selected).ToDictionary(p => p.Part, p => p.SelectedTemplate?.Id),
+                SkillsPer20Percent = SkillsPer20Percent
             };
             return config;
         }
@@ -376,5 +378,11 @@ namespace Programming.Team.ViewModels.Resume
         public ObservableCollection<ResumePartViewModel> ResumeParts { get; } = new ObservableCollection<ResumePartViewModel>();
         public ResumePart[] Parts { get; set; } = [ResumePart.Bio, ResumePart.Reccomendations, ResumePart.Skills, ResumePart.Positions, ResumePart.Education, ResumePart.Certifications, ResumePart.Publications];
         public Dictionary<ResumePart, Guid?> SectionTemplates { get; set; } = [];
+        private double? skillsPer20Percent;
+        public double? SkillsPer20Percent 
+        {
+            get => skillsPer20Percent;
+            set => this.RaiseAndSetIfChanged(ref skillsPer20Percent, value);
+        }
     }
 }

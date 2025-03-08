@@ -17,6 +17,7 @@ using Programming.Team.AI.Core;
 using System.Collections.ObjectModel;
 using DynamicData;
 using System.Windows.Input;
+using System.Diagnostics;
 
 namespace Programming.Team.ViewModels.Resume
 {
@@ -228,6 +229,64 @@ namespace Programming.Team.ViewModels.Resume
             return Task.CompletedTask;
         }
     }
+    public class SuggestAddSkillsForPositionViewModel : ReactiveObject
+    {
+        public Interaction<string, bool> Alert { get; } = new Interaction<string, bool>();
+        public Guid PositionId { get; set; }
+        public ReactiveCommand<Unit, Unit> SuggestSkills { get; }
+        public ReactiveCommand<Unit, Unit> AddSelectedSkills { get; }
+        public ObservableCollection<SkillViewModel> Skills { get; } = new ObservableCollection<SkillViewModel>();
+        protected ISkillsBusinessFacade SkillFacade { get; }
+        protected IBusinessRepositoryFacade<PositionSkill, Guid> PositionSkillFacade { get; }
+        protected ILogger Logger { get; }
+        public SuggestAddSkillsForPositionViewModel(ISkillsBusinessFacade skillFacade, IBusinessRepositoryFacade<PositionSkill, Guid> positionSkillFacade, ILogger<SuggestAddSkillsForPositionViewModel> logger)
+        {
+            SuggestSkills = ReactiveCommand.CreateFromTask(DoSuggestSkills);
+            AddSelectedSkills = ReactiveCommand.CreateFromTask(DoAddSelectedSkills);
+            SkillFacade = skillFacade;
+            PositionSkillFacade = positionSkillFacade;
+            Logger = logger;
+        }
+        protected async Task DoSuggestSkills(CancellationToken token)
+        {
+            try
+            {
+                Skills.Clear();
+                foreach(var skill in await SkillFacade.GetSkillsExcludingPosition(PositionId, token: token))
+                {
+                    var vm = new SkillViewModel(Logger, SkillFacade, skill);
+                    await vm.Load.Execute().GetAwaiter();
+                    Skills.Add(vm);
+                }
+            }
+            catch(Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
+                await Alert.Handle(ex.Message).GetAwaiter();
+            }
+        }
+        protected async Task DoAddSelectedSkills(CancellationToken token)
+        {
+            try
+            {
+                foreach(var skill in Skills.Where(s => s.IsSelected).ToArray())
+                {
+                    var ps = new PositionSkill()
+                    {
+                        PositionId = PositionId,
+                        SkillId = skill.Id
+                    };
+                    await PositionSkillFacade.Add(ps, token: token);
+                    Skills.Remove(skill);
+                }
+            }
+            catch(Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
+                await Alert.Handle(ex.Message).GetAwaiter();
+            }
+        }
+    }
     public class PositionSkillsViewModel : EntitiesDefaultViewModel<Guid, PositionSkill, PositionSkillViewModel, AddPositionSkillViewModel>
     {
         public ReactiveCommand<Unit, Unit> ExtractSkills { get; }
@@ -238,7 +297,11 @@ namespace Programming.Team.ViewModels.Resume
         public Guid PositionId
         {
             get => AddViewModel.PositionId;
-            set => AddViewModel.PositionId = value;
+            set
+            {
+                AddViewModel.PositionId = value;
+                SuggestAddSkillsVM.PositionId = value;
+            }
         }
         private string description = string.Empty;
         public string Description
@@ -246,7 +309,8 @@ namespace Programming.Team.ViewModels.Resume
             get => description;
             set => this.RaiseAndSetIfChanged(ref description, value);
         }
-        public PositionSkillsViewModel(AddPositionSkillViewModel addViewModel, 
+        public SuggestAddSkillsForPositionViewModel SuggestAddSkillsVM { get; }
+        public PositionSkillsViewModel(AddPositionSkillViewModel addViewModel, SuggestAddSkillsForPositionViewModel suggestAddSkillsVM, 
             IBusinessRepositoryFacade<PositionSkill, Guid> facade, IBusinessRepositoryFacade<Skill, Guid> skillFacade, 
             ILogger<EntitiesViewModel<Guid, PositionSkill, PositionSkillViewModel, IBusinessRepositoryFacade<PositionSkill, Guid>>> logger, 
             IResumeEnricher enricher) : base(addViewModel, facade, logger)
@@ -255,7 +319,9 @@ namespace Programming.Team.ViewModels.Resume
             AssociateSkills = ReactiveCommand.CreateFromTask(DoAssociateSkills);
             Enricher = enricher;
             SkillFacade = skillFacade;
-            
+            SuggestAddSkillsVM = suggestAddSkillsVM;
+           
+
         }
         private bool isOpen;
         public bool IsOpen

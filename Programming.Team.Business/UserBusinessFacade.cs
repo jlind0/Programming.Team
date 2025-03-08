@@ -116,4 +116,15 @@ namespace Programming.Team.Business
             return base.Update(entity, work, properites, token);
         }
     }
+    public class SkillsBusinessFacade : BusinessRepositoryFacade<Skill, Guid, ISkillsRespository>, ISkillsBusinessFacade
+    {
+        public SkillsBusinessFacade(ISkillsRespository repository, ILogger<Skill> logger) : base(repository, logger)
+        {
+        }
+        public Task<Skill[]> GetSkillsExcludingPosition(Guid positionId, IUnitOfWork? work = null,
+            CancellationToken token = default)
+        {
+            return Repository.GetSkillsExcludingPosition(positionId, work, token);
+        }
+    }
 }

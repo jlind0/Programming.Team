@@ -92,13 +92,18 @@ namespace Programming.Team.AI
                                 double bullets = (Math.Ceiling((mtch / 0.2) * (config.BulletsPer20Percent ?? 0.75)));
                                 if(bullets < 2)
                                     bullets = 2;
-                                position.Description = await ChatGPT.GetRepsonse($"Output a LaTex snippet, without special charachter escaping and the bullets properly itemized, that will be added to an existing latex document - do not generate opening or closing article, document sections or headers. Tailor user message - which is a description of a job experience, resulting in a total text length of no more than {length} characters, to the following job requirement sticking to the facts included in the user message, do not be creative IF A TECHNOLOGY IS NOT MENTIONED IN THE USER MESSAGE DO NOT INCLUDE IT IN THE SUMMARY!!!! include a short paragraph and {Math.Round(bullets)} bullet points: {JsonSerializer.Serialize(posting.Details)}", JsonSerializer.Serialize(position.Description), token: t);
+                                position.Description = await ChatGPT.GetRepsonse($"Output a LaTex snippet, without special charachter escaping and the bullets properly itemized, that will be added to an existing latex document - do not generate opening or closing article, document sections or headers. Tailor user message - which is a description of a job experience, resulting in a total text length of no more than {length} characters, to the following job requirement sticking to the facts included in the user message, do not be creative IF A TECHNOLOGY IS NOT MENTIONED IN THE USER MESSAGE DO NOT INCLUDE IT IN THE SUMMARY!!!! include a short paragraph and {Math.Round(bullets)} bullet points which are LaTeX formated (written with itemize), do not bold anything or include any type of header - just the paragraph and bullets: {JsonSerializer.Serialize(posting.Details)}", JsonSerializer.Serialize(position.Description), token: t);
                                 position.Description = position.Description?.Replace("#", "\\#").Replace("$", "\\$").Replace("&", "\\&").Replace("%", "\\%");
+                                
                             }
                             else if(!config.HidePositionsNotInJD)
                                 position.Description = "";
                             else
                                 toRemove.Add(position);
+                            if (config.SkillsPer20Percent != null)
+                            {
+                                position.PositionSkills = position.PositionSkills.Take(Math.Max(Convert.ToInt32((mtch / 0.2) * config.SkillsPer20Percent.Value), 10)).ToList();
+                            }
                         }
                     }
                     int currentCount = Interlocked.Increment(ref numberProcessed);

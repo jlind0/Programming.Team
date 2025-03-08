@@ -12,6 +12,7 @@
             <PositionSkillView ViewModel="e" />
         }
     </MudStack>
+    <SuggestAddSkillsForPositionView ViewModel="ViewModel.SuggestAddSkillsVM" />
     <MudButton OnClick="ViewModel.ExtractSkills.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
                Color="Color.Primary">Extract Skills</MudButton>
      @if(ViewModel.RawSkills.Count > 0)
