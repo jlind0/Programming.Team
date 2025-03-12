@@ -4,7 +4,7 @@ As a contributor to the existing project, given unspecified style
 property I guess from the original author's mention. This is to be
 less intrusive and coherent as a contributor, introducing new code.
 
-## C# version(**in style**) preferred to be kept it classic
+## C# version(in style) preferred to be kept it classic
 
 It is preferably `C# 9` or older. It's guessed after the conversation
 about using `file-scoped namespaces`. The latest is `C# 13`(2025).
@@ -34,3 +34,16 @@ List of big features in `C# 10` to `C# 13` (to avoid otherwise noted):
 - `Experimental` Attribute(12)
 - Interceptors(12)
 - `extension`(13)
+
+## Format: pretty much default C# style
+
+Guessed following:
+- New lines for braces in Methods
+- New lines for braces in Accessors
+- New lines for braces in AnonymousMethods
+- New lines for braces in AnonymousTypes
+- New lines for braces in ControlBlocks
+- New lines for braces in LambdaExpressionBody
+- New lines for braces in ObjectCollectionArrayInitializers
+- New lines for braces in Properties
+- New lines for braces in Types
