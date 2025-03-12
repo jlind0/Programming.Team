@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace Programming.Team.AI
 {
+    ///<inheritdoc cref="IChatGPT"/>
     public class ChatGPT : IChatGPT
     {
         protected string ApiKey { get; }
