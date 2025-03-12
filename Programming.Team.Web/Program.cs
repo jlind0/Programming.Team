@@ -116,7 +116,7 @@ builder.Services.AddScoped<IRepository<Company, Guid>, Repository<Company, Guid>
 builder.Services.AddScoped<IRepository<Reccomendation, Guid>, Repository<Reccomendation, Guid>>();
 builder.Services.AddScoped<IRepository<Position, Guid>, Repository<Position, Guid>>();
 builder.Services.AddScoped<IRepository<PositionSkill, Guid>, Repository<PositionSkill, Guid>>();
-builder.Services.AddScoped<IRepository<Skill, Guid>, Repository<Skill, Guid>>();
+builder.Services.AddScoped<IRepository<Skill, Guid>, SkillsRepository>();
 builder.Services.AddScoped<IRepository<DocumentType, int>, Repository<DocumentType, int>>();
 builder.Services.AddScoped<IRepository<Education, Guid>, Repository<Education, Guid>>();
 builder.Services.AddScoped<IRepository<DocumentTemplate, Guid>, Repository<DocumentTemplate, Guid>>();
@@ -127,7 +127,9 @@ builder.Services.AddScoped<IRepository<Publication, Guid>, Repository<Publicatio
 builder.Services.AddScoped<IRepository<Package, Guid>, Repository<Package, Guid>>();
 builder.Services.AddScoped<IRepository<Purchase, Guid>, Repository<Purchase, Guid>>();
 builder.Services.AddScoped<IRepository<SectionTemplate, Guid>, SectionTemplateRepository>();
+builder.Services.AddScoped<ISkillsRespository, SkillsRepository>();
 builder.Services.AddScoped<ISectionTemplateRepository, SectionTemplateRepository>();
+builder.Services.AddScoped<ISkillsBusinessFacade, SkillsBusinessFacade>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<Role, Guid>, BusinessRepositoryFacade<Role, Guid, IRepository<Role, Guid>>>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<Company, Guid>, BusinessRepositoryFacade<Company, Guid, IRepository<Company, Guid>>>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<Position, Guid>, BusinessRepositoryFacade<Position, Guid, IRepository<Position, Guid>>>();
@@ -136,7 +138,7 @@ builder.Services.AddScoped<IUserBusinessFacade, UserBusinessFacade>();
 builder.Services.AddScoped<IRoleBusinessFacade, RoleBusinessFacade>();
 builder.Services.AddScoped<IRepository<Posting, Guid>, Repository<Posting, Guid>>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<PositionSkill, Guid>, BusinessRepositoryFacade<PositionSkill, Guid, IRepository<PositionSkill, Guid>>>();
-builder.Services.AddScoped<IBusinessRepositoryFacade<Skill, Guid>, BusinessRepositoryFacade<Skill, Guid, IRepository<Skill, Guid>>>();
+builder.Services.AddScoped<IBusinessRepositoryFacade<Skill, Guid>, SkillsBusinessFacade>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<Education, Guid>, BusinessRepositoryFacade<Education, Guid, IRepository<Education, Guid>>>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<Institution, Guid>, BusinessRepositoryFacade<Institution, Guid, IRepository<Institution, Guid>>>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<Certificate, Guid>, BusinessRepositoryFacade<Certificate, Guid, IRepository<Certificate, Guid>>>();
@@ -202,6 +204,7 @@ builder.Services.AddTransient<PackagesViewModel>();
 builder.Services.AddTransient<AddSectionTemplateViewModel>();
 builder.Services.AddTransient<SectionTemplatesViewModel>();
 builder.Services.AddTransient<IndexViewModel>();
+builder.Services.AddTransient<SuggestAddSkillsForPositionViewModel>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession(options =>
 {

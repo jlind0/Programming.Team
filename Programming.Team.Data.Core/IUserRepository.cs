@@ -25,4 +25,9 @@ namespace Programming.Team.Data.Core
         Task<SectionTemplate[]> GetBySection(ResumePart sectionId, IUnitOfWork? work = null, CancellationToken token = default);
         Task<SectionTemplate?> GetDefaultSection(ResumePart sectionId, IUnitOfWork? work = null, string defaultName = "Default", CancellationToken token = default);
     }
+    public interface ISkillsRespository : IRepository<Skill, Guid>
+    {
+        Task<Skill[]> GetSkillsExcludingPosition(Guid positionId, IUnitOfWork? work = null,
+            CancellationToken token = default);
+    }
 }

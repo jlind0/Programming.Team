@@ -6,6 +6,7 @@
         <MudNumericField @bind-Value="ViewModel.MatchThreshold" Label="Match Threshold" Variant="Variant.Outlined"/>
         <MudNumericField @bind-Value="ViewModel.TargetLengthPer10Percent" Label="Target Length Per 10%" Variant="Variant.Outlined"/>
         <MudNumericField @bind-Value="ViewModel.BulletsPer20Percent" Label="Bullets Per 20%" Variant="Variant.Outlined"/>
+        <MudNumericField @bind-Value="ViewModel.SkillsPer20Percent" Label="Skills Per 20%" Variant="Variant.Outlined" />
         <MudCheckBox @bind-Value="ViewModel.HideSkillsNotInJD" Label="Hide Skills not in JD"/>
         <MudCheckBox @bind-Value="ViewModel.HidePositionsNotInJD" Label="Hide Positions not in JD" />
         <MudDropContainer T="ResumePartViewModel" Items="ViewModel.ResumeParts" @ref="_container" ItemsSelector="@((item,dropzone) => item.Selected.ToString() == dropzone)" ItemDropped="ItemUpdated" Class="d-flex flex-wrap flex-grow-1">

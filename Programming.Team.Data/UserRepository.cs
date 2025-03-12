@@ -44,7 +44,7 @@ namespace Programming.Team.Data
             await Use(async (w, t) =>
             {
                 var query = w.ResumesContext.Users.AsQueryable();
-                if(properties != null)
+                if (properties != null)
                     query = query.Include(properties);
                 user = await query.SingleOrDefaultAsync(x => x.ObjectId == objectId);
             }, work, token);
@@ -79,30 +79,30 @@ namespace Programming.Team.Data
         public async Task<Guid[]> GetUserIds(Guid roleId, IUnitOfWork? work = null, CancellationToken token = default)
         {
             Guid[] userIds = [];
-            await Use(async (w, t) => 
+            await Use(async (w, t) =>
             {
                 userIds = await w.ResumesContext.Users.Where(u => u.Roles.Any(r => r.Id == roleId)).Select(u => u.Id).ToArrayAsync(token);
-            },work, token);
+            }, work, token);
             return userIds;
         }
-        
+
         public async Task SetSelectedUsersToRole(Guid roleId, Guid[] userIds, IUnitOfWork? work = null, CancellationToken token = default)
         {
             await Use(async (w, t) =>
             {
                 var role = await w.ResumesContext.Roles.Include(c => c.Users).SingleOrDefaultAsync(w => w.Id == roleId);
-                if(role != null)
+                if (role != null)
                 {
-                    
+
                     var userId = await GetCurrentUserId(w, true, token: t);
                     role.Users.Clear();
                     role.UpdateDate = DateTime.UtcNow;
                     role.UpdatedByUserId = userId;
-                    foreach(var id in userIds)
+                    foreach (var id in userIds)
                     {
                         role.Users.Add(await w.ResumesContext.Users.SingleAsync(w => w.Id == id));
                     }
-                    
+
                 }
             }, work, token, true);
         }
@@ -130,6 +130,29 @@ namespace Programming.Team.Data
                 template = await w.ResumesContext.SectionTemplates.FirstOrDefaultAsync(s => s.SectionId == sectionId && s.Name == defaultName);
             }, work, token);
             return template;
+        }
+    }
+    public class SkillsRepository : Repository<Skill, Guid>, ISkillsRespository
+    {
+        public SkillsRepository(IContextFactory contextFactory, IMemoryCache cache) : base(contextFactory, cache)
+        {
+        }
+        public virtual async Task<Skill[]> GetSkillsExcludingPosition(Guid positionId, IUnitOfWork? work = null,
+            CancellationToken token = default)
+        {
+            Skill[] skills = [];
+            await Use(async (w, t) =>
+            {
+                var userId = await GetCurrentUserId(w, token: t);
+                DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
+                var query = w.ResumesContext.Skills.Where(s => 
+                    s.PositionSkills.Any(ps => ps.Position.UserId == userId && ps.PositionId != positionId)).Except(
+                        w.ResumesContext.Skills.Where(s => s.PositionSkills.Any(ps => ps.PositionId == positionId))).Distinct();
+                query = query.OrderByDescending(s => s.PositionSkills.Sum(
+                    ps => EF.Functions.DateDiffDay(ps.Position.StartDate, ps.Position.EndDate ?? today)));
+                skills = await query.ToArrayAsync(token);
+            }, work, token);
+            return skills;
         }
     }
 }
