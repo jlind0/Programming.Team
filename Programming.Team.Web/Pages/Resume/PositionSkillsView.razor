@@ -1,31 +1,58 @@
-﻿@inherits ReactiveComponentBase<PositionSkillsViewModel>
+﻿@* Relationalish over ReactiveObjects for Position(experience) and Skill *@
+@inherits ReactiveComponentBase<PositionSkillsViewModel>
 @attribute [Authorize]
+
 @if (ViewModel != null)
 {
+    @* TODO: do something for overly populated AlertViews in many scopes *@
     <AlertView Alert="ViewModel.Alert" />
-    <MudButton OnClick="ViewModel.StartAdd.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
-        Color="Color.Primary">Add Skill</MudButton>
-    <AddPositionSkillView ViewModel="ViewModel.AddViewModel" />
-    <MudStack Row="true" Wrap="Wrap.Wrap">
+
+    @* TODO: see both MudStack and MudChip in the same component *@
+    <MudStack Wrap="Wrap.Wrap" Spacing="1" Row>
         @foreach (var e in ViewModel.Entities)
         {
+            @* insta tag style keyword display *@
             <PositionSkillView ViewModel="e" />
         }
     </MudStack>
-    <SuggestAddSkillsForPositionView ViewModel="ViewModel.SuggestAddSkillsVM" />
-    <MudButton OnClick="ViewModel.ExtractSkills.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
-               Color="Color.Primary">Extract Skills</MudButton>
-     @if(ViewModel.RawSkills.Count > 0)
-     {
-        <MudStack Row="true" Wrap="Wrap.Wrap">
-            @foreach (var e in ViewModel.RawSkills)
-            {
-                <RawSkillView ViewModel="e" />
-            }
-        </MudStack>
-        <MudButton OnClick="ViewModel.AssociateSkills.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
-                   Color="Color.Primary">Associate Skills</MudButton>
-     }
+
+    @* TODO: all these anti-patterns in component naming *@
+
+    @* "Add Skill" invokes *@
+    <AddPositionSkillView ViewModel="ViewModel.AddViewModel" />
+    @* here it has weird space-taking of popover cascading value
+       so reverse-margin upward *@
+    <MudElement Style="margin-top: -3rem;"></MudElement>
+    <MudElement Class="d-flex justify-between">
+        <MudButton
+            OnClick="ViewModel.StartAdd.BindCommand<MouseEventArgs>()"
+            Class="fw-bold"
+            Variant="Variant.Filled"
+            Color="Color.Primary">Add Skill</MudButton>
+        @* "Suggest Skills" *@
+        <SuggestAddSkillsForPositionView
+            ViewModel="ViewModel.SuggestAddSkillsVM"
+        />
+        <MudButton
+            OnClick="ViewModel.ExtractSkills.BindCommand<MouseEventArgs>()"
+            Class="fw-bold"
+            Variant="Variant.Filled"
+            Color="Color.Primary">Extract Skills</MudButton>
+        @if (ViewModel.RawSkills.Count > 0)
+        {
+            <MudStack Wrap="Wrap.Wrap" Row>
+                @foreach (var e in ViewModel.RawSkills)
+                {
+                    <RawSkillView ViewModel="e" />
+                }
+            </MudStack>
+        }
+        <MudButton
+            OnClick="ViewModel.AssociateSkills.BindCommand<MouseEventArgs>()"
+            Class="fw-bold"
+            Variant="Variant.Filled"
+            Color="Color.Primary">Associate Skills</MudButton>
+    </MudElement>
 }
 
 @code {

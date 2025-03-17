@@ -1,25 +1,40 @@
-﻿@inherits ReactiveComponentBase<AddSkillViewModel>
+﻿@* at the thing *@
+
+@inherits ReactiveComponentBase<AddSkillViewModel>
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
-    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4">
-        <div class="d-flex flex-column">
-            <MudStack>
-                <MudTextField @bind-Value="ViewModel.Name" Label="Name" Variant="Variant.Outlined" />
-                <MudStack Row="true">
-                    <MudButton OnClick="ViewModel.Add.BindCommand<MouseEventArgs>()" Class="fw-bold"
-                        Variant="Variant.Filled" Color="Color.Primary">
-                        Add Skill</MudButton>
-                    <MudButton OnClick="ViewModel.Cancel.BindCommand<MouseEventArgs>()" Class="fw-bold"
-                        Variant="Variant.Filled" Color="Color.Primary">
-                        Cancel</MudButton>
-                </MudStack>
-            </MudStack>
-
-        </div>
-    </MudPopover>
+    @* TODO: backend redesign to avoid these UI-less anti-patterns *@
+    <MudPopover
+        Open="ViewModel.IsOpen"
+        Class="px-4 pt-4"
+        Fixed>
+     <div class="d-flex flex-column">
+         <MudStack>
+             <MudTextField
+                @bind-Value="ViewModel.Name"
+                Label="Name"
+                Variant="Variant.Outlined" />
+             <MudStack Row>
+                 <MudButton
+                    OnClick="ViewModel.Add.BindCommand<MouseEventArgs>()"
+                    Class="fw-bold"
+                    Variant="Variant.Filled"
+                    Color="Color.Primary"
+                >Add Skill</MudButton>
+                 <MudButton
+                    OnClick="ViewModel.Cancel.BindCommand<MouseEventArgs>()"
+                    Class="fw-bold"
+                    Variant="Variant.Filled"
+                    Color="Color.Primary"
+                >Cancel</MudButton>
+             </MudStack>
+         </MudStack>
+     </div>
+ </MudPopover>
 }
 @code {
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && ViewModel != null)

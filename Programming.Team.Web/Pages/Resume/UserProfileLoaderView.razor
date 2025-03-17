@@ -1,14 +1,21 @@
 ﻿@page "/resume/profile"
 @attribute [Authorize]
 @inherits ReactiveInjectableComponentBase<UserProfileLoaderViewModel>
+
+<MudContainer Class="d-flex flex-column align-center pt-6 color-under-paper">
 @if(ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert"/>
     @if(ViewModel.ViewModel != null)
     {
-        <UserProfileView ViewModel="ViewModel.ViewModel"/>
+        <MudPaper
+            Class="pa-4 mb-4 half-us-letter"
+            Style="width: 42rem;">
+            <UserProfileView ViewModel="ViewModel.ViewModel"/>
+        </MudPaper>
     }
 }
+</MudContainer>
 @code {
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

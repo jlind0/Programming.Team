@@ -1,14 +1,12 @@
 ﻿@page "/resume/builder"
+
+@inject IJSRuntime JSRuntime
 @inherits ReactiveInjectableComponentBase<ResumeBuilderViewModel>
 @attribute [Authorize]
 
-<MudContainer Class="d-flex flex-column align-center pt-6 color-under-paper">
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
-    <MudPaper
-        Class="pa-4 mb-4 half-us-letter"
-        Style="width: 42rem;">    
     <MudTextField @bind-Value="ViewModel.Name" Label="Name" Variant="Variant.Outlined" />
     <MudSelect Label="Document Template" T="DocumentTemplate" @bind-Value="ViewModel.SelectedTemplate"
         ToStringFunc="e => e?.Name">
@@ -27,10 +25,7 @@
             <MudText Color="Color.Secondary">@ViewModel.Progress</MudText>
         </h1>
     </MudOverlay>
-    </MudPaper>
 }
-</MudContainer>
-
 @code {
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

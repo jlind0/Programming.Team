@@ -1,39 +1,46 @@
 ﻿@page "/resume/postings"
 @attribute [Authorize]
 @inherits ReactiveInjectableComponentBase<PostingsViewModel>
+
+<MudContainer Class="d-flex flex-column align-center pt-6 color-under-paper">
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
-    <MudDataGrid @ref="grid" T="Posting" ServerData="ViewModel.Fetch.BindServerDataCommand()" RowsPerPage="10"
-        Filterable="true" FilterMode="DataGridFilterMode.ColumnFilterMenu" SortMode="SortMode.Multiple">
-        <Columns>
-            <PropertyColumn Property="x => x.Name" Title="Name" />
-            <PropertyColumn Property="x => x.DocumentTemplate.Name" Title="Document Template" Sortable="false"
-                Filterable="false" />
-            <TemplateColumn Title="Edit Posting">
-                <CellTemplate>
-                    @{
-                        var strHref = $"/resume/postings/{context.Item.Id}";
-                        <MudIconButton Href="@strHref" Icon="@Icons.Material.Filled.Edit" Color="Color.Primary"
-                            aria-label="edit" />
-                    }
-                </CellTemplate>
-            </TemplateColumn>
-            <TemplateColumn Title="Download Resume">
-                <CellTemplate>
-                    @{
-                        var strHref = $"api/resumes/{context.Item.Id}";
-                        <MudIconButton Href="@strHref" Icon="@Icons.Material.Filled.Download" Color="Color.Primary"
-                            aria-label="download" />
-                    }
-                </CellTemplate>
-            </TemplateColumn>
-        </Columns>
-        <PagerContent>
-            <MudDataGridPager T="Posting" />
-        </PagerContent>
-    </MudDataGrid>
+
+        <MudDataGrid
+            Class="pa-4 mb-4"
+            @ref="grid" T="Posting" ServerData="ViewModel.Fetch.BindServerDataCommand()" RowsPerPage="10"
+            Filterable="true" FilterMode="DataGridFilterMode.ColumnFilterMenu" SortMode="SortMode.Multiple">
+            <Columns>
+                <PropertyColumn Property="x => x.Name" Title="Name" />
+                <PropertyColumn Property="x => x.DocumentTemplate.Name" Title="Document Template" Sortable="false"
+                    Filterable="false" />
+                <TemplateColumn Title="Edit Posting">
+                    <CellTemplate>
+                        @{
+                            var strHref = $"/resume/postings/{context.Item.Id}";
+                            <MudIconButton Href="@strHref" Icon="@Icons.Material.Filled.Edit" Color="Color.Primary"
+                                aria-label="edit" />
+                        }
+                    </CellTemplate>
+                </TemplateColumn>
+                <TemplateColumn Title="Download Resume">
+                    <CellTemplate>
+                        @{
+                            var strHref = $"api/resumes/{context.Item.Id}";
+                            <MudIconButton Href="@strHref" Icon="@Icons.Material.Filled.Download" Color="Color.Primary"
+                                aria-label="download" />
+                        }
+                    </CellTemplate>
+                </TemplateColumn>
+            </Columns>
+            <PagerContent>
+                <MudDataGridPager T="Posting" />
+            </PagerContent>
+        </MudDataGrid>
 }
+</MudContainer>
+
 @code {
     private MudDataGrid<Posting> grid = null!;
 }

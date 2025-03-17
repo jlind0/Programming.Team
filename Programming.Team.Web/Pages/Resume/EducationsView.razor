@@ -2,6 +2,7 @@
 @attribute [Authorize]
 @inherits ReactiveInjectableComponentBase<EducationsViewModel>
 
+<MudContainer Class="d-flex flex-column align-center pt-6 color-under-paper">
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
@@ -10,9 +11,14 @@
     <AddEducationView ViewModel="ViewModel.AddViewModel" />
     @foreach (var position in ViewModel.Entities)
     {
-        <EducationView ViewModel="position" />
+        <MudPaper
+            Class="pa-4 mb-4 half-us-letter"
+            Style="width: 42rem;">
+            <EducationView ViewModel="position" />
+        </MudPaper>
     }
 }
+</MudContainer>
 
 @code {
     protected override void OnInitialized()

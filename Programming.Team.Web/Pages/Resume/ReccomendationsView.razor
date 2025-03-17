@@ -2,6 +2,7 @@
 @attribute [Authorize]
 @inherits ReactiveInjectableComponentBase<ReccomendationsViewModel>
 
+<MudContainer Class="d-flex flex-column align-center pt-6 color-under-paper">
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
@@ -10,9 +11,14 @@
     <AddReccomendationView ViewModel="ViewModel.AddViewModel" />
     @foreach (var position in ViewModel.Entities)
     {
-        <ReccomendationView ViewModel="position" />
+        <MudPaper
+            Class="pa-4 mb-4"
+            Style="max-width: 42rem; height: auto;">        
+            <ReccomendationView ViewModel="position" />
+        </MudPaper>
     }
 }
+</MudContainer>
 
 @code {
     protected override void OnInitialized()

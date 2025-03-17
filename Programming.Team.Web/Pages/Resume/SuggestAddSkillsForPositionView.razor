@@ -1,14 +1,21 @@
-﻿@inherits ReactiveComponentBase<SuggestAddSkillsForPositionViewModel>
+﻿@* Position means experience *@
+
+@inherits ReactiveComponentBase<SuggestAddSkillsForPositionViewModel>
 @if(ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
     <MudStack>
-        <MudButton OnClick="ViewModel.SuggestSkills.BindCommand<MouseEventArgs>()">Suggest Skills</MudButton>
+        <MudButton
+            OnClick="ViewModel.SuggestSkills.BindCommand<MouseEventArgs>()"
+            Class="fw-bold"
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+        >Suggest Skills</MudButton>
+
         @if (ViewModel.Skills.Count > 0)
         {
             <MudPaper Height="300px" Class="overflow-auto">
                 <MudStack Row="true" Wrap="Wrap.Wrap">
-                 
                     @foreach (var skill in ViewModel.Skills)
                     {
                         @skill.Name
@@ -16,7 +23,9 @@
                     }
                 </MudStack>
             </MudPaper>
-            <MudButton OnClick="ViewModel.AddSelectedSkills.BindCommand<MouseEventArgs>()">Add Skills</MudButton>
+            <MudButton
+                OnClick="ViewModel.AddSelectedSkills.BindCommand<MouseEventArgs>()"
+            >Add Skills</MudButton>
         }
     </MudStack>
 }

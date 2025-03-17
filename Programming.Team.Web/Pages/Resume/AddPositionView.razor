@@ -1,30 +1,34 @@
-﻿@inherits ReactiveComponentBase<AddPositionViewModel>
+﻿@* AddExperienceView *@
+@inherits ReactiveComponentBase<AddExpVM>
 
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
+    @* MudPopover is appeared as MudPaper by default *@
+    <MudPopover Class="mt-4 pa-4 mb-4 half-us-letter" Style="width: 42rem;" Open="ViewModel.IsOpen"
+        AnchorOrigin="Origin.TopCenter" TransformOrigin="Origin.TopCenter">
+        @* <div class="d-flex flex-column"> *@
+        <MudStack>
+            <SearchSelectCompanyView ViewModel="ViewModel.CompanyViewModel" />
+            <MudTextField @bind-Value="ViewModel.Title" Label="Title" Variant="Variant.Outlined" />
 
-    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4">
-        <div class="d-flex flex-column">
-            <MudStack>
-                <SearchSelectCompanyView ViewModel="ViewModel.CompanyViewModel" />
-                <MudTextField @bind-Value="ViewModel.Title" Label="Title" Variant="Variant.Outlined" />
+            <MudElement Class="d-flex">
                 <MudDatePicker @bind-Date="ViewModel.StartDateTime" Label="Start Date" MinDate="new DateTime(1950, 1, 1)" />
+                <MudSpacer />
                 <MudDatePicker @bind-Date="ViewModel.EndDateTime" Label="End Date" MinDate="new DateTime(1950, 1, 1)" />
-                <MudTextField Lines="10" @bind-Value="ViewModel.Description" Label="Description"
-                    Variant="Variant.Outlined" />
-                <MudTextField @bind-Value="ViewModel.SortOrder" Label="Sort Order" Variant="Variant.Outlined" />
-                <MudStack Row="true">
-                    <MudButton OnClick="ViewModel.Add.BindCommand<MouseEventArgs>()" Class="fw-bold"
-                        Variant="Variant.Filled" Color="Color.Primary">
-                        Add Position</MudButton>
-                    <MudButton OnClick="ViewModel.Cancel.BindCommand<MouseEventArgs>()" Class="fw-bold"
-                        Variant="Variant.Filled" Color="Color.Primary">
-                        Cancel</MudButton>
-                </MudStack>
+            </MudElement>
+            <MudTextField Lines="10" @bind-Value="ViewModel.Description" Label="Description" Variant="Variant.Outlined" />
+            @* <MudTextField @bind-Value="ViewModel.SortOrder" Label="Sort Order" Variant="Variant.Outlined" /> *@
+            <MudStack Row="true">
+                <MudButton OnClick="ViewModel.Add.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
+                    Color="Color.Primary">
+                    Add Position</MudButton>
+                <MudButton OnClick="ViewModel.Cancel.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
+                    Color="Color.Primary">
+                    Cancel</MudButton>
             </MudStack>
-
-        </div>
+        </MudStack>
+        @* </div> *@
     </MudPopover>
 
 }

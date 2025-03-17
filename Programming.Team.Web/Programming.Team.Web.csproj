@@ -23,18 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Programming.Team.AI.Core\Programming.Team.AI.Core.csproj" />
-    <ProjectReference Include="..\Programming.Team.AI\Programming.Team.AI.csproj" />
-    <ProjectReference Include="..\Programming.Team.Business.Core\Programming.Team.Business.Core.csproj" />
-    <ProjectReference Include="..\Programming.Team.Business\Programming.Team.Business.csproj" />
-    <ProjectReference Include="..\Programming.Team.Core\Programming.Team.Core.csproj" />
-    <ProjectReference Include="..\Programming.Team.Data.Core\Programming.Team.Data.Core.csproj" />
-    <ProjectReference Include="..\Programming.Team.Data\Programming.Team.Data.csproj" />
-    <ProjectReference Include="..\Programming.Team.PurchaseManager.Core\Programming.Team.PurchaseManager.Core.csproj" />
-    <ProjectReference Include="..\Programming.Team.PurchaseManager\Programming.Team.PurchaseManager.csproj" />
-    <ProjectReference Include="..\Programming.Team.Templating.Core\Programming.Team.Templating.Core.csproj" />
-    <ProjectReference Include="..\Programming.Team.Templating\Programming.Team.Templating.csproj" />
-    <ProjectReference Include="..\Programming.Team.ViewModels\Programming.Team.ViewModels.csproj" />
+    <ProjectReference Include="..\Programming.Team\Programming.Team.csproj" />
   </ItemGroup>
 
   <ItemGroup>

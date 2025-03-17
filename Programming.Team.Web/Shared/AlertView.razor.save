@@ -1,0 +1,98 @@
+﻿@inherits ReactiveInjectableComponentBase<AlertView.AlertViewModel>
+@inject ISnackbar Snackbar
+
+@if (ViewModel != null && ViewModel.IsOpen)
+{
+    Snackbar.Add(@ViewModel.Message, @AlertSeverity, config =>
+    {
+        config.ShowTransitionDuration = 300;
+        config.OnClick = snackbar =>
+    {
+        ViewModel.Close();
+        return Task.CompletedTask;
+    };
+    });
+}
+
+@code {
+
+    public class AlertViewModel : ReactiveObject
+    {
+        public ISnackbar Snackbar;
+
+        SemaphoreSlim slim = new SemaphoreSlim(0);
+        private bool isOpen;
+        public bool IsOpen
+        {
+            get => isOpen;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref isOpen, value);
+                if (!value)
+                    slim.Release();
+            }
+        }
+        private string message = null!;
+        public string Message
+        {
+            get => message;
+            set => this.RaiseAndSetIfChanged(ref message, value);
+        }
+        public void ToggleOpen()
+        {
+            IsOpen = !IsOpen;
+        }
+        public void Close()
+        {
+            IsOpen = false;
+        }
+        public void LoadAlertView(AlertView view)
+        {
+            view.Alert.RegisterHandler(async msg =>
+            {
+                Message = msg.Input;
+                IsOpen = true;
+
+                var config = (SnackbarOptions options) =>
+    {
+                options.VisibleStateDuration = int.MaxValue;
+                options.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow;
+            };
+
+                Snackbar.Add(view.Message, view.AlertSeverity, config =>
+    {
+                config.ShowTransitionDuration = 300;
+                config.OnClick = (snackbar) =>
+    {
+                view.Close();
+                return Task.CompletedTask;
+            };
+            });
+
+                await slim.WaitAsync();
+                msg.SetOutput(true);
+
+            });
+        }
+    }
+
+    private Interaction<string, bool> alert = null!;
+    [Parameter]
+    public Interaction<string, bool> Alert
+    {
+        get => alert;
+        set
+        {
+            alert = value;
+            ViewModel?.LoadAlertView(this);
+            //Snackbar.Add($"Now click hide snackbar. Key: {Key}", Severity.Normal, config, Key);
+            //Snackbar.Add($"Now click hide snackbar. Key: {Key}", Severity.Normal, config, Key);
+
+
+        }
+    }
+    [Parameter]
+    public Severity AlertSeverity { get; set; } = Severity.Error;
+
+
+}

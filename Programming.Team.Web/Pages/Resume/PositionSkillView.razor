@@ -1,25 +1,27 @@
-﻿@inherits ReactiveComponentBase<PositionSkillViewModel>
+﻿@* insta tag style keyword display *@
+
+@inherits ReactiveComponentBase<ExpSkillVM>
 
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
     <MudChip T="string" OnClose="ViewModel.Delete.BindCommand<MudChip<string>>()"
         OnClick="ViewModel.Edit.BindCommand<MouseEventArgs>()">@ViewModel.Skill.Name</MudChip>
-    <MudPopover Open="ViewModel.IsOpen">
-        <div class="d-flex flex-column">
-            <MudStack Fixed="true" Class="px-4 pt-4">
-                <MudText>@ViewModel.Skill.Name</MudText>
-                <MudTextField Lines="10" @bind-Value="ViewModel.Description" Label="Description"
-                    Variant="Variant.Outlined" />
-                <MudStack Row="true">
-                    <MudButton OnClick="ViewModel.Update.BindCommand<MouseEventArgs>()" Class="fw-bold"
-                        Variant="Variant.Filled" Color="Color.Primary">Update Skill</MudButton>
-                    <MudButton OnClick="ViewModel.Cancel.BindCommand<MouseEventArgs>()" Class="fw-bold"
-                        Variant="Variant.Filled" Color="Color.Primary">Cancel</MudButton>
-                </MudStack>
-            </MudStack>
-        </div>
-    </MudPopover>
+    <MudPopover Open="ViewModel.IsOpen" Fixed="true">
+        @* <div class="d-flex flex-column"> *@
+        <MudElement Style="margin-top: -1rem;"></MudElement>
+        <MudStack Fixed="true" Class="px-4 pt-4">
+            <MudText>@ViewModel.Skill.Name</MudText>
+            <MudTextField Lines="10" @bind-Value="ViewModel.Description" Label="Description" Variant="Variant.Outlined" />
+            <MudStack Row>
+             <MudButton OnClick="ViewModel.Update.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
+                 Color="Color.Primary">Update Skill</MudButton>
+             <MudButton OnClick="ViewModel.Cancel.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
+                 Color="Color.Primary">Cancel</MudButton>
+         </MudStack>
+     </MudStack>
+     @* </div> *@
+ </MudPopover>
 }
 
 @code {

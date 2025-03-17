@@ -1,0 +1,29 @@
+@*
+SearchSelecTView.razor
+Generic
+Description: This component displays a message and a counter, allowing users to increment the counter.
+*@
+
+@typeparam T
+
+@if (ViewModel != null)
+{
+    <AlertView Alert="ViewModel.Alert" />
+    <MudStack>
+        <MudAutocomplete T="Skill" CoerceText="true" Label="@Label" ToStringFunc="c => c.Name"
+        @bind-Value="ViewModel.Selected" DebounceInterval="250" SearchFunc="ViewModel.Search.BindCommand()" />
+        @if (ViewModel.CanAdd)
+        {
+            <MudButton OnClick="ViewModel.StartAdd.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
+                Color="Color.Primary">Add Skill</MudButton>
+            <AddSkillView ViewModel="ViewModel.AddViewModel" />
+        }
+        </MudStack>
+}
+@code {
+    [Parameter]
+    public T ViewModel { get; set; }
+
+    [Parameter]
+    public T Label { get; set; }
+}

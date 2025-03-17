@@ -21,7 +21,8 @@
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <NavMenu />
     </MudDrawer>
-    <MudMainContent Class="mt-16 pa-4">
+    @* body should start from MudContainer with pt: ex. pt-6 *@
+    <MudMainContent>
         @Body
     </MudMainContent>
 </MudLayout>
