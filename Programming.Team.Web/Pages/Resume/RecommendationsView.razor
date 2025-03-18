@@ -1,16 +1,16 @@
 ﻿@page "/resume/recommendations"
 @attribute [Authorize]
-@inherits ReactiveInjectableComponentBase<ReccomendationsViewModel>
+@inherits ReactiveInjectableComponentBase<RecommendationsViewModel>
 
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
     <MudButton OnClick="ViewModel.StartAdd.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
         Color="Color.Primary">Add Reccomendation</MudButton>
-    <AddReccomendationView ViewModel="ViewModel.AddViewModel" />
+    <AddRecommendationView ViewModel="ViewModel.AddViewModel" />
     @foreach (var position in ViewModel.Entities)
     {
-        <ReccomendationView ViewModel="position" />
+        <RecommendationView ViewModel="position" />
     }
 }
 

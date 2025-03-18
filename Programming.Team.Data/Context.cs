@@ -44,7 +44,7 @@ public partial class ResumesContext : DbContext
 
     public virtual DbSet<Publication> Publications { get; set; }
 
-    public virtual DbSet<Reccomendation> Reccomendations { get; set; }
+    public virtual DbSet<Recommendation> Reccomendations { get; set; }
     public virtual DbSet<SectionTemplate> SectionTemplates { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Name=Resumes");
@@ -474,8 +474,9 @@ public partial class ResumesContext : DbContext
             entity.HasQueryFilter(d => !d.IsDeleted);
         });
 
-        modelBuilder.Entity<Reccomendation>(entity =>
+        modelBuilder.Entity<Recommendation>(entity =>
         {
+            entity.ToTable("Reccomendations");
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             entity.Property(e => e.CreateDate)
                 .HasDefaultValueSql("(getutcdate())")

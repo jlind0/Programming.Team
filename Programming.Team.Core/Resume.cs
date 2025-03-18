@@ -11,7 +11,7 @@ namespace Programming.Team.Core
         public User User { get; set; } = null!;
         public List<Position> Positions { get; set; } = new List<Position>();
         public List<Education> Educations { get; set; } = new List<Education>();
-        public List<Reccomendation> Reccomendations { get; set; } = new List<Reccomendation>();
+        public List<Recommendation> Reccomendations { get; set; } = new List<Recommendation>();
         public List<Certificate> Certificates { get; set; } = new List<Certificate>();
         public List<SkillRollup> Skills { get; set; } = new List<SkillRollup>();
         public List<Publication> Publications { get; set; } = new List<Publication>();

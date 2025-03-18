@@ -15,15 +15,15 @@ using System.Threading.Tasks;
 
 namespace Programming.Team.ViewModels.Resume
 {
-    public class AddReccomendationViewModel : AddUserPartionedEntity<Guid, Reccomendation>, IReccomendation
+    public class AddRecommendationViewModel : AddUserPartionedEntity<Guid, Recommendation>, IRecommendation
     {
         public SearchSelectPositionViewModel SelectPosition { get; }
         protected readonly CompositeDisposable disposable = new CompositeDisposable();
-        ~AddReccomendationViewModel()
+        ~AddRecommendationViewModel()
         {
             disposable.Dispose();
         }
-        public AddReccomendationViewModel(SearchSelectPositionViewModel selectPosition, IBusinessRepositoryFacade<Reccomendation, Guid> facade, ILogger<AddEntityViewModel<Guid, Reccomendation, IBusinessRepositoryFacade<Reccomendation, Guid>>> logger) : base(facade, logger)
+        public AddRecommendationViewModel(SearchSelectPositionViewModel selectPosition, IBusinessRepositoryFacade<Recommendation, Guid> facade, ILogger<AddEntityViewModel<Guid, Recommendation, IBusinessRepositoryFacade<Recommendation, Guid>>> logger) : base(facade, logger)
         {
             SelectPosition = selectPosition;
             SelectPosition.WhenPropertyChanged(p => p.Selected).Subscribe(p =>
@@ -85,9 +85,9 @@ namespace Programming.Team.ViewModels.Resume
             return Task.CompletedTask;
         }
         public override bool CanAdd => SelectPosition.Selected != null;
-        protected override Task<Reccomendation> ConstructEntity()
+        protected override Task<Recommendation> ConstructEntity()
         {
-            return Task.FromResult(new Reccomendation()
+            return Task.FromResult(new Recommendation()
             {
                 PositionId = PositionId,
                 Name = Name,
@@ -98,7 +98,7 @@ namespace Programming.Team.ViewModels.Resume
             });
         }
     }
-    public class ReccomendationViewModel : EntityViewModel<Guid, Reccomendation>, IReccomendation
+    public class RecommendationViewModel : EntityViewModel<Guid, Recommendation>, IRecommendation
     {
         private Guid positionId;
         public Guid PositionId
@@ -140,22 +140,22 @@ namespace Programming.Team.ViewModels.Resume
             get => position;
             set => this.RaiseAndSetIfChanged(ref position, value);
         }
-        public ReccomendationViewModel(ILogger logger, IBusinessRepositoryFacade<Reccomendation, Guid> facade, Guid id) : base(logger, facade, id)
+        public RecommendationViewModel(ILogger logger, IBusinessRepositoryFacade<Recommendation, Guid> facade, Guid id) : base(logger, facade, id)
         {
         }
 
-        public ReccomendationViewModel(ILogger logger, IBusinessRepositoryFacade<Reccomendation, Guid> facade, Reccomendation entity) : base(logger, facade, entity)
+        public RecommendationViewModel(ILogger logger, IBusinessRepositoryFacade<Recommendation, Guid> facade, Recommendation entity) : base(logger, facade, entity)
         {
         }
         
-        protected override Func<IQueryable<Reccomendation>, IQueryable<Reccomendation>>? PropertiesToLoad()
+        protected override Func<IQueryable<Recommendation>, IQueryable<Recommendation>>? PropertiesToLoad()
         {
             return e => e.Include(x => x.Position).ThenInclude(x => x.Company);
         }
 
-        protected override Task<Reccomendation> Populate()
+        protected override Task<Recommendation> Populate()
         {
-            return Task.FromResult(new Reccomendation()
+            return Task.FromResult(new Recommendation()
             {
                 Id = Id,
                 Name = Name,
@@ -167,7 +167,7 @@ namespace Programming.Team.ViewModels.Resume
             });
         }
 
-        protected override Task Read(Reccomendation entity)
+        protected override Task Read(Recommendation entity)
         {
             Id = entity.Id;
             UserId = entity.UserId;
@@ -180,27 +180,27 @@ namespace Programming.Team.ViewModels.Resume
             return Task.CompletedTask;
         }
     }
-    public class ReccomendationsViewModel : EntitiesDefaultViewModel<Guid, Reccomendation, ReccomendationViewModel, AddReccomendationViewModel>
+    public class RecommendationsViewModel : EntitiesDefaultViewModel<Guid, Recommendation, RecommendationViewModel, AddRecommendationViewModel>
     {
-        public ReccomendationsViewModel(AddReccomendationViewModel addViewModel, IBusinessRepositoryFacade<Reccomendation, Guid> facade, ILogger<EntitiesViewModel<Guid, Reccomendation, ReccomendationViewModel, IBusinessRepositoryFacade<Reccomendation, Guid>>> logger) : base(addViewModel, facade, logger)
+        public RecommendationsViewModel(AddRecommendationViewModel addViewModel, IBusinessRepositoryFacade<Recommendation, Guid> facade, ILogger<EntitiesViewModel<Guid, Recommendation, RecommendationViewModel, IBusinessRepositoryFacade<Recommendation, Guid>>> logger) : base(addViewModel, facade, logger)
         {
         }
-        protected override Func<IQueryable<Reccomendation>, IQueryable<Reccomendation>>? PropertiesToLoad()
+        protected override Func<IQueryable<Recommendation>, IQueryable<Recommendation>>? PropertiesToLoad()
         {
             return x => x.Include(e => e.Position).ThenInclude(e => e.Company);
         }
-        protected override async Task<Expression<Func<Reccomendation, bool>>?> FilterCondition()
+        protected override async Task<Expression<Func<Recommendation, bool>>?> FilterCondition()
         {
             var userid = await Facade.GetCurrentUserId();
             return e => e.UserId == userid;
         }
-        protected override Func<IQueryable<Reccomendation>, IOrderedQueryable<Reccomendation>>? OrderBy()
+        protected override Func<IQueryable<Recommendation>, IOrderedQueryable<Recommendation>>? OrderBy()
         {
             return e => e.OrderBy(c => c.SortOrder).ThenBy(c => c.Name);
         }
-        protected override Task<ReccomendationViewModel> Construct(Reccomendation entity, CancellationToken token)
+        protected override Task<RecommendationViewModel> Construct(Recommendation entity, CancellationToken token)
         {
-            return Task.FromResult(new ReccomendationViewModel(Logger, Facade, entity));
+            return Task.FromResult(new RecommendationViewModel(Logger, Facade, entity));
         }
     }
 }
