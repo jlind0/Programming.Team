@@ -46,5 +46,5 @@ public partial class Position : Entity<Guid>, IPosition
     public virtual ICollection<PositionSkill> PositionSkills { get; set; } = new List<PositionSkill>();
 
     public virtual User User { get; set; } = null!;
-    public virtual ICollection<Recommendation> Reccomendations { get; set; } = new List<Recommendation>();
+    public virtual ICollection<Recommendation> Recommendations { get; set; } = new List<Recommendation>();
 }

@@ -82,7 +82,7 @@ namespace Programming.Team.Business
                     var certs = await CertificateFacade.Get(work: uow, properites: GetCertificateProperties(), orderBy: q => q.OrderByDescending(e => e.ValidToDate ?? DateOnly.MaxValue).ThenByDescending(e => e.ValidFromDate),
                         filter: q => q.UserId == userId, token: token);
                     resume.Certificates.AddRange(certs.Entities);
-                    resume.Reccomendations = resume.Positions.SelectMany(e => e.Reccomendations).OrderBy(c => c.SortOrder).ThenBy(c => c.Name).ToList();
+                    resume.Recommendations = resume.Positions.SelectMany(e => e.Recommendations).OrderBy(c => c.SortOrder).ThenBy(c => c.Name).ToList();
                     
                     foreach(var position in resume.Positions)
                     {
@@ -121,7 +121,7 @@ namespace Programming.Team.Business
         }
         protected Func<IQueryable<Position>, IQueryable<Position>> GetPositionProperties()
         {
-            return e => e.Include(x => x.PositionSkills).ThenInclude(x => x.Skill).Include(x => x.Company).Include(x => x.Reccomendations);
+            return e => e.Include(x => x.PositionSkills).ThenInclude(x => x.Skill).Include(x => x.Company).Include(x => x.Recommendations);
         }
         protected Func<IQueryable<Education>, IQueryable<Education>> GetEducationProperties() 
         {

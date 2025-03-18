@@ -44,7 +44,7 @@ public partial class ResumesContext : DbContext
 
     public virtual DbSet<Publication> Publications { get; set; }
 
-    public virtual DbSet<Recommendation> Reccomendations { get; set; }
+    public virtual DbSet<Recommendation> Recommendations { get; set; }
     public virtual DbSet<SectionTemplate> SectionTemplates { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Name=Resumes");
@@ -476,7 +476,6 @@ public partial class ResumesContext : DbContext
 
         modelBuilder.Entity<Recommendation>(entity =>
         {
-            entity.ToTable("Reccomendations");
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             entity.Property(e => e.CreateDate)
                 .HasDefaultValueSql("(getutcdate())")
@@ -495,7 +494,7 @@ public partial class ResumesContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Reccomendations_Users1");
 
-            entity.HasOne(d => d.Position).WithMany(p => p.Reccomendations)
+            entity.HasOne(d => d.Position).WithMany(p => p.Recommendations)
                 .HasForeignKey(d => d.PositionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Reccomendations_Positions");

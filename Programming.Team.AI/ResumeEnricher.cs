@@ -61,7 +61,7 @@ namespace Programming.Team.AI
                 {
                     skill.Name = skill.Name.Replace("#", "\\#").Replace("$", "\\$").Replace("&", "\\&").Replace("%", "\\%");
                 }
-                foreach(var rec in resume.Reccomendations)
+                foreach(var rec in resume.Recommendations)
                 {
                     rec.Body = rec.Body.Replace("#", "\\#").Replace("$", "\\$").Replace("&", "\\&").Replace("%", "\\%");
                     rec.Name = rec.Name.Replace("#", "\\#").Replace("$", "\\$").Replace("&", "\\&").Replace("%", "\\%");

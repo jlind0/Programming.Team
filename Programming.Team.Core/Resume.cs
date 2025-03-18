@@ -11,11 +11,11 @@ namespace Programming.Team.Core
         public User User { get; set; } = null!;
         public List<Position> Positions { get; set; } = new List<Position>();
         public List<Education> Educations { get; set; } = new List<Education>();
-        public List<Recommendation> Reccomendations { get; set; } = new List<Recommendation>();
+        public List<Recommendation> Recommendations { get; set; } = new List<Recommendation>();
         public List<Certificate> Certificates { get; set; } = new List<Certificate>();
         public List<SkillRollup> Skills { get; set; } = new List<SkillRollup>();
         public List<Publication> Publications { get; set; } = new List<Publication>();
-        public ResumePart[] Parts { get; set; } = [ResumePart.Bio, ResumePart.Reccomendations, ResumePart.Skills, ResumePart.Positions, ResumePart.Education, ResumePart.Certifications, ResumePart.Publications];
+        public ResumePart[] Parts { get; set; } = [ResumePart.Bio, ResumePart.Recommendations, ResumePart.Skills, ResumePart.Positions, ResumePart.Education, ResumePart.Certifications, ResumePart.Publications];
     }
     public class SkillRollup
     {
