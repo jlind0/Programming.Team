@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace Programming.Team.Core;
-public interface ISkill : IEntity<Guid>
+public interface ISkill : IEntity<Guid>, INamedEntity
 {
     string Name { get; set; }
 }

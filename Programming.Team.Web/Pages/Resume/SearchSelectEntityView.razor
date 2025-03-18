@@ -1,0 +1,22 @@
+﻿@typeparam TKey where TKey : struct
+@typeparam TEntity where TEntity : Entity<TKey>, INamedEntity, new()
+@typeparam TAddViewModel where TAddViewModel : class, IAddEntityViewModel<TKey, TEntity>
+@typeparam TSearchSelectViewModel where TSearchSelectViewModel : EntitySelectSearchViewModel<TKey, TEntity, TAddViewModel>
+@typeparam TAddView where TAddView : ReactiveComponentBase<TAddViewModel>
+@inherits ReactiveComponentBase<TSearchSelectViewModel>
+
+@if (ViewModel != null)
+{
+    <AlertView Alert="ViewModel.Alert" />
+    <MudStack>
+        <MudAutocomplete T="TEntity" CoerceText="true" Label="@typeof(TEntity).Name" ToStringFunc="c => c.Name"
+                         @bind-Value="ViewModel.Selected" DebounceInterval="250" SearchFunc="ViewModel.Search.BindCommand()" />
+        @if (ViewModel.CanAdd)
+        {
+            <MudButton OnClick="ViewModel.StartAdd.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
+                       Color="Color.Primary">Add @typeof(TEntity).Name</MudButton>
+            <DynamicComponent Type="typeof(TAddView)" Parameters="@(new Dictionary<string, object> { { "ViewModel", ViewModel.AddViewModel } })" />
+        }
+    </MudStack>
+
+}

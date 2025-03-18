@@ -15,6 +15,10 @@ namespace Programming.Team.Core
     {
         Guid UserId { get; set; }
     }
+    public interface INamedEntity
+    {
+        string Name { get; set; }
+    }
     public abstract class Entity<TKey> : IEntity<TKey>
         where TKey : struct
     {

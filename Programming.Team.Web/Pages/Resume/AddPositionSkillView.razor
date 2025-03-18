@@ -6,7 +6,10 @@
     <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4">
         <div class="d-flex flex-column">
             <MudStack>
-                <SearchSelectSkillView ViewModel="ViewModel.SkillSelectorViewModel" />
+                <SearchSelectEntityView TAddView="AddSkillView"
+                                        TEntity="Skill" TKey="Guid" TAddViewModel="AddSkillViewModel"
+                                        TSearchSelectViewModel="SearchSelectSkillViewModel"
+                                        ViewModel="ViewModel.SkillSelectorViewModel" />
                 <MudTextField Lines="10" @bind-Value="ViewModel.Description" Label="Description"
                     Variant="Variant.Outlined" />
                 <MudStack Row="true">

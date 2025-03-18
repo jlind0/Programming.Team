@@ -245,6 +245,7 @@ public partial class ResumesContext : DbContext
 
         modelBuilder.Entity<Position>(entity =>
         {
+            entity.Ignore(e => e.Name);
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             entity.Property(e => e.CreateDate)
                 .HasDefaultValueSql("(getutcdate())")
@@ -364,7 +365,7 @@ public partial class ResumesContext : DbContext
         modelBuilder.Entity<User>(entity =>
         {
             entity.HasIndex(e => e.ObjectId, "IX_Users").IsUnique();
-
+            
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             entity.Property(e => e.City).HasMaxLength(500);
             entity.Property(e => e.Country).HasMaxLength(500);

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace Programming.Team.Core;
-public interface ICompany : IEntity<Guid>
+public interface ICompany : IEntity<Guid>, INamedEntity
 {
     string Name { get; set; }
 

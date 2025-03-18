@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Programming.Team.Core;
 
-public interface IDocumentType : IEntity<int>
+public interface IDocumentType : IEntity<int>, INamedEntity
 {
     string Name { get; set; }
 }

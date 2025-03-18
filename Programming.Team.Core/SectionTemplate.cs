@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Programming.Team.Core
 {
-    public interface ISectionTemplate : IEntity<Guid>
+    public interface ISectionTemplate : IEntity<Guid>, INamedEntity
     {
         ResumePart SectionId { get; set; }
         string Name { get; set; }

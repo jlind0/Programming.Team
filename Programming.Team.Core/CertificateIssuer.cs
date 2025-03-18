@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace Programming.Team.Core;
-public interface ICertificateIssuer : IEntity<Guid>
+public interface ICertificateIssuer : IEntity<Guid>, INamedEntity
 {
     string Name { get; set; }
 

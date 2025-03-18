@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Programming.Team.Core;
 
-public interface IInstitution : IEntity<Guid>
+public interface IInstitution : IEntity<Guid>, INamedEntity
 {
     string Name { get; set; }
 

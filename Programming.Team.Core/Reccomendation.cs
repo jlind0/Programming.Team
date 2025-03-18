@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Programming.Team.Core;
 
-public interface IRecommendation : IEntity<Guid>, IUserPartionedEntity
+public interface IRecommendation : IEntity<Guid>, IUserPartionedEntity, INamedEntity
 {
 
     Guid PositionId { get; set; }

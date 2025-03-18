@@ -17,9 +17,9 @@ public interface IPosition : IEntity<Guid>, IUserPartionedEntity
 
     string? SortOrder { get; set; }
 }
-public partial class Position : Entity<Guid>, IPosition
+public partial class Position : Entity<Guid>, IPosition, INamedEntity
 {
-
+    public string Name { get => Company.Name; set { } }
     public Guid UserId { get; set; }
 
     public Guid CompanyId { get; set; }
