@@ -489,7 +489,7 @@ public partial class ResumesContext : DbContext
                 .HasDefaultValueSql("(getutcdate())")
                 .HasColumnType("datetime");
 
-            entity.HasOne(d => d.CreatedByUser).WithMany(p => p.ReccomendationCreatedByUsers)
+            entity.HasOne(d => d.CreatedByUser).WithMany(p => p.RecommendationCreatedByUsers)
                 .HasForeignKey(d => d.CreatedByUserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Reccomendations_Users1");
@@ -499,12 +499,12 @@ public partial class ResumesContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Reccomendations_Positions");
 
-            entity.HasOne(d => d.UpdatedByUser).WithMany(p => p.ReccomendationUpdatedByUsers)
+            entity.HasOne(d => d.UpdatedByUser).WithMany(p => p.RecommendationUpdatedByUsers)
                 .HasForeignKey(d => d.UpdatedByUserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Reccomendations_Users2");
 
-            entity.HasOne(d => d.User).WithMany(p => p.ReccomendationUsers)
+            entity.HasOne(d => d.User).WithMany(p => p.RecommendationUsers)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Reccomendations_Users");
