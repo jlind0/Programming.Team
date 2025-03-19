@@ -15,11 +15,16 @@ namespace Programming.Team.ViewModels.Admin
         public AddDocumentTypeViewModel(IBusinessRepositoryFacade<DocumentType, int> facade, ILogger<AddEntityViewModel<int, DocumentType, IBusinessRepositoryFacade<DocumentType, int>>> logger) : base(facade, logger)
         {
         }
+        public override bool CanAdd => base.CanAdd && !string.IsNullOrWhiteSpace(Name);
         private string name = string.Empty;
         public string Name
         {
             get => name;
-            set => this.RaiseAndSetIfChanged(ref name, value);
+            set
+            {
+                this.RaiseAndSetIfChanged(ref name, value);
+                this.RaisePropertyChanged(nameof(CanAdd));
+            }
         }
 
         protected override Task Clear()
@@ -42,7 +47,7 @@ namespace Programming.Team.ViewModels.Admin
         public DocumentTypeViewModel(ILogger logger, IBusinessRepositoryFacade<DocumentType, int> facade, DocumentType entity) : base(logger, facade, entity)
         {
         }
-
+        
         private string name = string.Empty;
         public string Name
         {

@@ -98,7 +98,7 @@ namespace Programming.Team.ViewModels.Admin
             }
         }
 
-        public override bool CanAdd => !string.IsNullOrWhiteSpace(Template) && !string.IsNullOrWhiteSpace(Name) && DocumentType != null;
+        public override bool CanAdd => base.CanAdd && !string.IsNullOrWhiteSpace(Template) && !string.IsNullOrWhiteSpace(Name) && DocumentType != null;
         protected override Task Clear()
         {
             DocumentType = DocumentTypes.First();
