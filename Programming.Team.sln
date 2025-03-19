@@ -33,6 +33,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Programming.Team.PurchaseMa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Programming.Team.AI.Tests", "Programming.Team.AI.Tests\Programming.Team.AI.Tests.csproj", "{B5AACD68-9A2B-4CDB-9CE5-A2CEEA7DEE31}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Programming.Team.Business.Tests", "Programming.Team.Business.Tests\Programming.Team.Business.Tests.csproj", "{5B3C66A1-9F37-45BD-9D9F-C60C48FD44D4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +101,10 @@ Global
 		{B5AACD68-9A2B-4CDB-9CE5-A2CEEA7DEE31}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5AACD68-9A2B-4CDB-9CE5-A2CEEA7DEE31}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5AACD68-9A2B-4CDB-9CE5-A2CEEA7DEE31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B3C66A1-9F37-45BD-9D9F-C60C48FD44D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B3C66A1-9F37-45BD-9D9F-C60C48FD44D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B3C66A1-9F37-45BD-9D9F-C60C48FD44D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B3C66A1-9F37-45BD-9D9F-C60C48FD44D4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
