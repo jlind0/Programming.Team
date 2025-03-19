@@ -63,7 +63,11 @@ namespace Programming.Team.ViewModels.Admin
         public DocumentType? DocumentType
         {
             get => documentType;
-            set => this.RaiseAndSetIfChanged(ref documentType, value);
+            set
+            {
+                this.RaiseAndSetIfChanged(ref documentType, value);
+                this.RaisePropertyChanged(nameof(CanAdd));
+            }
         }
         private int documentTypeId;
         public int DocumentTypeId
@@ -76,17 +80,25 @@ namespace Programming.Team.ViewModels.Admin
         public string Name
         {
             get => name;
-            set => this.RaiseAndSetIfChanged(ref name, value);
+            set
+            {
+                this.RaiseAndSetIfChanged(ref name, value);
+                this.RaisePropertyChanged(nameof(CanAdd));
+            }
         }
 
         private string template = string.Empty;
         public string Template
         {
             get => template;
-            set => this.RaiseAndSetIfChanged(ref template, value);
+            set
+            {
+                this.RaiseAndSetIfChanged(ref template, value);
+                this.RaisePropertyChanged(nameof(CanAdd));
+            }
         }
 
-
+        public override bool CanAdd => !string.IsNullOrWhiteSpace(Template) && !string.IsNullOrWhiteSpace(Name) && DocumentType != null;
         protected override Task Clear()
         {
             DocumentType = DocumentTypes.First();
