@@ -11,11 +11,12 @@ using System.Threading.Tasks;
 
 namespace Programming.Team.AI
 {
+    ///<inheritdoc cref="IResumeEnricher"/>
     public class ResumeEnricher : IResumeEnricher
     {
         protected ILogger Logger { get; }
         protected IChatGPT ChatGPT { get; }
-        public ResumeEnricher(ILogger<ResumeEnricher> logger, IChatGPT chatGPT) 
+        public ResumeEnricher(ILogger<ResumeEnricher> logger, IChatGPT chatGPT)
         {
             Logger = logger;
             ChatGPT = chatGPT;
@@ -24,9 +25,9 @@ namespace Programming.Team.AI
         {
             try
             {
-                var config = !string.IsNullOrWhiteSpace(posting.Configuration) ? 
+                var config = !string.IsNullOrWhiteSpace(posting.Configuration) ?
                     JsonSerializer.Deserialize<ResumeConfiguration>(posting.Configuration) ?? throw new InvalidDataException() : new ResumeConfiguration();
-                
+
                 if (config.HideSkillsNotInJD)
                 {
                     progress?.Report("Filtering Skills");
@@ -50,7 +51,7 @@ namespace Programming.Team.AI
                     }
                     catch { }
                 }
-                
+
                 if (!string.IsNullOrWhiteSpace(resume.User.Bio))
                 {
                     progress?.Report("Tailoring Bio");
@@ -66,11 +67,11 @@ namespace Programming.Team.AI
                     rec.Body = rec.Body.Replace("#", "\\#").Replace("$", "\\$").Replace("&", "\\&").Replace("%", "\\%");
                     rec.Name = rec.Name.Replace("#", "\\#").Replace("$", "\\$").Replace("&", "\\&").Replace("%", "\\%");
                 }
-                foreach(var edu in resume.Educations)
+                foreach (var edu in resume.Educations)
                 {
                     edu.Description = edu.Description?.Replace("#", "\\#").Replace("$", "\\$").Replace("&", "\\&").Replace("%", "\\%");
                 }
-                foreach(var pub in resume.Publications)
+                foreach (var pub in resume.Publications)
                 {
                     pub.Title = pub.Title.Replace("#", "\\#").Replace("$", "\\$").Replace("&", "\\&").Replace("%", "\\%");
                     pub.Description = pub.Description?.Replace("#", "\\#").Replace("$", "\\$").Replace("&", "\\&").Replace("%", "\\%");
@@ -90,13 +91,13 @@ namespace Programming.Team.AI
                             {
                                 double length = mtch * 10 * (config.TargetLengthPer10Percent ?? 75);
                                 double bullets = (Math.Ceiling((mtch / 0.2) * (config.BulletsPer20Percent ?? 0.75)));
-                                if(bullets < 2)
+                                if (bullets < 2)
                                     bullets = 2;
                                 position.Description = await ChatGPT.GetRepsonse($"Output a LaTex snippet, without special charachter escaping and the bullets properly itemized, that will be added to an existing latex document - do not generate opening or closing article, document sections or headers. Tailor user message - which is a description of a job experience, resulting in a total text length of no more than {length} characters, to the following job requirement sticking to the facts included in the user message, do not be creative IF A TECHNOLOGY IS NOT MENTIONED IN THE USER MESSAGE DO NOT INCLUDE IT IN THE SUMMARY!!!! include a short paragraph and {Math.Round(bullets)} bullet points which are LaTeX formated (written with itemize, no dashes - use itemize for bullets), do not bold anything or include any type of header - just the paragraph and bullets: {JsonSerializer.Serialize(posting.Details)}", JsonSerializer.Serialize(position.Description), token: t);
                                 position.Description = position.Description?.Replace("#", "\\#").Replace("$", "\\$").Replace("&", "\\&").Replace("%", "\\%");
-                                
+
                             }
-                            else if(!config.HidePositionsNotInJD)
+                            else if (!config.HidePositionsNotInJD)
                                 position.Description = "";
                             else
                                 toRemove.Add(position);

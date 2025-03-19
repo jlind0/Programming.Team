@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
+﻿/**
+Implement what's from Programming.Team.Data.Core/Plumbing.cs
+*/
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -18,6 +21,7 @@ using System.Transactions;
 
 namespace Programming.Team.Data
 {
+    ///<inheritdoc cref="IContextFactory"/>
     public class ContextFactory : IContextFactory
     {
         protected DbContextOptions<ResumesContext> Config { get; }
@@ -61,22 +65,31 @@ namespace Programming.Team.Data
             return null;
         }
         private const string ImpersonatedUserId = nameof(ImpersonatedUserId);
+
+        /// <summary>
+        /// Retrieves the impersonated user ID from the session.
+        /// </summary>
+        /// <returns>The impersonated user ID or null if not set.</returns>
         public async Task<Guid?> GetImpersonatedUser()
         {
             var httpContext = ServiceProvider.GetService<IHttpContextAccessor>();
             var strUserId = httpContext?.HttpContext.Session.GetString(ImpersonatedUserId);
-            
-            if(Guid.TryParse(strUserId, out Guid userId))
+
+            if (Guid.TryParse(strUserId, out Guid userId))
                 return userId;
             return null;
         }
-
+        /// <summary>
+        /// Sets the impersonated user ID in the session.
+        /// </summary>
+        /// <param name="userId">The user ID to impersonate or null to clear impersonation.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public Task SetImpersonatedUser(Guid? userId)
         {
             var httpContext = ServiceProvider.GetService<IHttpContextAccessor>();
-            if(httpContext != null)
+            if (httpContext != null)
             {
-                if(userId == null)
+                if (userId == null)
                     httpContext.HttpContext.Session.Remove(ImpersonatedUserId);
                 else
                     httpContext.HttpContext.Session.SetString(ImpersonatedUserId, userId.ToString());
@@ -85,9 +98,10 @@ namespace Programming.Team.Data
             return Task.CompletedTask;
         }
     }
+    ///<inheritdoc cref="IUnitOfWork"/>
     public class UnitOfWork : IUnitOfWork
     {
-        public DbContext Context{ get; }
+        public DbContext Context { get; }
         internal ResumesContext ResumesContext => (ResumesContext)Context;
         //protected TransactionScope Transaction { get; }
         public UnitOfWork(IContextFactory contextFactory)
@@ -103,23 +117,39 @@ namespace Programming.Team.Data
             TransactionScopeAsyncFlowOption.Enabled);*/
 
         }
+        /// <summary>
+        /// Commits the changes to the database.
+        /// </summary>
+        /// <param name="token">A cancellation token.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public async Task Commit(CancellationToken token = default)
         {
             await Context.SaveChangesAsync();
             //Transaction.Complete();
         }
-
+        /// <summary>
+        /// Disposes the Unit of Work and its associated DbContext.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public async ValueTask DisposeAsync()
         {
             await Context.DisposeAsync();
             //Transaction.Dispose();
         }
-
+        /// <summary>
+        /// Rolls back the transaction by disposing the Unit of Work.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public async Task Rollback()
         {
             await DisposeAsync();
         }
     }
+    /// <summary>
+    /// Generic repository implementation for CRUD operations on entities.
+    /// </summary>
+    /// <typeparam name="TEntity">The entity type.</typeparam>
+    /// <typeparam name="TKey">The primary key type.</typeparam>
     public class Repository<TEntity, TKey> : IRepository<TEntity, TKey>
        where TKey : struct
        where TEntity : Entity<TKey>, new()
@@ -156,6 +186,13 @@ namespace Programming.Team.Data
                 }
             }
         }
+        /// <summary>
+        /// Deletes an entity by its primary key.
+        /// </summary>
+        /// <param name="key">The primary key of the entity to delete.</param>
+        /// <param name="work">An optional Unit of Work instance.</param>
+        /// <param name="token">A cancellation token.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public virtual Task Delete(TKey key, IUnitOfWork? work = null, CancellationToken token = default)
         {
             return Use(async (w, t) =>
@@ -169,12 +206,28 @@ namespace Programming.Team.Data
             }, work, token, true);
 
         }
+        /// <summary>
+        /// Deletes an entity.
+        /// </summary>
+        /// <param name="entity">The entity to delete.</param>
+        /// <param name="work">An optional Unit of Work instance.</param>
+        /// <param name="token">A cancellation token.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public virtual Task Delete(TEntity entity, IUnitOfWork? work = null, CancellationToken token = default)
+        {
+            return Use(async (w, t) =>
+            {
+                entity.UpdateDate = DateTime.UtcNow;
+                entity.UpdatedByUserId = await GetCurrentUserId(work, true, token: token);
+                entity.IsDeleted = true;
+            }, work, token, true);
+        }
         protected async Task PopulateBaseAttributes(TEntity entity, UnitOfWork uow, CancellationToken token)
         {
-            if(entity.CreatedByUserId == null)
+            if (entity.CreatedByUserId == null)
             {
                 var e = await GetByID(entity.Id, token: token);
-                if(e != null)
+                if (e != null)
                 {
                     entity.CreatedByUserId = e.CreatedByUserId;
                     entity.IsDeleted = e.IsDeleted;
@@ -209,17 +262,9 @@ namespace Programming.Team.Data
             }
             else
                 return userId;
-            
+
         }
-        public virtual Task Delete(TEntity entity, IUnitOfWork? work = null, CancellationToken token = default)
-        {
-            return Use(async (w, t) =>
-            {
-                entity.UpdateDate = DateTime.UtcNow;
-                entity.UpdatedByUserId = await GetCurrentUserId(work, true, token: token);
-                entity.IsDeleted = true;
-            }, work, token, true);
-        }
+
         protected virtual async Task HydrateResultsSet(RepositoryResultSet<TKey, TEntity> results,
             IQueryable<TEntity> query,
             IUnitOfWork w,
@@ -291,7 +336,7 @@ namespace Programming.Team.Data
                     query = properites(query);
                 }
                 entity = await query.SingleOrDefaultAsync(q => q.Id.Equals(key));
-                
+
             }, work, token);
             return entity;
         }
@@ -309,7 +354,7 @@ namespace Programming.Team.Data
         }
 
         public async virtual Task<TEntity> Update(TEntity entity,
-            
+
             IUnitOfWork? work = null, Func<IQueryable<TEntity>, IQueryable<TEntity>>? properites = null, CancellationToken token = default)
         {
             await Use(async (w, t) =>
@@ -320,7 +365,7 @@ namespace Programming.Team.Data
                 entity.UpdatedByUserId = userId;
                 w.Context.Update(entity);
             }, work, token, true);
-            if(properites != null)
+            if (properites != null)
                 return await GetByID(entity.Id, properites: properites, token: token) ?? throw new InvalidDataException();
             else
                 return entity;

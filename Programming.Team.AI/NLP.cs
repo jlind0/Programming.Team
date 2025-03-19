@@ -9,6 +9,7 @@ using Programming.Team.AI.Core;
 
 namespace Programming.Team.AI
 {
+    ///<inheritdoc cref="INLP"/>
     public class NLP : INLP
     {
         protected ILogger Logger { get; }

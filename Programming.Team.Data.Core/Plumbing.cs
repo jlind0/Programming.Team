@@ -13,6 +13,9 @@ using System.Windows.Input;
 
 namespace Programming.Team.Data.Core
 {
+    /// <summary>
+    /// Create DbContext instances and manage user impersonation.
+    /// </summary>
     public interface IContextFactory
     {
         DbContext CreateContext();
@@ -20,6 +23,9 @@ namespace Programming.Team.Data.Core
         Task<Guid?> GetImpersonatedUser();
         Task SetImpersonatedUser(Guid? userId);
     }
+    /// <summary>
+    /// Extract user ID.
+    /// </summary>
     public static class ClaimsPrincipalExtentension
     {
         public static string? GetUserId(this ClaimsPrincipal? principal)
@@ -27,6 +33,9 @@ namespace Programming.Team.Data.Core
             return principal?.Claims.FirstOrDefault(p => p.Type == "http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
         }
     }
+    /// <summary>
+    /// Manage transactions and database context.
+    /// </summary>
     public interface IUnitOfWork : IAsyncDisposable
     {
         DbContext Context { get; }
@@ -38,6 +47,9 @@ namespace Programming.Team.Data.Core
         IUnitOfWork CreateUnitOfWork();
         Task<Guid?> GetCurrentUserId(IUnitOfWork? uow = null, bool fetchTrueUserId = false, CancellationToken token = default);
     }
+    /// <summary>
+    /// Generic repository interface for CRUD operations on entities.
+    /// </summary>
     public interface IIRepository<in TEntity, TKey> : IRepository
         where TEntity : Entity<TKey>, new()
         where TKey : struct
@@ -45,8 +57,10 @@ namespace Programming.Team.Data.Core
         Task Delete(TKey id, IUnitOfWork? work = null, CancellationToken token = default);
         Task Delete(TEntity entity, IUnitOfWork? work = null, CancellationToken token = default);
         Task Add(TEntity entity, IUnitOfWork? work = null, CancellationToken token = default);
-
     }
+    /// <summary>
+    /// Extend repository for more querying and update.
+    /// </summary>
     public interface IRepository<TEntity, TKey> : IIRepository<TEntity, TKey>
         where TEntity : Entity<TKey>, new()
         where TKey : struct
