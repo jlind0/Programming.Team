@@ -151,7 +151,7 @@ builder.Services.AddScoped<IBusinessRepositoryFacade<Purchase, Guid>, BusinessRe
 builder.Services.AddScoped<IBusinessRepositoryFacade<Package, Guid>, PackageBusinessFacade>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<SectionTemplate, Guid>, SectionTemplateBusinessFacade>();
 builder.Services.AddScoped<ISectionTemplateBusinessFacade, SectionTemplateBusinessFacade>();
-builder.Services.AddScoped<IPurchaseManager, PurhcaseManager>();
+builder.Services.AddScoped<IPurchaseManager, PurchaseManager>();
 builder.Services.AddScoped<IChatGPT, ChatGPT>();
 builder.Services.AddScoped<IResumeEnricher, ResumeEnricher>();
 builder.Services.AddScoped<IDocumentTemplator, DocumentTemplator>();

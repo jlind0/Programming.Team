@@ -15,7 +15,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Programming.Team.PurchaseManager
 {
-    public class PurhcaseManager : IPurchaseManager
+    public class PurchaseManager : IPurchaseManager
     {
         protected ProductService ProductService { get; }
         protected PriceService PriceService { get; }
@@ -27,7 +27,7 @@ namespace Programming.Team.PurchaseManager
         protected IRepository<Package, Guid> PackageRepository { get; }
         protected IRepository<Purchase, Guid> PurchaseRepository { get; }
         protected IUserRepository UserRepository { get; set; }
-        public PurhcaseManager(IConfiguration config, IUserRepository userRepository, IRepository<Package, Guid> packageRepository, IRepository<Purchase, Guid> purchaseRepository,
+        public PurchaseManager(IConfiguration config, IUserRepository userRepository, IRepository<Package, Guid> packageRepository, IRepository<Purchase, Guid> purchaseRepository,
             ProductService productService, PriceService priceService, PaymentLinkService paymentLinkService, SessionService sessionService, AccountService accountService, PayoutService payoutService)
         {
             UserRepository = userRepository;
@@ -91,7 +91,7 @@ namespace Programming.Team.PurchaseManager
             {
                 await CreateProduct(package, token);
             }
-            if (package.Price != oldPackage?.Price)
+            if (oldPackage != null && package.Price != oldPackage.Price)
             { 
                 await CreatePrice(package, token);
             }
