@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 
 namespace Programming.Team.Core;
-public interface IRole : IEntity<Guid>
+public interface IRole : IEntity<Guid>, INamedEntity
 {
     string Name { get; set; }
 }

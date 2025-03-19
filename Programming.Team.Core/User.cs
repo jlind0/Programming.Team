@@ -126,11 +126,11 @@ public partial class User : Entity<Guid>, IUser
 
     public virtual ICollection<Publication> PublicationUsers { get; set; } = new List<Publication>();
 
-    public virtual ICollection<Reccomendation> ReccomendationCreatedByUsers { get; set; } = new List<Reccomendation>();
+    public virtual ICollection<Recommendation> RecommendationCreatedByUsers { get; set; } = new List<Recommendation>();
 
-    public virtual ICollection<Reccomendation> ReccomendationUpdatedByUsers { get; set; } = new List<Reccomendation>();
+    public virtual ICollection<Recommendation> RecommendationUpdatedByUsers { get; set; } = new List<Recommendation>();
 
-    public virtual ICollection<Reccomendation> ReccomendationUsers { get; set; } = new List<Reccomendation>();
+    public virtual ICollection<Recommendation> RecommendationUsers { get; set; } = new List<Recommendation>();
     public virtual ICollection<User> Recruiters { get; set; } = new List<User>();
     public virtual ICollection<User> Recruits { get; set; } = new List<User>();
     public int ResumeGenerationsLeft { get; set; } = 15;

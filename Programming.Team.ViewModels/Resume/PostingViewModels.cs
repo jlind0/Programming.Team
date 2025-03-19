@@ -376,7 +376,7 @@ namespace Programming.Team.ViewModels.Resume
             set => this.RaiseAndSetIfChanged(ref hidePositionsNotInJD, value);
         }
         public ObservableCollection<ResumePartViewModel> ResumeParts { get; } = new ObservableCollection<ResumePartViewModel>();
-        public ResumePart[] Parts { get; set; } = [ResumePart.Bio, ResumePart.Reccomendations, ResumePart.Skills, ResumePart.Positions, ResumePart.Education, ResumePart.Certifications, ResumePart.Publications];
+        public ResumePart[] Parts { get; set; } = [ResumePart.Bio, ResumePart.Recommendations, ResumePart.Skills, ResumePart.Positions, ResumePart.Education, ResumePart.Certifications, ResumePart.Publications];
         public Dictionary<ResumePart, Guid?> SectionTemplates { get; set; } = [];
         private double? skillsPer20Percent;
         public double? SkillsPer20Percent 

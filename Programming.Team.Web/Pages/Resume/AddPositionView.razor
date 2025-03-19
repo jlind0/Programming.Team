@@ -7,7 +7,10 @@
     <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4">
         <div class="d-flex flex-column">
             <MudStack>
-                <SearchSelectCompanyView ViewModel="ViewModel.CompanyViewModel" />
+                <SearchSelectEntityView TAddView="AddCompanyView"
+                                        TEntity="Company" TKey="Guid" TAddViewModel="AddCompanyViewModel"
+                                        TSearchSelectViewModel="SearchSelectCompanyViewModel"
+                                        ViewModel="ViewModel.CompanyViewModel" />
                 <MudTextField @bind-Value="ViewModel.Title" Label="Title" Variant="Variant.Outlined" />
                 <MudDatePicker @bind-Date="ViewModel.StartDateTime" Label="Start Date" MinDate="new DateTime(1950, 1, 1)" />
                 <MudDatePicker @bind-Date="ViewModel.EndDateTime" Label="End Date" MinDate="new DateTime(1950, 1, 1)" />

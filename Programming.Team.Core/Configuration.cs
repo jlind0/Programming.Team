@@ -11,7 +11,7 @@ namespace Programming.Team.Core
     public enum ResumePart
     {
         Bio,
-        Reccomendations,
+        Recommendations,
         Positions,
         Skills,
         Education,
@@ -36,7 +36,7 @@ namespace Programming.Team.Core
         public bool HideSkillsNotInJD { get; set; } = true;
         public double? BulletsPer20Percent { get; set; }
         public bool HidePositionsNotInJD { get; set; } = false;
-        public ResumePart[] Parts { get; set; } = [ResumePart.Bio, ResumePart.Reccomendations, ResumePart.Skills, ResumePart.Positions, ResumePart.Education, ResumePart.Certifications, ResumePart.Publications];
+        public ResumePart[] Parts { get; set; } = [ResumePart.Bio, ResumePart.Recommendations, ResumePart.Skills, ResumePart.Positions, ResumePart.Education, ResumePart.Certifications, ResumePart.Publications];
         public Dictionary<ResumePart, Guid?> SectionTemplates { get; set; } = [];
         public double? SkillsPer20Percent { get; set; }
 

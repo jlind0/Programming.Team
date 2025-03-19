@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace Programming.Team.Core;
-public interface IDocumentTemplate : IEntity<Guid>
+public interface IDocumentTemplate : IEntity<Guid>, INamedEntity
 {
     int DocumentTypeId { get; set; }
 

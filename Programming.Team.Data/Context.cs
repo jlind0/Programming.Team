@@ -44,7 +44,7 @@ public partial class ResumesContext : DbContext
 
     public virtual DbSet<Publication> Publications { get; set; }
 
-    public virtual DbSet<Reccomendation> Reccomendations { get; set; }
+    public virtual DbSet<Recommendation> Recommendations { get; set; }
     public virtual DbSet<SectionTemplate> SectionTemplates { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Name=Resumes");
@@ -245,6 +245,7 @@ public partial class ResumesContext : DbContext
 
         modelBuilder.Entity<Position>(entity =>
         {
+            entity.Ignore(e => e.Name);
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             entity.Property(e => e.CreateDate)
                 .HasDefaultValueSql("(getutcdate())")
@@ -364,7 +365,7 @@ public partial class ResumesContext : DbContext
         modelBuilder.Entity<User>(entity =>
         {
             entity.HasIndex(e => e.ObjectId, "IX_Users").IsUnique();
-
+            
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             entity.Property(e => e.City).HasMaxLength(500);
             entity.Property(e => e.Country).HasMaxLength(500);
@@ -474,7 +475,7 @@ public partial class ResumesContext : DbContext
             entity.HasQueryFilter(d => !d.IsDeleted);
         });
 
-        modelBuilder.Entity<Reccomendation>(entity =>
+        modelBuilder.Entity<Recommendation>(entity =>
         {
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             entity.Property(e => e.CreateDate)
@@ -489,22 +490,22 @@ public partial class ResumesContext : DbContext
                 .HasDefaultValueSql("(getutcdate())")
                 .HasColumnType("datetime");
 
-            entity.HasOne(d => d.CreatedByUser).WithMany(p => p.ReccomendationCreatedByUsers)
+            entity.HasOne(d => d.CreatedByUser).WithMany(p => p.RecommendationCreatedByUsers)
                 .HasForeignKey(d => d.CreatedByUserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Reccomendations_Users1");
 
-            entity.HasOne(d => d.Position).WithMany(p => p.Reccomendations)
+            entity.HasOne(d => d.Position).WithMany(p => p.Recommendations)
                 .HasForeignKey(d => d.PositionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Reccomendations_Positions");
 
-            entity.HasOne(d => d.UpdatedByUser).WithMany(p => p.ReccomendationUpdatedByUsers)
+            entity.HasOne(d => d.UpdatedByUser).WithMany(p => p.RecommendationUpdatedByUsers)
                 .HasForeignKey(d => d.UpdatedByUserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Reccomendations_Users2");
 
-            entity.HasOne(d => d.User).WithMany(p => p.ReccomendationUsers)
+            entity.HasOne(d => d.User).WithMany(p => p.RecommendationUsers)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Reccomendations_Users");
