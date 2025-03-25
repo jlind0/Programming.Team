@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using System.Text;
+using System.IO.Compression;
 
 namespace Programming.Team.Web.Authorization
 {
@@ -32,6 +34,87 @@ namespace Programming.Team.Web.Authorization
             await _next(context);
         }
     }
+public class LinkRewritingMiddleware
+    {
+        private readonly RequestDelegate _next;
+
+        public LinkRewritingMiddleware(RequestDelegate next)
+        {
+            _next = next;
+        }
+
+        public async Task InvokeAsync(HttpContext context)
+        {
+            // Only apply for routes starting with /blog
+            if (context.Request.Path.StartsWithSegments("/blog"))
+            {
+                // Backup the original response stream.
+                var originalBodyStream = context.Response.Body;
+
+                using (var responseBody = new MemoryStream())
+                {
+                    // Replace the response stream with our memory stream.
+                    context.Response.Body = responseBody;
+
+                    // Process the request down the pipeline.
+                    await _next(context);
+
+                    // Reset the stream position to the beginning.
+                    responseBody.Seek(0, SeekOrigin.Begin);
+
+                    // Read the content, decompressing if necessary.
+                    string bodyText;
+                    var contentEncoding = context.Response.Headers["Content-Encoding"].ToString();
+
+                    if (contentEncoding.Contains("gzip"))
+                    {
+                        using (var decompressionStream = new GZipStream(responseBody, CompressionMode.Decompress))
+                        using (var reader = new StreamReader(decompressionStream))
+                        {
+                            bodyText = await reader.ReadToEndAsync();
+                        }
+                    }
+                    else if (contentEncoding.Contains("deflate"))
+                    {
+                        using (var decompressionStream = new DeflateStream(responseBody, CompressionMode.Decompress))
+                        using (var reader = new StreamReader(decompressionStream))
+                        {
+                            bodyText = await reader.ReadToEndAsync();
+                        }
+                    }
+                    else
+                    {
+                        using (var reader = new StreamReader(responseBody))
+                        {
+                            bodyText = await reader.ReadToEndAsync();
+                        }
+                    }
+
+                    // Perform the link rewriting.
+                    string modifiedBody = bodyText.Replace(
+                        "https://blog.programming.team/",
+                        "https://programming.team/blog/");
+
+                    // Remove compression headers because the content is now modified (and uncompressed).
+                    context.Response.Headers.Remove("Content-Encoding");
+                    context.Response.Headers.Remove("Content-Length");
+
+                    // Reset the response body stream to the original stream.
+                    context.Response.Body = originalBodyStream;
+
+                    // Write out the modified content.
+                    await context.Response.WriteAsync(modifiedBody, Encoding.UTF8);
+                }
+            }
+            else
+            {
+                // For non-/blog requests, simply continue processing.
+                await _next(context);
+            }
+        }
+    }
+
+
     public class RoleAuthorizationAttribute : AuthorizeAttribute, IAuthorizationFilter
     {
         readonly string[] _roles;

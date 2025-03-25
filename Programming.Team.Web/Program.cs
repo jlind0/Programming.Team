@@ -309,6 +309,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthentication();
+app.UseMiddleware<LinkRewritingMiddleware>();
 app.UseMiddleware<RolePopulationMiddleware>();
 app.UseAuthorization();
 app.MapReverseProxy();
