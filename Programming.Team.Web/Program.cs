@@ -33,6 +33,8 @@ using Programming.Team.ViewModels.Purchase;
 using Programming.Team.PurchaseManager.Core;
 using Programming.Team.PurchaseManager;
 using Programming.Team.ViewModels;
+using Yarp.ReverseProxy.Configuration;
+using System.Collections.ObjectModel;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -80,6 +82,81 @@ builder.Services.AddAuthorization();
 builder.Services.AddMemoryCache();
 builder.Services.AddAuthorization();
 builder.Services.AddTokenAcquisition();
+builder.Services.AddReverseProxy()
+    .LoadFromMemory(
+        routes: new[]
+        {
+            new RouteConfig
+            {
+                RouteId = "blog-route",
+                ClusterId = "blog-cluster",
+                Match = new RouteMatch(){
+                    Path = "/blog/{**catchAll}" },
+                Transforms = new[]
+                {
+                    // 1) Remove the `/blog` prefix so WP sees the path as `/whatever`
+                    new Dictionary<string, string>
+                    {
+                        { "PathRemovePrefix", "/blog" }
+                    },
+                    // 2) Rewrite the request Host header
+                    new Dictionary<string, string>
+                    {
+                        { "RequestHeader", "Host" },
+                        { "Set", "blog.programming.team" }
+                    }
+                }
+
+            },
+            new RouteConfig
+            {
+                RouteId = "blog-media-route",
+                ClusterId = "blog-media-cluster",
+                Match = new RouteMatch(){
+                    Path = "/wp-content/{**catchAll}" },
+                Transforms = new[]
+                {
+                    // 2) Rewrite the request Host header
+                    new Dictionary<string, string>
+                    {
+                        { "RequestHeader", "Host" },
+                        { "Set", "blog.programming.team" }
+                    }
+                }
+
+            }
+        },
+        clusters: new[]
+        {
+            new ClusterConfig
+            {
+                ClusterId = "blog-cluster",
+                Destinations = new Dictionary<string, DestinationConfig>
+                {
+                    // The destination is the WordPress subdomain:
+                    {
+                        "blog-dest", new DestinationConfig
+                        {
+                            Address = "https://blog.programming.team/"
+                        }
+                    }
+                }
+            },
+            new ClusterConfig
+            {
+                ClusterId = "blog-media-cluster",
+                Destinations = new Dictionary<string, DestinationConfig>
+                {
+                    // The destination is the WordPress subdomain:
+                    {
+                        "blog-dest", new DestinationConfig
+                        {
+                            Address = "https://blog.programming.team/"
+                        }
+                    }
+                }
+            }
+        });
 builder.Services.AddControllers().AddNewtonsoftJson();
 builder.Services.AddMvc().AddNewtonsoftJson();
 builder.Services.AddRazorPages();
@@ -234,7 +311,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseMiddleware<RolePopulationMiddleware>();
 app.UseAuthorization();
-
+app.MapReverseProxy();
 app.MapControllers();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
