@@ -320,6 +320,7 @@ namespace Programming.Team.ViewModels.Resume
         {
             return Task.FromResult(new Certificate()
             {
+                Id = Id,
                 IssuerId = IssuerId,
                 Name = Name,
                 Description = Description,

@@ -29,6 +29,16 @@ public partial class Certificate : Entity<Guid>, ICertificate
 
     public DateOnly? ValidToDate { get; set; }
 
+    public string ValidFromDateString
+    {
+        get => ValidFromDate.ToString("yyyy-MM-dd");
+    }
+
+    public string? ValidToDateString
+    {
+        get => ValidToDate?.ToString("yyyy-MM-dd");
+    }
+
     public string? Url { get; set; }
 
     public string? Description { get; set; }

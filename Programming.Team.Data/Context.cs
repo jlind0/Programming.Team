@@ -81,6 +81,8 @@ public partial class ResumesContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Certificates_Users");
              entity.HasQueryFilter(d => !d.IsDeleted);
+            entity.Ignore(p => p.ValidFromDateString);
+            entity.Ignore(p => p.ValidToDateString);
             entity.ToTable("Certificates");
         });
 
