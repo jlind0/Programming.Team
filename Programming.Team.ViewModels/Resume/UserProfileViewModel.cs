@@ -89,6 +89,23 @@ namespace Programming.Team.ViewModels.Resume
             }
         }
     }
+    public class TrueUserLoaderViewModel : EntityLoaderViewModel<Guid, User, UserProfileViewModel, IUserBusinessFacade>
+    {
+        protected ResumeConfigurationViewModel Config { get; }
+        public TrueUserLoaderViewModel(IUserBusinessFacade facade, ResumeConfigurationViewModel config, ILogger<EntityLoaderViewModel<Guid, User, UserProfileViewModel, IUserBusinessFacade>> logger) : base(facade, logger)
+        {
+            Config = config;
+        }
+        protected override async Task DoLoad(Guid key, CancellationToken token)
+        {
+            key = await Facade.GetCurrentUserId(fetchTrueUserId: true, token: token) ?? throw new InvalidDataException();
+            await base.DoLoad(key, token);
+        }
+        protected override UserProfileViewModel Construct(User entity)
+        {
+            return new UserProfileViewModel(Logger, Config, Facade, entity);
+        }
+    }
     public class UserProfileViewModel : EntityViewModel<Guid, User>, IUser
     {
         public ResumeConfigurationViewModel? DefaultResumeConfigurationViewModel { get; }

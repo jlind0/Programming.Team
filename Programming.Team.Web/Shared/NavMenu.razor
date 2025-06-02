@@ -4,36 +4,46 @@
     <ImpersonatorNavItemView />
     <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
     <MudNavLink Href="blog/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Notes">Blog</MudNavLink>
-    @if (isAdmin)
+    @if (isAdmin || isTemplator)
     {
         <MudNavGroup Title="Admin" Icon="@Icons.Material.Filled.ManageAccounts" Expanded="false">
-            <MudNavLink Href="admin/users" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.SupervisorAccount">Users
-            </MudNavLink>
-            <MudNavLink Href="admin/roles" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Badge">
-                Roles
-            </MudNavLink>
-            <MudNavLink Href="admin/documenttypes" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AccountTree">
-                Document Types
-            </MudNavLink>
-            <MudNavLink Href="admin/templates/section" Match="NavLinkMatch.Prefix"
+            @if(isAdmin)
+            {
+                <MudNavLink Href="admin/users" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.SupervisorAccount">Users
+                </MudNavLink>
+                <MudNavLink Href="admin/roles" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Badge">
+                    Roles
+                </MudNavLink>
+                <MudNavLink Href="admin/documenttypes" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AccountTree">
+                    Document Types
+                </MudNavLink>
+            }
+            @if (isAdmin || isTemplator)
+            {
+                <MudNavLink Href="admin/templates/document" Match="NavLinkMatch.Prefix"
+                            Icon="@Icons.Material.Filled.LibraryBooks">
+                    Document Templates
+                </MudNavLink>
+                <MudNavLink Href="admin/templates/section" Match="NavLinkMatch.Prefix"
                 Icon="@Icons.Material.Filled.SnippetFolder">
-                Section Templates
-            </MudNavLink>
-            <MudNavLink Href="admin/templates/document" Match="NavLinkMatch.Prefix"
-                Icon="@Icons.Material.Filled.LibraryBooks">
-                Document Templates
-            </MudNavLink>
-            <MudNavLink Href="purchasing/admin" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PriceCheck">
-                Purchases
-            </MudNavLink>
-            <MudNavLink Href="purchasing/packages/manage" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Redeem">
-                Packages
-            </MudNavLink>
+                    Section Templates
+                </MudNavLink>
+                
+            }
+            @if (isAdmin)
+            {
+                <MudNavLink Href="purchasing/admin" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PriceCheck">
+                    Purchases
+                </MudNavLink>
+                <MudNavLink Href="purchasing/packages/manage" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Redeem">
+                    Packages
+                </MudNavLink>
+            }
         </MudNavGroup>
     }
     @if (isAuthenticated && !isRecruiter)
     {
-        <MudNavGroup Href="recruiters" Match="NavLinkMatch.Prefix" Title="Recruiters"
+        <MudNavGroup Title="Recruiters"
             Icon="@Icons.Material.Filled.SupervisorAccount" Expanded="false">
 
             <MudNavLink Href="recruiters" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.SupervisorAccount">
@@ -47,13 +57,15 @@
     }
     @if (isRecruiter)
     {
-        <MudNavGroup Href="recruiters" Match="NavLinkMatch.Prefix" Title="Recruit"
+        <MudNavGroup Title="Recruits"
             Icon="@Icons.Material.Filled.PersonSearch" Expanded="false">
             <MudNavLink Href="recruiters/impersonate" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.CoPresent">
                 Impersonate</MudNavLink>
 
             <MudNavLink Disabled="!isAuthenticated" Href="recruits" Match="NavLinkMatch.Prefix"
                 Icon="@Icons.Material.Filled.Handshake">Recruits</MudNavLink>
+            <MudNavLink Disabled="!isAuthenticated" Href="resume/profile/true" Match="NavLinkMatch.Prefix"
+                        Icon="@Icons.Material.Filled.AccountBox">Recruiter Profile</MudNavLink>
         </MudNavGroup>
     }
 
@@ -107,12 +119,14 @@
     private bool isAdmin = false;
     private bool isRecruiter = false;
     private bool isAuthenticated = false;
+    private bool isTemplator = false;
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthState.GetAuthenticationStateAsync();
         isAdmin = authState.User?.IsInRole("Admin") ?? false;
         isRecruiter = authState.User?.IsInRole("Recruiter") ?? false;
         isAuthenticated = authState.User?.Identity?.IsAuthenticated ?? false;
+        isTemplator = authState.User?.IsInRole("Templator") ?? false;
         await base.OnInitializedAsync();
     }
 }

@@ -37,9 +37,10 @@ namespace Programming.Team.ViewModels.Admin
 
         protected override UserViewModel Construct(User entity)
         {
-            return new UserViewModel(Logger, Facade, entity.Id, Config);
+            return new UserViewModel(Logger, Facade, entity, Config);
         }
     }
+    
     public class UserViewModel : EntityViewModel<Guid, User, IUserBusinessFacade>, IUser
     {
         public ResumeConfigurationViewModel? Configuration { get; }

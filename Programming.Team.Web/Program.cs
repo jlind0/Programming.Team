@@ -284,6 +284,7 @@ builder.Services.AddTransient<AddSectionTemplateViewModel>();
 builder.Services.AddTransient<SectionTemplatesViewModel>();
 builder.Services.AddTransient<IndexViewModel>();
 builder.Services.AddTransient<SuggestAddSkillsForPositionViewModel>();
+builder.Services.AddTransient<TrueUserLoaderViewModel>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession(options =>
 {

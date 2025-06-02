@@ -1,6 +1,6 @@
 ﻿@page "/admin/templates/document"
 @inherits ReactiveInjectableComponentBase<DocumentTemplatesViewModel>
-@attribute [Authorize(Roles = "Admin")]
+@attribute [Authorize(Roles = "Admin,Templator")]
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
