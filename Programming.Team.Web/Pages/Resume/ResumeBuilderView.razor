@@ -5,13 +5,6 @@
 {
     <AlertView Alert="ViewModel.Alert" />
     <MudTextField @bind-Value="ViewModel.Name" Label="Name" Variant="Variant.Outlined" />
-    <MudSelect Label="Document Template" T="DocumentTemplate" @bind-Value="ViewModel.SelectedTemplate"
-        ToStringFunc="e => e?.Name">
-        @foreach (var doctype in ViewModel.DocumentTemplates)
-        {
-            <MudSelectItem T="DocumentTemplate" Value="doctype">@doctype.Name</MudSelectItem>
-        }
-    </MudSelect>
     <MudTextField Lines="10" @bind-Value="ViewModel.PostingText" Label="Posting Text" Variant="Variant.Outlined" />
     <ResumeConfigurationView ViewModel="ViewModel.Configuration" />
     <MudButton OnClick="ViewModel.Build.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"

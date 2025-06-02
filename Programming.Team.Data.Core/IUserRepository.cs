@@ -15,19 +15,23 @@ namespace Programming.Team.Data.Core
         Task RemoveRecruiter(Guid targetUserId, Guid recruiterId, IUnitOfWork? work = null, CancellationToken token = default);
         Task<bool> UtilizeResumeGeneration(Guid userId, IUnitOfWork? work = null, CancellationToken token = default);
     }
-    public interface IRoleRepository : IRepository<Role, Guid> 
+    public interface IRoleRepository : IRepository<Role, Guid>
     {
         Task<Guid[]> GetUserIds(Guid roleId, IUnitOfWork? work = null, CancellationToken token = default);
         Task SetSelectedUsersToRole(Guid roleId, Guid[] userIds, IUnitOfWork? work = null, CancellationToken token = default);
     }
     public interface ISectionTemplateRepository : IRepository<SectionTemplate, Guid>
     {
-        Task<SectionTemplate[]> GetBySection(ResumePart sectionId, IUnitOfWork? work = null, CancellationToken token = default);
-        Task<SectionTemplate?> GetDefaultSection(ResumePart sectionId, IUnitOfWork? work = null, string defaultName = "Default", CancellationToken token = default);
+        Task<SectionTemplate[]> GetBySection(ResumePart sectionId, Guid documentTemplateId, IUnitOfWork? work = null, CancellationToken token = default);
+        Task<SectionTemplate?> GetDefaultSection(ResumePart sectionId, Guid documentTemplateId, IUnitOfWork? work = null, CancellationToken token = default);
     }
     public interface ISkillsRespository : IRepository<Skill, Guid>
     {
         Task<Skill[]> GetSkillsExcludingPosition(Guid positionId, IUnitOfWork? work = null,
             CancellationToken token = default);
+    }
+    public interface IDocumentTemplateRepository : IRepository<DocumentTemplate, Guid>
+    {
+        Task<DocumentTemplate[]> GetForUser(Guid userId, IUnitOfWork? work = null, CancellationToken token = default);
     }
 }

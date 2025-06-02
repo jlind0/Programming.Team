@@ -38,13 +38,14 @@ namespace Programming.Team.ViewModels.Resume
     }
     public class PostingLoaderViewModel : EntityLoaderViewModel<Guid, Posting, PostingViewModel, IBusinessRepositoryFacade<Posting, Guid>>
     {
-        protected IBusinessRepositoryFacade<DocumentTemplate, Guid> DocumentTemplateFacade { get; }
         protected IResumeBuilder Builder { get; }
         protected ISectionTemplateBusinessFacade SectionFacade { get; }
-        public PostingLoaderViewModel(IResumeBuilder builder, ISectionTemplateBusinessFacade sectionFacade, IBusinessRepositoryFacade<DocumentTemplate, Guid> documentTemplateFacade, IBusinessRepositoryFacade<Posting, Guid> facade, ILogger<EntityLoaderViewModel<Guid, Posting, PostingViewModel, IBusinessRepositoryFacade<Posting, Guid>>> logger) : base(facade, logger)
+        protected IDocumentTemplateBusinessFacade DocumentTemplateFacade { get; }
+        public PostingLoaderViewModel(IResumeBuilder builder, IDocumentTemplateBusinessFacade docTemplateFacade, 
+            ISectionTemplateBusinessFacade sectionFacade, IBusinessRepositoryFacade<Posting, Guid> facade, ILogger<EntityLoaderViewModel<Guid, Posting, PostingViewModel, IBusinessRepositoryFacade<Posting, Guid>>> logger) : base(facade, logger)
         {
             SectionFacade = sectionFacade;
-            DocumentTemplateFacade = documentTemplateFacade;
+            DocumentTemplateFacade = docTemplateFacade;
             Builder = builder;
         }
         protected override async Task DoLoad(Guid key, CancellationToken token)
@@ -58,7 +59,7 @@ namespace Programming.Team.ViewModels.Resume
         }
         protected override PostingViewModel Construct(Posting entity)
         {
-            return new PostingViewModel(Builder, new ResumeConfigurationViewModel(SectionFacade), DocumentTemplateFacade, Logger, Facade, entity);
+            return new PostingViewModel(Builder, new ResumeConfigurationViewModel(SectionFacade, DocumentTemplateFacade), DocumentTemplateFacade, Logger, Facade, entity);
         }
     }
     public class PostingViewModel : EntityViewModel<Guid, Posting>, IPosting
@@ -292,9 +293,47 @@ namespace Programming.Team.ViewModels.Resume
             set => this.RaiseAndSetIfChanged(ref isLoaded, value);
         }
         protected ISectionTemplateBusinessFacade Facade { get; }
-        public ResumeConfigurationViewModel(ISectionTemplateBusinessFacade facade)
+        protected IDocumentTemplateBusinessFacade DocumentTemplateFacade { get; }
+        private readonly CompositeDisposable disposables = new CompositeDisposable();
+        public ResumeConfigurationViewModel(ISectionTemplateBusinessFacade facade, IDocumentTemplateBusinessFacade docTemplateFacade)
         {
             Facade = facade;
+            DocumentTemplateFacade = docTemplateFacade;
+            this.WhenPropertyChanged(p => p.SelectedTemplate).Subscribe(async p =>
+            {
+                DefaultDocumentTemplateId = p.Value?.Id;
+                await LoadSectionTemplates();
+            }).DisposeWith(disposables);
+        }
+        ~ResumeConfigurationViewModel()
+        {
+            disposables.Dispose();
+        }
+        private readonly object lockObject = new object();
+        protected async Task LoadSectionTemplates()
+        {
+            List<ResumePartViewModel> parts = [];
+            if (DefaultDocumentTemplateId != null)
+            {
+                foreach (var part in Enum.GetValues<ResumePart>())
+                {
+                    SectionTemplates.TryGetValue(part, out var selectedId);
+                    var pv = new ResumePartViewModel(part,
+                        Parts.Contains(part) ? Array.IndexOf(Parts, part) : int.MaxValue, Parts.Contains(part),
+                        await Facade.GetBySection(part, DefaultDocumentTemplateId.Value), selectedId);
+                    parts.Add(pv);
+                }
+            }
+            lock (lockObject)
+            {
+                IsLoaded = false;
+                ResumeParts.Clear();
+                foreach (var pv in parts.OrderBy(p => p.Order))
+                {
+                    ResumeParts.Add(pv);
+                }
+                IsLoaded = true;
+            }
         }
         public async Task Load(string? configuration)
         {
@@ -308,21 +347,10 @@ namespace Programming.Team.ViewModels.Resume
             SkillsPer20Percent = config.SkillsPer20Percent;
             Parts = config.Parts;
             SectionTemplates = config.SectionTemplates;
-            ResumeParts.Clear();
-            List<ResumePartViewModel> parts = [];
-            foreach (var part in Enum.GetValues<ResumePart>())
-            {
-                SectionTemplates.TryGetValue(part, out var selectedId);
-                var pv = new ResumePartViewModel(part, 
-                    Parts.Contains(part) ? Array.IndexOf(Parts, part) : int.MaxValue, Parts.Contains(part),
-                    await Facade.GetBySection(part), selectedId);
-                parts.Add(pv);
-            }
-            foreach(var pv in parts.OrderBy(p => p.Order))
-            {
-                ResumeParts.Add(pv);
-            }
-            IsLoaded = true;
+            DocumentTemplates.Clear();
+            DocumentTemplates.AddRange(await DocumentTemplateFacade.GetForUser((await Facade.GetCurrentUserId(fetchTrueUserId: true))!.Value));
+            SelectedTemplate = DocumentTemplates.SingleOrDefault(dt => dt.Id == (config.DefaultDocumentTemplateId ?? DocumentTemplates.FirstOrDefault()?.Id));
+            await LoadSectionTemplates();
         }
         public ResumeConfiguration GetConfiguration()
         {
@@ -335,7 +363,8 @@ namespace Programming.Team.ViewModels.Resume
                 HidePositionsNotInJD = HidePositionsNotInJD,
                 Parts = ResumeParts.Where(p => p.Selected).OrderBy(p => p.Order).Select(p => p.Part).ToArray(),
                 SectionTemplates = ResumeParts.Where(p => p.Selected).ToDictionary(p => p.Part, p => p.SelectedTemplate?.Id),
-                SkillsPer20Percent = SkillsPer20Percent
+                SkillsPer20Percent = SkillsPer20Percent,
+                DefaultDocumentTemplateId = DefaultDocumentTemplateId
             };
             return config;
         }
@@ -376,6 +405,7 @@ namespace Programming.Team.ViewModels.Resume
             set => this.RaiseAndSetIfChanged(ref hidePositionsNotInJD, value);
         }
         public ObservableCollection<ResumePartViewModel> ResumeParts { get; } = new ObservableCollection<ResumePartViewModel>();
+        public ObservableCollection<DocumentTemplate> DocumentTemplates { get; } = new ObservableCollection<DocumentTemplate>();
         public ResumePart[] Parts { get; set; } = [ResumePart.Bio, ResumePart.Recommendations, ResumePart.Skills, ResumePart.Positions, ResumePart.Education, ResumePart.Certifications, ResumePart.Publications];
         public Dictionary<ResumePart, Guid?> SectionTemplates { get; set; } = [];
         private double? skillsPer20Percent;
@@ -383,6 +413,17 @@ namespace Programming.Team.ViewModels.Resume
         {
             get => skillsPer20Percent;
             set => this.RaiseAndSetIfChanged(ref skillsPer20Percent, value);
+        }
+        private Guid? defaultDocumentTemplateId;
+        public Guid? DefaultDocumentTemplateId {
+            get => defaultDocumentTemplateId;
+            set => this.RaiseAndSetIfChanged(ref defaultDocumentTemplateId, value);
+        }
+        private DocumentTemplate? selectedTemplate;
+        public DocumentTemplate? SelectedTemplate
+        {
+            get => selectedTemplate;
+            set => this.RaiseAndSetIfChanged(ref selectedTemplate, value);
         }
     }
 }

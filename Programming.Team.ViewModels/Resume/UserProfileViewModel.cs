@@ -16,7 +16,7 @@ namespace Programming.Team.ViewModels.Resume
 {
     public class UserBarLoaderViewModel : UserProfileLoaderViewModel
     {
-        public UserBarLoaderViewModel(IUserBusinessFacade facade, ISectionTemplateBusinessFacade sectionFacade, ILogger<UserProfileLoaderViewModel> logger) : base(facade, logger, sectionFacade)
+        public UserBarLoaderViewModel(IUserBusinessFacade facade, ISectionTemplateBusinessFacade sectionFacade, IDocumentTemplateBusinessFacade docTemplateFacade, ILogger<UserProfileLoaderViewModel> logger) : base(facade, docTemplateFacade, logger, sectionFacade)
         {
         }
         protected async override Task DoLoad(CancellationToken token)
@@ -29,7 +29,7 @@ namespace Programming.Team.ViewModels.Resume
                     var user = await Facade.GetByID(userId.Value, token: token);
                     if (user != null)
                     {
-                        ViewModel = new UserProfileViewModel(Logger, new ResumeConfigurationViewModel(SectionFacade), Facade, user);
+                        ViewModel = new UserProfileViewModel(Logger, new ResumeConfigurationViewModel(SectionFacade, DocumentTemplateFacade), Facade, user);
                         await ViewModel.Load.Execute().GetAwaiter();
                     }
                 }
@@ -49,6 +49,7 @@ namespace Programming.Team.ViewModels.Resume
         public ReactiveCommand<Unit, Unit> Load { get; }
         protected IUserBusinessFacade Facade { get; }
         protected ISectionTemplateBusinessFacade SectionFacade { get; }
+        protected IDocumentTemplateBusinessFacade DocumentTemplateFacade { get; }
         protected ILogger Logger { get; }
         private UserProfileViewModel? viewModel;
         public UserProfileViewModel? ViewModel
@@ -56,11 +57,12 @@ namespace Programming.Team.ViewModels.Resume
             get => viewModel;
             set => this.RaiseAndSetIfChanged(ref viewModel, value);
         }
-        public UserProfileLoaderViewModel(IUserBusinessFacade facade, ILogger<UserProfileLoaderViewModel> logger, ISectionTemplateBusinessFacade sectionFacade) 
+        public UserProfileLoaderViewModel(IUserBusinessFacade facade, IDocumentTemplateBusinessFacade docFacade, ILogger<UserProfileLoaderViewModel> logger, ISectionTemplateBusinessFacade sectionFacade) 
         { 
             Facade = facade;
             Logger = logger;
             Load = ReactiveCommand.CreateFromTask(DoLoad);
+            DocumentTemplateFacade = docFacade;
             SectionFacade = sectionFacade;
         }
         protected virtual async Task DoLoad(CancellationToken token)
@@ -73,7 +75,7 @@ namespace Programming.Team.ViewModels.Resume
                     var user = await Facade.GetByID(userId.Value, token: token);
                     if (user != null)
                     {
-                        ViewModel = new UserProfileViewModel(Logger, new ResumeConfigurationViewModel(SectionFacade), Facade, user);
+                        ViewModel = new UserProfileViewModel(Logger, new ResumeConfigurationViewModel(SectionFacade, DocumentTemplateFacade), Facade, user);
                         await ViewModel.Load.Execute().GetAwaiter();
                     }
                 }

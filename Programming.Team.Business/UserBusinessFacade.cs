@@ -90,14 +90,15 @@ namespace Programming.Team.Business
         {
         }
 
-        public Task<SectionTemplate[]> GetBySection(ResumePart sectionId, IUnitOfWork? work = null, CancellationToken token = default)
+        public Task<SectionTemplate[]> GetBySection(ResumePart sectionId, Guid documentTemplateId, IUnitOfWork? work = null, CancellationToken token = default)
         {
-            return Repository.GetBySection(sectionId, work, token);
+            return Repository.GetBySection(sectionId, documentTemplateId, work, token);
         }
 
-        public Task<SectionTemplate?> GetDefaultSection(ResumePart sectionId, IUnitOfWork? work = null, string defaultName = "Default", CancellationToken token = default)
+
+        public Task<SectionTemplate?> GetDefaultSection(ResumePart sectionId, Guid documentTemplateId, IUnitOfWork? work = null, CancellationToken token = default)
         {
-            return Repository.GetDefaultSection(sectionId, work, defaultName, token);
+            return Repository.GetDefaultSection(sectionId, documentTemplateId, work, token);
         }
     }
     public class PostingBusinessFacade : BusinessRepositoryFacade<Posting, Guid>
@@ -125,6 +126,17 @@ namespace Programming.Team.Business
             CancellationToken token = default)
         {
             return Repository.GetSkillsExcludingPosition(positionId, work, token);
+        }
+    }
+    public class DocumentTemplateBusinessFacade : BusinessRepositoryFacade<DocumentTemplate, Guid, IDocumentTemplateRepository>, IDocumentTemplateBusinessFacade
+    {
+        public DocumentTemplateBusinessFacade(IDocumentTemplateRepository repository, ILogger<DocumentTemplate> logger) : base(repository, logger)
+        {
+        }
+
+        public Task<DocumentTemplate[]> GetForUser(Guid userId, IUnitOfWork? work = null, CancellationToken token = default)
+        {
+            return Repository.GetForUser(userId, work, token);
         }
     }
 }

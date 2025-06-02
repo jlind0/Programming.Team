@@ -97,6 +97,14 @@ namespace Programming.Team.Data
             }
             return Task.CompletedTask;
         }
+
+        public async Task<bool> IsInRole(string roleName, CancellationToken token = default)
+        {
+            var principal = await GetPrincipal();
+            if (principal == null)
+                return false;
+            return principal.IsInRole(roleName);
+        }
     }
     ///<inheritdoc cref="IUnitOfWork"/>
     public class UnitOfWork : IUnitOfWork
@@ -264,7 +272,6 @@ namespace Programming.Team.Data
                 return userId;
 
         }
-
         protected virtual async Task HydrateResultsSet(RepositoryResultSet<TKey, TEntity> results,
             IQueryable<TEntity> query,
             IUnitOfWork w,
@@ -387,5 +394,6 @@ namespace Programming.Team.Data
             return count;
         }
 
+       
     }
 }

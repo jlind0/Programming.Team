@@ -79,23 +79,8 @@ namespace Programming.Team.Business.Core
     /// </summary>
     public interface ISectionTemplateBusinessFacade : IBusinessRepositoryFacade<SectionTemplate, Guid>
     {
-        /// <summary>
-        /// Get Section Templates by Section
-        /// </summary>
-        /// <param name="sectionId">Target SectionTemplate.SectionId</param>
-        /// <param name="work">Optional Unit of Work</param>
-        /// <param name="token">Optional Cancellation Token</param>
-        /// <returns></returns>
-        Task<SectionTemplate[]> GetBySection(ResumePart sectionId, IUnitOfWork? work = null, CancellationToken token = default);
-        /// <summary>
-        /// Get the default section template
-        /// </summary>
-        /// <param name="sectionId">Target SectionTemplate.SectionId</param>
-        /// <param name="work">Optional Unit of Work</param>
-        /// <param name="defaultName">Optional Override "Default" section name</param>
-        /// <param name="token">Optional Cancellation Token</param>
-        /// <returns>Section Template, if found</returns>
-        Task<SectionTemplate?> GetDefaultSection(ResumePart sectionId, IUnitOfWork? work = null, string defaultName = "Default", CancellationToken token = default);
+        Task<SectionTemplate[]> GetBySection(ResumePart sectionId, Guid documentTemplateId, IUnitOfWork? work = null, CancellationToken token = default);
+        Task<SectionTemplate?> GetDefaultSection(ResumePart sectionId, Guid documentTemplateId, IUnitOfWork? work = null, CancellationToken token = default);
     }
     /// <summary>
     /// Skills Business Facade
@@ -111,5 +96,10 @@ namespace Programming.Team.Business.Core
         /// <returns>Array of Skills not assigned to the given position but exist for that user</returns>
         Task<Skill[]> GetSkillsExcludingPosition(Guid positionId, IUnitOfWork? work = null,
             CancellationToken token = default);
+    }
+
+    public interface IDocumentTemplateBusinessFacade : IBusinessRepositoryFacade<DocumentTemplate, Guid>
+    {
+        Task<DocumentTemplate[]> GetForUser(Guid userId, IUnitOfWork? work = null, CancellationToken token = default);
     }
 }

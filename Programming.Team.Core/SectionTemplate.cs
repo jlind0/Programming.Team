@@ -16,5 +16,6 @@ namespace Programming.Team.Core
         public ResumePart SectionId { get; set; }
         public string Name { get; set; } = null!;
         public string Template { get; set; } = null!;
+        public virtual ICollection<DocumentSectionTemplate> DocumentSectionTemplates { get; set; } = new List<DocumentSectionTemplate>();
     }
 }

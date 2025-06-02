@@ -18,9 +18,9 @@ public class SectionTemplateBusinessFacadeTests
         var token = new CancellationToken();
         var sectionId = ResumePart.Bio;
         // Act
-        await sectionTemplateBusinessFacade.GetBySection(sectionId, token: token);
+        await sectionTemplateBusinessFacade.GetBySection(sectionId, Guid.NewGuid(), token: token);
         // Assert
-        repository.Verify(r => r.GetBySection(sectionId, It.IsAny<IUnitOfWork>(), token), Times.Once());
+        repository.Verify(r => r.GetBySection(sectionId, It.IsAny<Guid>(), It.IsAny<IUnitOfWork>(), token), Times.Once());
     }
     [TestMethod]
     public async Task SectionTemplatebusinessFacade_GetDefaultSection()
@@ -30,7 +30,7 @@ public class SectionTemplateBusinessFacadeTests
         var sectionTemplateBusinessFacade = new SectionTemplateBusinessFacade(repository.Object, logger.Object);
         var token = new CancellationToken();
         var sectionId = ResumePart.Bio;
-        await sectionTemplateBusinessFacade.GetDefaultSection(sectionId, token: token);
-        repository.Verify(r => r.GetDefaultSection(sectionId, It.IsAny<IUnitOfWork>(), "Default", token), Times.Once());
+        await sectionTemplateBusinessFacade.GetDefaultSection(sectionId, Guid.NewGuid(), token: token);
+        repository.Verify(r => r.GetDefaultSection(sectionId, It.IsAny<Guid>(), It.IsAny<IUnitOfWork>(), token), Times.Once());
     }
 }

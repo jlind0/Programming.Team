@@ -46,6 +46,8 @@ public partial class ResumesContext : DbContext
 
     public virtual DbSet<Recommendation> Recommendations { get; set; }
     public virtual DbSet<SectionTemplate> SectionTemplates { get; set; }
+    public virtual DbSet<DocumentSectionTemplate> DocumentSectionTemplates { get; set; }
+    public virtual DbSet<DocumentTemplatePurchase> DocumentTemplatePurchases { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Name=Resumes");
 
@@ -145,6 +147,7 @@ public partial class ResumesContext : DbContext
             entity.Property(e => e.CreateDate)
                 .HasDefaultValueSql("(getutcdate())")
                 .HasColumnType("datetime");
+            entity.Property(e => e.ApprovalStatus).HasConversion<short>();
             entity.Property(e => e.Name).HasMaxLength(1000);
             entity.Property(e => e.UpdateDate)
                 .HasDefaultValueSql("(getutcdate())")
@@ -163,6 +166,11 @@ public partial class ResumesContext : DbContext
                 .HasForeignKey(d => d.UpdatedByUserId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
              entity.HasQueryFilter(d => !d.IsDeleted);
+            entity.HasMany(d => d.DocumentSectionTemplates).WithOne(p => p.DocumentTemplate)
+                .HasForeignKey(d => d.DocumentTemplateId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_DocumnetSectionTemplates_DocumentTemplates");
+            entity.Property(e => e.Price).HasColumnType("money");
         });
 
         modelBuilder.Entity<DocumentType>(entity =>
@@ -182,6 +190,7 @@ public partial class ResumesContext : DbContext
             entity.HasOne(d => d.UpdatedByUser).WithMany(p => p.DocumentTypeUpdatedByUsers)
                 .HasForeignKey(d => d.UpdatedByUserId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
+
              entity.HasQueryFilter(d => !d.IsDeleted);
         });
 
@@ -582,7 +591,58 @@ public partial class ResumesContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_SectionTemplates_Users1");
             entity.HasQueryFilter(d => !d.IsDeleted);
+            entity.HasMany(d => d.DocumentSectionTemplates).WithOne(p => p.SectionTemplate)
+                .HasForeignKey(d => d.SectionTemplateId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_DocumnetSectionTemplates_SectionTemplates");
 
+        });
+        modelBuilder.Entity<DocumentSectionTemplate>(entity =>
+        {
+            entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.CreateDate).HasColumnType("datetime");
+            entity.Property(e => e.UpdateDate).HasColumnType("datetime");
+            entity.HasOne(d => d.DocumentTemplate).WithMany(p => p.DocumentSectionTemplates)
+                    .HasForeignKey(d => d.DocumentTemplateId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DocumnetSectionTemplates_DocumentTemplates");
+            entity.HasOne(d => d.SectionTemplate).WithMany(p => p.DocumentSectionTemplates)
+                .HasForeignKey(d => d.SectionTemplateId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_DocumnetSectionTemplates_SectionTemplates");
+            entity.HasOne(d => d.CreatedByUser).WithMany(p => p.DocumentSectionTemplateCreatedByUsers)
+                .HasForeignKey(d => d.CreatedByUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_DocumnetSectionTemplates_Users");
+            entity.HasOne(d => d.UpdatedByUser).WithMany(p => p.DocumentSectionTemplateUpdatedByUsers)
+                .HasForeignKey(d => d.UpdatedByUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_DocumnetSectionTemplates_Users1");
+            entity.HasQueryFilter(d => !d.IsDeleted);
+        });
+        modelBuilder.Entity<DocumentTemplatePurchase>(entity =>
+        {
+            entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.CreateDate).HasColumnType("datetime");
+            entity.Property(e => e.UpdateDate).HasColumnType("datetime");
+            entity.Property(e => e.PricePaid).HasColumnType("money");
+            entity.HasOne(d => d.DocumentTemplate).WithMany(p => p.TemplatePurchases)
+                    .HasForeignKey(d => d.DocumentTemplateId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DocumentTemplatePurchases_DocumentTemplates");
+            entity.HasOne(d => d.User).WithMany(p => p.DocumentTemplatePurchases)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_DocumentTemplatePurchases_Users");
+            entity.HasOne(d => d.CreatedByUser).WithMany(p => p.DocumentTemplatePurchaseCreatedByUsers)
+                .HasForeignKey(d => d.CreatedByUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_DocumentTemplatePurchases_Users1");
+            entity.HasOne(d => d.UpdatedByUser).WithMany(p => p.DocumentTemplatePurchaseUpdatedByUsers)
+                .HasForeignKey(d => d.UpdatedByUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_DocumentTemplatePurchases_Users2");
+            entity.HasQueryFilter(d => !d.IsDeleted);
         });
         OnModelCreatingPartial(modelBuilder);
     }

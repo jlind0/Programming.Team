@@ -22,6 +22,7 @@ namespace Programming.Team.Data.Core
         Task<ClaimsPrincipal?> GetPrincipal();
         Task<Guid?> GetImpersonatedUser();
         Task SetImpersonatedUser(Guid? userId);
+        Task<bool> IsInRole(string roleName, CancellationToken token = default);
     }
     /// <summary>
     /// Extract user ID.

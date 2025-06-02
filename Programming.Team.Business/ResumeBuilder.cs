@@ -174,7 +174,7 @@ namespace Programming.Team.Business
                 foreach(var part in (ResumePart[])Enum.GetValues(typeof(ResumePart)))
                 {
                     config.SectionTemplates.TryGetValue(part, out var sectionTemplateId);
-                    var section = sectionTemplateId != null ? await SectionFacade.GetByID(sectionTemplateId.Value, token: token) : await SectionFacade.GetDefaultSection(part, token: token);
+                    var section = sectionTemplateId != null ? await SectionFacade.GetByID(sectionTemplateId.Value, token: token) : await SectionFacade.GetDefaultSection(part, posting.DocumentTemplateId, token: token);
                     if (section == null) continue;
                     docTemplate.Template = docTemplate.Template.Replace($"%==={Enum.GetName(typeof(ResumePart), part)}===", section.Template);
                 }

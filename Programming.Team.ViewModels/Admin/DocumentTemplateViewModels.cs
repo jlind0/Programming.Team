@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Programming.Team.Business.Core;
 using Programming.Team.Core;
+using Programming.Team.Data.Core;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -21,13 +22,15 @@ namespace Programming.Team.ViewModels.Admin
         public ObservableCollection<DocumentType> DocumentTypes { get; } = new ObservableCollection<DocumentType>();
         protected IBusinessRepositoryFacade<DocumentType, int> DocumentTypesFacade { get; }
         protected readonly CompositeDisposable disposables = new CompositeDisposable();
+        protected IContextFactory ContextFactory { get; }
         ~AddDocumentTemplateViewModel()
         {
             disposables.Dispose();
         }
-        public AddDocumentTemplateViewModel(IBusinessRepositoryFacade<DocumentType, int> documentTypesFacade, IBusinessRepositoryFacade<DocumentTemplate, Guid> facade, ILogger<AddEntityViewModel<Guid, DocumentTemplate, IBusinessRepositoryFacade<DocumentTemplate, Guid>>> logger) : base(facade, logger)
+        public AddDocumentTemplateViewModel(IContextFactory contextFactory, IBusinessRepositoryFacade<DocumentType, int> documentTypesFacade, IBusinessRepositoryFacade<DocumentTemplate, Guid> facade, ILogger<AddEntityViewModel<Guid, DocumentTemplate, IBusinessRepositoryFacade<DocumentTemplate, Guid>>> logger) : base(facade, logger)
         {
             DocumentTypesFacade = documentTypesFacade;
+            ContextFactory = contextFactory;
             this.WhenPropertyChanged(p => p.DocumentType).Subscribe(p =>
             {
                 if (DocumentTypes.Count == 0)
@@ -51,6 +54,16 @@ namespace Programming.Team.ViewModels.Admin
                     DocumentTypes.Add(type);
                 }
                 DocumentTypeId = DocumentTypes.First().Id;
+                if (await ContextFactory.IsInRole("Admin"))
+                {
+                    ApprovalStatus = ApprovalStatus.Approved;
+                    OwnerId = null;
+                }
+                else
+                {
+                    OwnerId = await DocumentTypesFacade.GetCurrentUserId(fetchTrueUserId: true, token: token);
+                    ApprovalStatus = ApprovalStatus.Pending;
+                }
             }
             catch (Exception ex)
             {
@@ -99,14 +112,26 @@ namespace Programming.Team.ViewModels.Admin
         }
 
         public override bool CanAdd => base.CanAdd && !string.IsNullOrWhiteSpace(Template) && !string.IsNullOrWhiteSpace(Name) && DocumentType != null;
+
+        public Guid? OwnerId { get; set; }
+        private decimal? price;
+        public decimal? Price 
+        {
+            get => price;
+            set => this.RaiseAndSetIfChanged(ref price, value);
+        }
+        public ApprovalStatus ApprovalStatus { get; set; } = ApprovalStatus.Approved;
+
         protected override Task Clear()
         {
             DocumentType = DocumentTypes.First();
             Name = string.Empty;
             Template = string.Empty;
+            Price = null;
+            ApprovalStatus = OwnerId == null ? ApprovalStatus.Approved : ApprovalStatus.Pending;
             return Task.CompletedTask;
         }
-
+        
         protected override Task<DocumentTemplate> ConstructEntity()
         {
             return Task.FromResult(new DocumentTemplate()
@@ -114,10 +139,14 @@ namespace Programming.Team.ViewModels.Admin
                 Id = Id,
                 Name = Name,
                 Template = Template,
-                DocumentTypeId = DocumentTypeId
+                DocumentTypeId = DocumentTypeId,
+                OwnerId = OwnerId,
+                Price = Price,
+                ApprovalStatus = ApprovalStatus
             });
         }
     }
+    
     public class DocumentTemplateViewModel : EntityViewModel<Guid, DocumentTemplate>, IDocumentTemplate
     {
         private int documentTypeId;
@@ -154,9 +183,33 @@ namespace Programming.Team.ViewModels.Admin
             get => template;
             set => this.RaiseAndSetIfChanged(ref template, value);
         }
+        private Guid? ownerId;
+        public Guid? OwnerId
+        {
+            get => ownerId;
+            set => this.RaiseAndSetIfChanged(ref ownerId, value);
+        }
+        private User? owner;
+        public User? Owner
+        {
+            get => owner;
+            set => this.RaiseAndSetIfChanged(ref owner, value);
+        }
+        private decimal? price;
+        public decimal? Price
+        {
+            get => price;
+            set => this.RaiseAndSetIfChanged(ref price, value);
+        }
+        private ApprovalStatus approvalStatus = ApprovalStatus.Approved;
+        public ApprovalStatus ApprovalStatus{
+            get => approvalStatus;
+            set => this.RaiseAndSetIfChanged(ref approvalStatus, value);
+        }
+
         protected override Func<IQueryable<DocumentTemplate>, IQueryable<DocumentTemplate>>? PropertiesToLoad()
         {
-            return x => x.Include(e => e.DocumentType);
+            return x => x.Include(e => e.DocumentType).Include(e => e.Owner).Include(e => e.DocumentSectionTemplates).ThenInclude(e => e.SectionTemplate);
         }
         protected override Task<DocumentTemplate> Populate()
         {
@@ -165,7 +218,10 @@ namespace Programming.Team.ViewModels.Admin
                 Id = Id,
                 Name = Name,
                 Template = template,
-                DocumentTypeId = DocumentTypeId
+                DocumentTypeId = DocumentTypeId,
+                OwnerId = OwnerId,
+                Price = Price,
+                ApprovalStatus = ApprovalStatus
             });
         }
 
@@ -176,17 +232,35 @@ namespace Programming.Team.ViewModels.Admin
             DocumentType = entity.DocumentType;
             DocumentTypeId = entity.DocumentTypeId;
             Name = entity.Name;
+            OwnerId = entity.OwnerId;
+            Price = entity.Price;
+            ApprovalStatus = entity.ApprovalStatus;
+            Owner = entity.Owner;
             return Task.CompletedTask;
         }
     }
     public class DocumentTemplatesViewModel : EntitiesDefaultViewModel<Guid, DocumentTemplate, DocumentTemplateViewModel, AddDocumentTemplateViewModel>
     {
-        public DocumentTemplatesViewModel(AddDocumentTemplateViewModel addViewModel, IBusinessRepositoryFacade<DocumentTemplate, Guid> facade, ILogger<EntitiesViewModel<Guid, DocumentTemplate, DocumentTemplateViewModel, IBusinessRepositoryFacade<DocumentTemplate, Guid>>> logger) : base(addViewModel, facade, logger)
+        protected IContextFactory ContextFactory { get; }
+        public DocumentTemplatesViewModel(IContextFactory contextFactory, AddDocumentTemplateViewModel addViewModel, IBusinessRepositoryFacade<DocumentTemplate, Guid> facade, ILogger<EntitiesViewModel<Guid, DocumentTemplate, DocumentTemplateViewModel, IBusinessRepositoryFacade<DocumentTemplate, Guid>>> logger) : base(addViewModel, facade, logger)
         {
+            ContextFactory = contextFactory;
         }
         protected override Func<IQueryable<DocumentTemplate>, IQueryable<DocumentTemplate>>? PropertiesToLoad()
         {
-            return e => e.Include(e => e.DocumentType);
+            return x => x.Include(e => e.DocumentType).Include(e => e.Owner).Include(e => e.DocumentSectionTemplates).ThenInclude(e => e.SectionTemplate);
+        }
+        protected override async Task<Expression<Func<DocumentTemplate, bool>>?> FilterCondition()
+        {
+            if (await ContextFactory.IsInRole("Admin"))
+            {
+                return null; // Admins see all templates
+            }
+            else
+            {
+                var userId = await Facade.GetCurrentUserId(fetchTrueUserId: true);
+                return e => e.OwnerId == userId;
+            }   
         }
         protected override Func<IQueryable<DocumentTemplate>, IOrderedQueryable<DocumentTemplate>>? OrderBy()
         {

@@ -9,6 +9,12 @@
         <MudNumericField @bind-Value="ViewModel.SkillsPer20Percent" Label="Skills Per 20%" Variant="Variant.Outlined" />
         <MudCheckBox @bind-Value="ViewModel.HideSkillsNotInJD" Label="Hide Skills not in JD"/>
         <MudCheckBox @bind-Value="ViewModel.HidePositionsNotInJD" Label="Hide Positions not in JD" />
+        <MudSelect Label="Document Template" T="DocumentTemplate" @bind-Value="ViewModel.SelectedTemplate" ToStringFunc="e => e?.Name">
+            @foreach (var template in ViewModel.DocumentTemplates)
+            {
+                <MudSelectItem T="DocumentTemplate" Value="template">@template.Name</MudSelectItem>
+            }
+        </MudSelect>
         <MudDropContainer T="ResumePartViewModel" Items="ViewModel.ResumeParts" @ref="_container" ItemsSelector="@((item,dropzone) => item.Selected.ToString() == dropzone)" ItemDropped="ItemUpdated" Class="d-flex flex-wrap flex-grow-1">
             <ChildContent>
                 <MudPaper Class="ma-4 flex-grow-1">
@@ -56,14 +62,15 @@
                 if(p.Value)
                 {
                     StateHasChanged();
-                    _container.Refresh();
+                    
+                    _container?.Refresh();
                 }
             }).DisposeWith(disposables);
         }
         
         base.OnInitialized();
     }
-    private MudDropContainer<ResumePartViewModel> _container = null!;
+    private MudDropContainer<ResumePartViewModel>? _container = null!;
     private void ItemUpdated(MudItemDropInfo<ResumePartViewModel> dropItem)
     {
         dropItem.Item.Selected = bool.Parse(dropItem.DropzoneIdentifier);

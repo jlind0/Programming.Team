@@ -1,4 +1,5 @@
 ﻿using DynamicData;
+using DynamicData.Binding;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Storage.Json;
@@ -11,6 +12,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -28,8 +30,7 @@ namespace Programming.Team.ViewModels.Resume
         public ReactiveCommand<Unit, Unit> Load { get; }
         protected IBusinessRepositoryFacade<DocumentTemplate, Guid> DocumentTemplateFacade { get; }
         protected IUserBusinessFacade UserFacade { get; }
-        public ObservableCollection<DocumentTemplate> DocumentTemplates { get; } = new ObservableCollection<DocumentTemplate>();
-        protected NavigationManager NavMan { get; } 
+        protected NavigationManager NavMan { get; }
         public ResumeBuilderViewModel(NavigationManager navMan, ResumeConfigurationViewModel config, IUserBusinessFacade userFacade, IBusinessRepositoryFacade<DocumentTemplate, Guid>  documentTemplateFacade, ILogger<ResumeBuilderViewModel> logger, IResumeBuilder builder)
         {
             Configuration = config;
@@ -40,12 +41,6 @@ namespace Programming.Team.ViewModels.Resume
             Build = ReactiveCommand.CreateFromTask(DoBuild);
             Load = ReactiveCommand.CreateFromTask(DoLoad);
             NavMan = navMan;
-        }
-        private DocumentTemplate? selectedTemplate;
-        public DocumentTemplate? SelectedTemplate
-        {
-            get => selectedTemplate;
-            set => this.RaiseAndSetIfChanged(ref selectedTemplate, value);
         }
         private string postingText = string.Empty;
         public string PostingText
@@ -81,12 +76,14 @@ namespace Programming.Team.ViewModels.Resume
                 var userId = await DocumentTemplateFacade.GetCurrentUserId();
                 if (userId == null)
                     return;
+                if (Configuration.SelectedTemplate == null)
+                    return;
                 Progress<string> progressable = new Progress<string>(str =>
                 {
                     Progress = str;
                 });
                 var resume = await Builder.BuildResume(userId.Value, progressable, token);
-                var posting = await Builder.BuildPosting(userId.Value, SelectedTemplate!.Id, Name, PostingText, resume,progressable, Configuration.GetConfiguration(), token: token);
+                var posting = await Builder.BuildPosting(userId.Value, Configuration.SelectedTemplate.Id, Name, PostingText, resume,progressable, Configuration.GetConfiguration(), token: token);
                 Progress = null;
                 await Alert.Handle("Resume Built").GetAwaiter();
                 NavMan.NavigateTo($"/resume/postings/{posting.Id}");
@@ -103,11 +100,7 @@ namespace Programming.Team.ViewModels.Resume
             {
                 var userId = await UserFacade.GetCurrentUserId(fetchTrueUserId: true, token: token);
                 var user = await UserFacade.GetByID(userId.Value, token: token);
-
-                DocumentTemplates.Clear();
                 var dts = await DocumentTemplateFacade.Get(orderBy: o => o.OrderBy(e => e.Name), token: token);
-                DocumentTemplates.AddRange(dts.Entities);
-                SelectedTemplate = DocumentTemplates.First();
                 await Configuration.Load(user?.DefaultResumeConfiguration);
             }
             catch(Exception ex)

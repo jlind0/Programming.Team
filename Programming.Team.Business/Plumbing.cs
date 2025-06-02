@@ -19,7 +19,7 @@ namespace Programming.Team.Business
         protected ILogger Logger { get; }
         public string? AccessCode { get; set; }
 
-        protected BusinessRepositoryFacade(IRepository repository, ILogger logger)
+        protected BusinessRepositoryFacade( IRepository repository, ILogger logger)
         {
             RepositoryRaw = repository;
             Logger = logger;

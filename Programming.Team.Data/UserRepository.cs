@@ -112,22 +112,24 @@ namespace Programming.Team.Data
         public SectionTemplateRepository(IContextFactory contextFactory, IMemoryCache cache) : base(contextFactory, cache)
         {
         }
-        public async Task<SectionTemplate[]> GetBySection(ResumePart sectionId, IUnitOfWork? work = null, CancellationToken token = default)
+        public async Task<SectionTemplate[]> GetBySection(ResumePart sectionId, Guid documentTemplateId, IUnitOfWork? work = null, CancellationToken token = default)
         {
             SectionTemplate[] templates = [];
             await Use(async (w, t) =>
             {
-                templates = await w.ResumesContext.SectionTemplates.Where(s => s.SectionId == sectionId).OrderBy(s => s.Name).ToArrayAsync(token);
+                templates = await w.ResumesContext.DocumentSectionTemplates.Where(d => d.DocumentTemplateId == documentTemplateId).Select(d => d.SectionTemplate)
+                    .Where(s => s.SectionId == sectionId).ToArrayAsync(token);
             }, work, token);
             return templates;
         }
 
-        public async Task<SectionTemplate?> GetDefaultSection(ResumePart sectionId, IUnitOfWork? work = null, string defaultName = "Default", CancellationToken token = default)
+        public async Task<SectionTemplate?> GetDefaultSection(ResumePart sectionId, Guid documentTemplateId, IUnitOfWork? work = null, CancellationToken token = default)
         {
             SectionTemplate? template = null;
             await Use(async (w, t) =>
             {
-                template = await w.ResumesContext.SectionTemplates.FirstOrDefaultAsync(s => s.SectionId == sectionId && s.Name == defaultName);
+                template = await w.ResumesContext.DocumentSectionTemplates.Where(d => d.DocumentTemplateId == documentTemplateId && d.IsDefault)
+                    .Select(d => d.SectionTemplate).SingleOrDefaultAsync(s => s.SectionId == sectionId, token);
             }, work, token);
             return template;
         }
@@ -153,6 +155,28 @@ namespace Programming.Team.Data
                 skills = await query.ToArrayAsync(token);
             }, work, token);
             return skills;
+        }
+    }
+    public class DocumentTemplateRepository : Repository<DocumentTemplate, Guid>, IDocumentTemplateRepository
+    {
+        public DocumentTemplateRepository(IContextFactory contextFactory, IMemoryCache cache) : base(contextFactory, cache)
+        {
+        }
+        public async Task<DocumentTemplate[]> GetForUser(Guid userId, IUnitOfWork? work = null, CancellationToken token = default)
+        {
+            DocumentTemplate[] templates = [];
+            await Use(async (w, t) =>
+            {
+                templates = await w.ResumesContext.DocumentTemplates
+                 .Where(d =>
+                     (d.OwnerId == null || d.OwnerId == userId) ||
+                     w.ResumesContext.DocumentTemplatePurchases
+                         .Any(p => p.UserId == userId && p.IsPaid &&
+                                   p.DocumentTemplateId == d.Id &&
+                                   p.DocumentTemplate.ApprovalStatus == ApprovalStatus.Approved))
+                 .ToArrayAsync(token);
+            }, work, token);
+            return templates;
         }
     }
 }

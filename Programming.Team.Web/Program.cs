@@ -196,7 +196,8 @@ builder.Services.AddScoped<IRepository<PositionSkill, Guid>, Repository<Position
 builder.Services.AddScoped<IRepository<Skill, Guid>, SkillsRepository>();
 builder.Services.AddScoped<IRepository<DocumentType, int>, Repository<DocumentType, int>>();
 builder.Services.AddScoped<IRepository<Education, Guid>, Repository<Education, Guid>>();
-builder.Services.AddScoped<IRepository<DocumentTemplate, Guid>, Repository<DocumentTemplate, Guid>>();
+builder.Services.AddScoped<IRepository<DocumentTemplate, Guid>, DocumentTemplateRepository>();
+builder.Services.AddScoped<IDocumentTemplateRepository, DocumentTemplateRepository>();
 builder.Services.AddScoped<IRepository<Institution, Guid>, Repository<Institution, Guid>>();
 builder.Services.AddScoped<IRepository<Certificate, Guid>, Repository<Certificate, Guid>>();
 builder.Services.AddScoped<IRepository<CertificateIssuer, Guid>, Repository<CertificateIssuer, Guid>>();
@@ -221,7 +222,8 @@ builder.Services.AddScoped<IBusinessRepositoryFacade<Institution, Guid>, Busines
 builder.Services.AddScoped<IBusinessRepositoryFacade<Certificate, Guid>, BusinessRepositoryFacade<Certificate, Guid, IRepository<Certificate, Guid>>>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<CertificateIssuer, Guid>, BusinessRepositoryFacade<CertificateIssuer, Guid, IRepository<CertificateIssuer, Guid>>>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<Publication, Guid>, BusinessRepositoryFacade<Publication, Guid, IRepository<Publication, Guid>>>();
-builder.Services.AddScoped<IBusinessRepositoryFacade<DocumentTemplate, Guid>, BusinessRepositoryFacade<DocumentTemplate, Guid, IRepository<DocumentTemplate, Guid>>>();
+builder.Services.AddScoped<IBusinessRepositoryFacade<DocumentTemplate, Guid>, DocumentTemplateBusinessFacade>();
+builder.Services.AddScoped<IDocumentTemplateBusinessFacade, DocumentTemplateBusinessFacade>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<DocumentType, int>, BusinessRepositoryFacade<DocumentType, int, IRepository<DocumentType, int>>>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<Posting, Guid>, PostingBusinessFacade>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<Purchase, Guid>, BusinessRepositoryFacade<Purchase, Guid, IRepository<Purchase, Guid>>>();

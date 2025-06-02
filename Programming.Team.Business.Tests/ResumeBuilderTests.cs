@@ -114,7 +114,7 @@ public class ResumeBuilderTests
                     SectionId = ResumePart.Positions,
                     Template = "some template"
                 });
-        sectionTemplateFacade.Setup(s => s.GetDefaultSection(It.IsAny<ResumePart>(), It.IsAny<IUnitOfWork>(), It.IsAny<string>(),
+        sectionTemplateFacade.Setup(s => s.GetDefaultSection(It.IsAny<ResumePart>(), It.IsAny<Guid>(), It.IsAny<IUnitOfWork>(),
                 It.IsAny<CancellationToken>())).ReturnsAsync(new SectionTemplate()
                 {
                     Id = Guid.NewGuid(),
@@ -139,7 +139,7 @@ public class ResumeBuilderTests
         documentTemplator.Verify(documentTemplator => documentTemplator.RenderLatex(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once());
         userFacade.Verify(userFacade => userFacade.GetCurrentUserId(It.IsAny<IUnitOfWork>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once());
         sectionTemplateFacade.Verify(sectionTemplateFacade => sectionTemplateFacade.GetDefaultSection(
-            It.IsAny<ResumePart>(), It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.AtLeastOnce());
+            It.IsAny<ResumePart>(), It.IsAny<Guid>(), It.IsAny<IUnitOfWork>(), It.IsAny<CancellationToken>()), Times.AtLeastOnce());
         resumeEnricher.Verify(resumeEnricher => resumeEnricher.EnrichResume(It.IsAny<Resume>(), It.IsAny<Posting>(), 
             It.IsAny<IProgress<string>>(), It.IsAny<CancellationToken>()), Times.Once());
         progress.Verify();
@@ -188,7 +188,7 @@ public class ResumeBuilderTests
                     SectionId = ResumePart.Positions,
                     Template = "some template"
                 });
-        sectionTemplateFacade.Setup(s => s.GetDefaultSection(It.IsAny<ResumePart>(), It.IsAny<IUnitOfWork>(), It.IsAny<string>(),
+        sectionTemplateFacade.Setup(s => s.GetDefaultSection(It.IsAny<ResumePart>(), It.IsAny<Guid>(), It.IsAny<IUnitOfWork>(),
                 It.IsAny<CancellationToken>())).ReturnsAsync(new SectionTemplate()
                 {
                     Id = Guid.NewGuid(),
@@ -213,7 +213,7 @@ public class ResumeBuilderTests
         documentTemplator.Verify(documentTemplator => documentTemplator.RenderLatex(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once());
         userFacade.Verify(userFacade => userFacade.GetCurrentUserId(It.IsAny<IUnitOfWork>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once());
         sectionTemplateFacade.Verify(sectionTemplateFacade => sectionTemplateFacade.GetDefaultSection(
-            It.IsAny<ResumePart>(), It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.AtLeastOnce());
+            It.IsAny<ResumePart>(), It.IsAny<Guid>(), It.IsAny<IUnitOfWork>(), It.IsAny<CancellationToken>()), Times.AtLeastOnce());
         resumeEnricher.Verify(resumeEnricher => resumeEnricher.EnrichResume(It.IsAny<Resume>(), It.IsAny<Posting>(),
             It.IsAny<IProgress<string>>(), It.IsAny<CancellationToken>()), Times.Never());
         progress.Verify();
@@ -262,7 +262,7 @@ public class ResumeBuilderTests
                     SectionId = ResumePart.Positions,
                     Template = "some template"
                 });
-        sectionTemplateFacade.Setup(s => s.GetDefaultSection(It.IsAny<ResumePart>(), It.IsAny<IUnitOfWork>(), It.IsAny<string>(),
+        sectionTemplateFacade.Setup(s => s.GetDefaultSection(It.IsAny<ResumePart>(), It.IsAny<Guid>(), It.IsAny<IUnitOfWork>(),
                 It.IsAny<CancellationToken>())).ReturnsAsync(new SectionTemplate()
                 {
                     Id = Guid.NewGuid(),
@@ -289,7 +289,7 @@ public class ResumeBuilderTests
         documentTemplator.Verify(documentTemplator => documentTemplator.RenderLatex(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once());
         userFacade.Verify(userFacade => userFacade.GetCurrentUserId(It.IsAny<IUnitOfWork>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Never());
         sectionTemplateFacade.Verify(sectionTemplateFacade => sectionTemplateFacade.GetDefaultSection(
-            It.IsAny<ResumePart>(), It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.AtLeastOnce());
+            It.IsAny<ResumePart>(), It.IsAny<Guid>(), It.IsAny<IUnitOfWork>(), It.IsAny<CancellationToken>()), Times.AtLeastOnce());
         resumeEnricher.Verify(resumeEnricher => resumeEnricher.EnrichResume(It.IsAny<Resume>(), It.IsAny<Posting>(),
             It.IsAny<IProgress<string>>(), It.IsAny<CancellationToken>()), Times.Never());
         progress.Verify();
@@ -338,7 +338,7 @@ public class ResumeBuilderTests
                     SectionId = ResumePart.Positions,
                     Template = "some template"
                 });
-        sectionTemplateFacade.Setup(s => s.GetDefaultSection(It.IsAny<ResumePart>(), It.IsAny<IUnitOfWork>(), It.IsAny<string>(),
+        sectionTemplateFacade.Setup(s => s.GetDefaultSection(It.IsAny<ResumePart>(), It.IsAny<Guid>(), It.IsAny<IUnitOfWork>(),
                 It.IsAny<CancellationToken>())).ReturnsAsync(new SectionTemplate()
                 {
                     Id = Guid.NewGuid(),
@@ -363,7 +363,7 @@ public class ResumeBuilderTests
         documentTemplator.Verify(documentTemplator => documentTemplator.RenderLatex(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never());
         userFacade.Verify(userFacade => userFacade.GetCurrentUserId(It.IsAny<IUnitOfWork>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once());
         sectionTemplateFacade.Verify(sectionTemplateFacade => sectionTemplateFacade.GetDefaultSection(
-            It.IsAny<ResumePart>(), It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.AtLeastOnce());
+            It.IsAny<ResumePart>(), It.IsAny<Guid>(), It.IsAny<IUnitOfWork>(), It.IsAny<CancellationToken>()), Times.AtLeastOnce());
         resumeEnricher.Verify(resumeEnricher => resumeEnricher.EnrichResume(It.IsAny<Resume>(), It.IsAny<Posting>(),
             It.IsAny<IProgress<string>>(), It.IsAny<CancellationToken>()), Times.Once());
         progress.Verify();
@@ -449,7 +449,7 @@ public class ResumeBuilderTests
                     SectionId = ResumePart.Positions,
                     Template = "some template"
                 });
-        sectionTemplateFacade.Setup(s => s.GetDefaultSection(It.IsAny<ResumePart>(), It.IsAny<IUnitOfWork>(), It.IsAny<string>(),
+        sectionTemplateFacade.Setup(s => s.GetDefaultSection(It.IsAny<ResumePart>(), It.IsAny<Guid>(), It.IsAny<IUnitOfWork>(),
                 It.IsAny<CancellationToken>())).ReturnsAsync(new SectionTemplate()
                 {
                     Id = Guid.NewGuid(),
@@ -475,7 +475,7 @@ public class ResumeBuilderTests
         documentTemplator.Verify(documentTemplator => documentTemplator.RenderLatex(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once());
         userFacade.Verify(userFacade => userFacade.GetCurrentUserId(It.IsAny<IUnitOfWork>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once());
         sectionTemplateFacade.Verify(sectionTemplateFacade => sectionTemplateFacade.GetDefaultSection(
-            It.IsAny<ResumePart>(), It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.AtLeastOnce());
+            It.IsAny<ResumePart>(), It.IsAny<Guid>(), It.IsAny<IUnitOfWork>(), It.IsAny<CancellationToken>()), Times.AtLeastOnce());
         resumeEnricher.Verify(resumeEnricher => resumeEnricher.EnrichResume(It.IsAny<Resume>(), It.IsAny<Posting>(),
             It.IsAny<IProgress<string>>(), It.IsAny<CancellationToken>()), Times.Once());
         progress.Verify();
