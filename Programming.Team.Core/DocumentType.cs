@@ -5,7 +5,6 @@ namespace Programming.Team.Core;
 
 public interface IDocumentType : IEntity<int>, INamedEntity
 {
-    string Name { get; set; }
 }
 public partial class DocumentType : Entity<int>, IDocumentType
 {

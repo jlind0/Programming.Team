@@ -6,7 +6,6 @@ public interface ICertificate : IEntity<Guid>, IUserPartionedEntity, INamedEntit
 {
     Guid IssuerId { get; set; }
 
-    string Name { get; set; }
 
     DateOnly ValidFromDate { get; set; }
 

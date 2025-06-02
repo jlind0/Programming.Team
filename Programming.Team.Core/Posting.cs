@@ -4,7 +4,6 @@ public interface IPosting : IEntity<Guid>, IUserPartionedEntity, INamedEntity
 {
     Guid DocumentTemplateId { get; set; }
 
-    string Name { get; set; }
 
     string Details { get; set; }
 

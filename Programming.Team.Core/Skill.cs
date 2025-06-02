@@ -4,7 +4,6 @@ using System.Collections.Generic;
 namespace Programming.Team.Core;
 public interface ISkill : IEntity<Guid>, INamedEntity
 {
-    string Name { get; set; }
 }
 public partial class Skill : Entity<Guid>, ISkill
 {

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 namespace Programming.Team.Core;
 public interface ICertificateIssuer : IEntity<Guid>, INamedEntity
 {
-    string Name { get; set; }
 
     string? Description { get; set; }
 

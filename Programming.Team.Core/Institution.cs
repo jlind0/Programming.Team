@@ -5,8 +5,6 @@ namespace Programming.Team.Core;
 
 public interface IInstitution : IEntity<Guid>, INamedEntity
 {
-    string Name { get; set; }
-
     string? Description { get; set; }
 
     string? City { get; set; }

@@ -5,7 +5,6 @@ using System.Collections.Generic;
 namespace Programming.Team.Core;
 public interface IRole : IEntity<Guid>, INamedEntity
 {
-    string Name { get; set; }
 }
 public partial class Role : Entity<Guid>, IRole
 {

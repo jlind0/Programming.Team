@@ -6,8 +6,6 @@ public interface IDocumentTemplate : IEntity<Guid>, INamedEntity
 {
     int DocumentTypeId { get; set; }
 
-    string Name { get; set; }
-
     string Template { get; set; }
 }
 public partial class DocumentTemplate : Entity<Guid>, IDocumentTemplate

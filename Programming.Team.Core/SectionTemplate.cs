@@ -9,7 +9,6 @@ namespace Programming.Team.Core
     public interface ISectionTemplate : IEntity<Guid>, INamedEntity
     {
         ResumePart SectionId { get; set; }
-        string Name { get; set; }
         string Template { get; set; }
     }
     public class SectionTemplate : Entity<Guid>, ISectionTemplate

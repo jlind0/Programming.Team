@@ -9,7 +9,6 @@ public interface IRecommendation : IEntity<Guid>, IUserPartionedEntity, INamedEn
 
     Guid PositionId { get; set; }
 
-    string Name { get; set; }
 
     string Body { get; set; }
 
