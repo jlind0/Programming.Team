@@ -8,9 +8,9 @@
                  Filterable="true" FilterMode="DataGridFilterMode.ColumnFilterMenu"
                  SortMode="SortMode.Multiple">
         <Columns>
-            <PropertyColumn Property="x => x.User.LastName" Title="Last Name"/>
-            <PropertyColumn Property="x => x.User.FirstName" Title="First Name"/>
-            <PropertyColumn Property="x => x.User.EmailAddress" Title="Email"/>
+            <PropertyColumn Sortable="false" Filterable="false" Property="x => x.User.LastName" Title="Last Name"/>
+            <PropertyColumn Sortable="false" Filterable="false" Property="x => x.User.FirstName" Title="First Name" />
+            <PropertyColumn Sortable="false" Filterable="false" Property="x => x.User.EmailAddress" Title="Email" />
             <PropertyColumn Property="x => x.ResumeGenerations" Title="Resume Generations" />
             <PropertyColumn Property="x => x.PricePaid" Title="Price" />
             <PropertyColumn Property="x => x.IsPaid" Title="Is Paid?" />
