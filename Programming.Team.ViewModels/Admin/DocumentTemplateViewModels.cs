@@ -170,12 +170,15 @@ namespace Programming.Team.ViewModels.Admin
             get => documentType;
             set => this.RaiseAndSetIfChanged(ref documentType, value);
         }
-        public DocumentTemplateViewModel(ILogger logger, IBusinessRepositoryFacade<DocumentTemplate, Guid> facade, Guid id) : base(logger, facade, id)
+        protected IContextFactory ContextFactory { get; }
+        public DocumentTemplateViewModel(ILogger logger, IContextFactory contextFactory, IBusinessRepositoryFacade<DocumentTemplate, Guid> facade, Guid id) : base(logger, facade, id)
         {
+            ContextFactory = contextFactory;
         }
 
-        public DocumentTemplateViewModel(ILogger logger, IBusinessRepositoryFacade<DocumentTemplate, Guid> facade, DocumentTemplate entity) : base(logger, facade, entity)
+        public DocumentTemplateViewModel(ILogger logger, IContextFactory contextFactory, IBusinessRepositoryFacade<DocumentTemplate, Guid> facade, DocumentTemplate entity) : base(logger, facade, entity)
         {
+            ContextFactory = contextFactory;
         }
 
         public string Template
@@ -211,9 +214,10 @@ namespace Programming.Team.ViewModels.Admin
         {
             return x => x.Include(e => e.DocumentType).Include(e => e.Owner).Include(e => e.DocumentSectionTemplates).ThenInclude(e => e.SectionTemplate);
         }
-        protected override Task<DocumentTemplate> Populate()
+        protected override async Task<DocumentTemplate> Populate()
         {
-            return Task.FromResult(new DocumentTemplate()
+            bool isAdmin = await ContextFactory.IsInRole("Admin");
+            return new DocumentTemplate()
             {
                 Id = Id,
                 Name = Name,
@@ -221,8 +225,8 @@ namespace Programming.Team.ViewModels.Admin
                 DocumentTypeId = DocumentTypeId,
                 OwnerId = OwnerId,
                 Price = Price,
-                ApprovalStatus = ApprovalStatus
-            });
+                ApprovalStatus = isAdmin ? ApprovalStatus : ApprovalStatus.Pending
+            };
         }
 
         protected override Task Read(DocumentTemplate entity)
@@ -268,7 +272,7 @@ namespace Programming.Team.ViewModels.Admin
         }
         protected override Task<DocumentTemplateViewModel> Construct(DocumentTemplate entity, CancellationToken token)
         {
-            return Task.FromResult(new DocumentTemplateViewModel(Logger, Facade, entity));
+            return Task.FromResult(new DocumentTemplateViewModel(Logger, ContextFactory, Facade, entity));
         }
     }
 }

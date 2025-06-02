@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Programming.Team.Business.Core;
 using Programming.Team.Core;
 using Programming.Team.Data.Core;
@@ -15,9 +16,11 @@ namespace Programming.Team.ViewModels.Admin
 {
     public class AddSectionTemplateViewModel : AddEntityViewModel<Guid, SectionTemplate>, ISectionTemplate
     {
+        protected IContextFactory ContextFactory { get; }
         public ObservableCollection<ResumePart> ResumeParts { get; } = new ObservableCollection<ResumePart>(Enum.GetValues<ResumePart>());
-        public AddSectionTemplateViewModel(IBusinessRepositoryFacade<SectionTemplate, Guid> facade, ILogger<AddEntityViewModel<Guid, SectionTemplate, IBusinessRepositoryFacade<SectionTemplate, Guid>>> logger) : base(facade, logger)
+        public AddSectionTemplateViewModel(IContextFactory contextFactory, IBusinessRepositoryFacade<SectionTemplate, Guid> facade, ILogger<AddEntityViewModel<Guid, SectionTemplate, IBusinessRepositoryFacade<SectionTemplate, Guid>>> logger) : base(facade, logger)
         {
+            ContextFactory = contextFactory;
         }
         private ResumePart sectionId;
         public ResumePart SectionId
@@ -52,7 +55,18 @@ namespace Programming.Team.ViewModels.Admin
             Template = string.Empty;
             return Task.CompletedTask;
         }
-
+        protected override async Task DoInit(CancellationToken token)
+        {
+            if(await ContextFactory.IsInRole("Admin"))
+            {
+                OwnerId = null;
+            }
+            else
+            {
+                OwnerId = await Facade.GetCurrentUserId(fetchTrueUserId: true, token: token);
+            }
+            await base.DoInit(token);
+        }
         protected override Task<SectionTemplate> ConstructEntity()
         {
             return Task.FromResult(new SectionTemplate { Name = Name, Template = Template, SectionId = SectionId, OwnerId = OwnerId });
@@ -85,6 +99,12 @@ namespace Programming.Team.ViewModels.Admin
             get => template;
             set => this.RaiseAndSetIfChanged(ref template, value);
         }
+        private User? owner;
+        public User? Owner
+        {
+            get => owner;
+            set => this.RaiseAndSetIfChanged(ref owner, value);
+        }
         public SectionTemplateViewModel(ILogger logger, IBusinessRepositoryFacade<SectionTemplate, Guid> facade, Guid id) : base(logger, facade, id)
         {
         }
@@ -112,6 +132,7 @@ namespace Programming.Team.ViewModels.Admin
             SectionId = entity.SectionId;
             Id = entity.Id;
             OwnerId = entity.OwnerId;
+            Owner = entity.Owner;
             return Task.CompletedTask;
         }
     }
@@ -125,6 +146,10 @@ namespace Programming.Team.ViewModels.Admin
         protected override Func<IQueryable<SectionTemplate>, IOrderedQueryable<SectionTemplate>>? OrderBy()
         {
             return e => e.OrderBy(e => e.Name);
+        }
+        protected override Func<IQueryable<SectionTemplate>, IQueryable<SectionTemplate>>? PropertiesToLoad()
+        {
+            return e => e.Include(e => e.Owner);
         }
         protected override async Task<Expression<Func<SectionTemplate, bool>>?> FilterCondition()
         {

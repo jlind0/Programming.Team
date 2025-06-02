@@ -1,11 +1,32 @@
 ﻿@inherits ReactiveComponentBase<DocumentTemplateViewModel>
-
+@inject AuthenticationStateProvider AuthState
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
     <MudStack>
         <MudTextField @bind-Value="ViewModel.Name" Label="Name" Variant="Variant.Outlined" />
         <MudText>Document Type: @ViewModel.DocumentType?.Name</MudText>
+        @if(ViewModel.Owner != null)
+        {
+            <MudText>Owner: @ViewModel.Owner.EmailAddress</MudText>
+        }
+        else
+        {
+            <MudText>Global Template</MudText>
+        }
+        @if (isAdmin)
+        {
+            <MudSelect Label="Approval Status" @bind-Value="ViewModel.ApprovalStatus" T="ApprovalStatus" ToStringFunc="s => Enum.GetName(s)">
+                @foreach (var status in Enum.GetValues<ApprovalStatus>())
+                {
+                    <MudSelectItem T="ApprovalStatus" Value="status">@Enum.GetName(status)</MudSelectItem>
+                }
+            </MudSelect>
+        }
+        else
+        {
+            <MudText>Status: @Enum.GetName(ViewModel.ApprovalStatus)</MudText>
+        }
         <MudTextField @bind-Value="ViewModel.Template" Label="Template" Lines="20" Variant="Variant.Outlined" />
         <MudStack Row="true">
             <MudButton OnClick="ViewModel.Update.BindCommand<MouseEventArgs>()">Update</MudButton>
@@ -15,4 +36,11 @@
 }
 
 @code {
+    private bool isAdmin = false;
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthState.GetAuthenticationStateAsync();
+        isAdmin = authState.User.IsInRole("Admin");
+        await base.OnInitializedAsync();
+    }
 }

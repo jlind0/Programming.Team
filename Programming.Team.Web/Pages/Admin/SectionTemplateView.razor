@@ -6,6 +6,14 @@
     <MudStack>
         <MudTextField @bind-Value="ViewModel.Name" Label="Name" Variant="Variant.Outlined" />
         <MudText>Section Type: @ViewModel.SectionId.ToString()</MudText>
+        @if (ViewModel.Owner != null)
+        {
+            <MudText>Owner: @ViewModel.Owner.EmailAddress</MudText>
+        }
+        else
+        {
+            <MudText>Global Template</MudText>
+        }
         <MudTextField @bind-Value="ViewModel.Template" Label="Template" Lines="20" Variant="Variant.Outlined" />
         <MudStack Row="true">
             <MudButton OnClick="ViewModel.Update.BindCommand<MouseEventArgs>()">Update</MudButton>
