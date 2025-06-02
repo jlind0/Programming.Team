@@ -18,17 +18,13 @@ namespace Programming.Team.ViewModels.Admin
     }
     public class SelectUsersViewModel : SelectEntitiesViewModel<Guid, User, UserViewModel, IUserBusinessFacade>
     {
-        protected ResumeConfigurationViewModel config;
-        public SelectUsersViewModel(IUserBusinessFacade facade, ResumeConfigurationViewModel config, ILogger<SelectEntitiesViewModel<Guid, User, UserViewModel, IUserBusinessFacade>> logger) : base(facade, logger)
+        public SelectUsersViewModel(IUserBusinessFacade facade, ILogger<SelectEntitiesViewModel<Guid, User, UserViewModel, IUserBusinessFacade>> logger) : base(facade, logger)
         {
-            this.config = config;
         }
 
-        protected override async Task<UserViewModel> ConstructViewModel(User entity)
+        protected override Task<UserViewModel> ConstructViewModel(User entity)
         {
-            var vm = new UserViewModel(Logger, Facade, entity.Id, config);
-            await vm.Load.Execute().GetAwaiter();
-            return vm;
+            return Task.FromResult(new UserViewModel(Logger, Facade, entity, null));
         }
     }
     public class UserLoaderViewModel : EntityLoaderViewModel<Guid, User, UserViewModel, IUserBusinessFacade>
@@ -46,13 +42,13 @@ namespace Programming.Team.ViewModels.Admin
     }
     public class UserViewModel : EntityViewModel<Guid, User, IUserBusinessFacade>, IUser
     {
-        public ResumeConfigurationViewModel Configuration { get; }
-        public UserViewModel(ILogger logger, IUserBusinessFacade facade, Guid id, ResumeConfigurationViewModel config) : base(logger, facade, id)
+        public ResumeConfigurationViewModel? Configuration { get; }
+        public UserViewModel(ILogger logger, IUserBusinessFacade facade, Guid id, ResumeConfigurationViewModel? config) : base(logger, facade, id)
         {
             Configuration = config;
         }
 
-        public UserViewModel(ILogger logger, IUserBusinessFacade facade, User entity, ResumeConfigurationViewModel config) : base(logger, facade, entity)
+        public UserViewModel(ILogger logger, IUserBusinessFacade facade, User entity, ResumeConfigurationViewModel? config) : base(logger, facade, entity)
         {
             Configuration = config;
         }
@@ -177,7 +173,7 @@ namespace Programming.Team.ViewModels.Admin
             user.State = State;
             user.Country = Country;
             user.ResumeGenerationsLeft = ResumeGenerationsLeft;
-            user.DefaultResumeConfiguration = Configuration.GetSerializedConfiguration();
+            user.DefaultResumeConfiguration = Configuration?.GetSerializedConfiguration() ?? DefaultResumeConfiguration;
             return Task.FromResult(user);
         }
         
@@ -199,7 +195,8 @@ namespace Programming.Team.ViewModels.Admin
             Country = entity.Country;
             ResumeGenerationsLeft = entity.ResumeGenerationsLeft;
             DefaultResumeConfiguration = entity.DefaultResumeConfiguration;
-            await Configuration.Load(DefaultResumeConfiguration);
+            if(Configuration != null)
+                await Configuration.Load(DefaultResumeConfiguration);
         }
     }
 }

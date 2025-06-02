@@ -37,7 +37,12 @@ namespace Programming.Team.ViewModels.Admin
             get => template;
             set => this.RaiseAndSetIfChanged(ref template, value);
         }
-
+        private Guid? ownerId;
+        public Guid? OwnerId
+        {
+            get => ownerId;
+            set => this.RaiseAndSetIfChanged(ref ownerId, value);
+        }
 
         protected override Task Clear()
         {
@@ -48,7 +53,7 @@ namespace Programming.Team.ViewModels.Admin
 
         protected override Task<SectionTemplate> ConstructEntity()
         {
-            return Task.FromResult(new SectionTemplate { Name = Name, Template = Template, SectionId = SectionId });
+            return Task.FromResult(new SectionTemplate { Name = Name, Template = Template, SectionId = SectionId, OwnerId = OwnerId });
         }
     }
     public class SectionTemplateViewModel : EntityViewModel<Guid, SectionTemplate>, ISectionTemplate
@@ -66,7 +71,12 @@ namespace Programming.Team.ViewModels.Admin
             get => name;
             set => this.RaiseAndSetIfChanged(ref name, value);
         }
-
+        private Guid? ownerId;
+        public Guid? OwnerId
+        {
+            get => ownerId;
+            set => this.RaiseAndSetIfChanged(ref ownerId, value);
+        }
         private string template = string.Empty;
         public string Template
         {
@@ -88,7 +98,8 @@ namespace Programming.Team.ViewModels.Admin
                 Name = Name,
                 Template = Template,
                 SectionId = SectionId,
-                Id = Id
+                Id = Id,
+                OwnerId = OwnerId
             });
         }
 
@@ -98,6 +109,7 @@ namespace Programming.Team.ViewModels.Admin
             Template = entity.Template;
             SectionId = entity.SectionId;
             Id = entity.Id;
+            OwnerId = entity.OwnerId;
             return Task.CompletedTask;
         }
     }

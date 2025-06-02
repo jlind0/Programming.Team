@@ -595,6 +595,10 @@ public partial class ResumesContext : DbContext
                 .HasForeignKey(d => d.SectionTemplateId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_DocumnetSectionTemplates_SectionTemplates");
+            entity.HasOne(d => d.Owner).WithMany(p => p.SectionTemplates)
+                .HasForeignKey(d => d.OwnerId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_SectionTemplates_Users2");
 
         });
         modelBuilder.Entity<DocumentSectionTemplate>(entity =>

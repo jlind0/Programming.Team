@@ -149,5 +149,6 @@ public partial class User : Entity<Guid>, IUser
     public virtual ICollection<DocumentSectionTemplate> DocumentSectionTemplateUpdatedByUsers { get; set; } = new List<DocumentSectionTemplate>();
     public virtual ICollection<DocumentTemplatePurchase> DocumentTemplatePurchaseCreatedByUsers { get; set; } = new List<DocumentTemplatePurchase>();
     public virtual ICollection<DocumentTemplatePurchase> DocumentTemplatePurchaseUpdatedByUsers { get; set; } = new List<DocumentTemplatePurchase>();
-    public ICollection<DocumentTemplatePurchase> DocumentTemplatePurchases { get; set; } = new List<DocumentTemplatePurchase>();
+    public virtual ICollection<DocumentTemplatePurchase> DocumentTemplatePurchases { get; set; } = new List<DocumentTemplatePurchase>();
+    public virtual ICollection<SectionTemplate> SectionTemplates { get; set; } = new List<SectionTemplate>();
 }

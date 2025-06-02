@@ -17,6 +17,84 @@ using System.Threading.Tasks;
 
 namespace Programming.Team.ViewModels.Admin
 {
+    public class DocumentSectionTemplateViewModel : EntityViewModel<Guid, DocumentSectionTemplate>, IDocumentSectionTemplate
+    {
+        private Guid documentTemplateId;
+        public Guid DocumentTemplateId
+        {
+            get => documentTemplateId;
+            set => this.RaiseAndSetIfChanged(ref documentTemplateId, value);
+        }
+        private Guid sectionTemplateId;
+        public Guid SectionTemplateId
+        {
+            get => sectionTemplateId;
+            set => this.RaiseAndSetIfChanged(ref sectionTemplateId, value);
+        }
+        private bool isDefault;
+        public bool IsDefault
+        {
+            get => isDefault;
+            set => this.RaiseAndSetIfChanged(ref isDefault, value);
+        }
+        public DocumentSectionTemplateViewModel(ILogger logger, IBusinessRepositoryFacade<DocumentSectionTemplate, Guid> facade, Guid id) : base(logger, facade, id)
+        {
+        }
+        public DocumentSectionTemplateViewModel(ILogger logger, IBusinessRepositoryFacade<DocumentSectionTemplate, Guid> facade, DocumentSectionTemplate entity) : base(logger, facade, entity)
+        {
+        }
+        protected override Func<IQueryable<DocumentSectionTemplate>, IQueryable<DocumentSectionTemplate>>? PropertiesToLoad()
+        {
+            return x => x.Include(e => e.DocumentTemplate).Include(e => e.SectionTemplate);
+        }
+
+        protected override Task<DocumentSectionTemplate> Populate()
+        {
+            return Task.FromResult(new DocumentSectionTemplate()
+            {
+                Id = Id,
+                DocumentTemplateId = DocumentTemplateId,
+                SectionTemplateId = SectionTemplateId,
+                IsDefault = IsDefault
+            });
+        }
+
+        protected override Task Read(DocumentSectionTemplate entity)
+        {
+            Id = entity.Id;
+            DocumentTemplateId = entity.DocumentTemplateId;
+            SectionTemplateId = entity.SectionTemplateId;
+            IsDefault = entity.IsDefault;
+            return Task.CompletedTask;
+        }
+    }
+    public class SelectSectionTemplatesViewModel : SelectEntitiesViewModel<Guid, SectionTemplate, SectionTemplateViewModel>
+    {
+        protected IContextFactory ContextFactory { get; }
+        public Guid? OwnerId { get; }
+        public SelectSectionTemplatesViewModel(Guid? ownerId, IContextFactory contextFactory, IBusinessRepositoryFacade<SectionTemplate, Guid> facade, ILogger<SelectEntitiesViewModel<Guid, SectionTemplate, SectionTemplateViewModel, IBusinessRepositoryFacade<SectionTemplate, Guid>>> logger) : base(facade, logger)
+        {
+            ContextFactory = contextFactory;
+            OwnerId = ownerId;
+        }
+        protected override Func<IQueryable<SectionTemplate>, IQueryable<SectionTemplate>>? PropertiesToLoad()
+        {
+            return e => e.Include(p => p.Owner).Include(p => p.DocumentSectionTemplates).ThenInclude(p => p.DocumentTemplate);
+        }
+        protected override Task<SectionTemplateViewModel> ConstructViewModel(SectionTemplate entity)
+        {
+            return Task.FromResult(new SectionTemplateViewModel(Logger, Facade, entity));
+        }
+        protected override async Task<Expression<Func<SectionTemplate, bool>>?> FilterCondition()
+        {
+            if(await ContextFactory.IsInRole("Admin"))
+            {
+                return null; // Admins see all section templates
+            }
+            var userId = await Facade.GetCurrentUserId(fetchTrueUserId: true);
+            return e => e.OwnerId == null || e.OwnerId == userId;
+        }
+    }
     public class AddDocumentTemplateViewModel : AddEntityViewModel<Guid, DocumentTemplate>, IDocumentTemplate
     {
         public ObservableCollection<DocumentType> DocumentTypes { get; } = new ObservableCollection<DocumentType>();

@@ -10,6 +10,7 @@ namespace Programming.Team.Core
     {
         ResumePart SectionId { get; set; }
         string Template { get; set; }
+        Guid? OwnerId { get; set; }
     }
     public class SectionTemplate : Entity<Guid>, ISectionTemplate
     {
@@ -17,5 +18,7 @@ namespace Programming.Team.Core
         public string Name { get; set; } = null!;
         public string Template { get; set; } = null!;
         public virtual ICollection<DocumentSectionTemplate> DocumentSectionTemplates { get; set; } = new List<DocumentSectionTemplate>();
+        public Guid? OwnerId { get; set; }
+        public virtual User? Owner { get; set; }
     }
 }

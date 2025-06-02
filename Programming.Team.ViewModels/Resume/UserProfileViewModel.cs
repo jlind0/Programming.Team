@@ -29,7 +29,7 @@ namespace Programming.Team.ViewModels.Resume
                     var user = await Facade.GetByID(userId.Value, token: token);
                     if (user != null)
                     {
-                        ViewModel = new UserProfileViewModel(Logger, new ResumeConfigurationViewModel(SectionFacade, DocumentTemplateFacade), Facade, user);
+                        ViewModel = new UserProfileViewModel(Logger, null, Facade, user);
                         await ViewModel.Load.Execute().GetAwaiter();
                     }
                 }
@@ -91,13 +91,13 @@ namespace Programming.Team.ViewModels.Resume
     }
     public class UserProfileViewModel : EntityViewModel<Guid, User>, IUser
     {
-        public ResumeConfigurationViewModel DefaultResumeConfigurationViewModel { get; }
-        public UserProfileViewModel(ILogger logger, ResumeConfigurationViewModel config, IBusinessRepositoryFacade<User, Guid> facade, Guid id) : base(logger, facade, id)
+        public ResumeConfigurationViewModel? DefaultResumeConfigurationViewModel { get; }
+        public UserProfileViewModel(ILogger logger, ResumeConfigurationViewModel? config, IBusinessRepositoryFacade<User, Guid> facade, Guid id) : base(logger, facade, id)
         {
             DefaultResumeConfigurationViewModel = config;
         }
 
-        public UserProfileViewModel(ILogger logger, ResumeConfigurationViewModel config, IBusinessRepositoryFacade<User, Guid> facade, User entity) : base(logger, facade, entity)
+        public UserProfileViewModel(ILogger logger, ResumeConfigurationViewModel? config, IBusinessRepositoryFacade<User, Guid> facade, User entity) : base(logger, facade, entity)
         {
             DefaultResumeConfigurationViewModel = config;
         }
@@ -224,7 +224,7 @@ namespace Programming.Team.ViewModels.Resume
                 State = State,
                 Country = Country,
                 ResumeGenerationsLeft = ResumeGenerationsLeft,
-                DefaultResumeConfiguration = DefaultResumeConfigurationViewModel.GetSerializedConfiguration()
+                DefaultResumeConfiguration = DefaultResumeConfigurationViewModel?.GetSerializedConfiguration() ?? DefaultResumeConfiguration
             });
         }
 
@@ -246,7 +246,8 @@ namespace Programming.Team.ViewModels.Resume
             Country = entity.Country;
             ResumeGenerationsLeft = entity.ResumeGenerationsLeft;
             DefaultResumeConfiguration = entity.DefaultResumeConfiguration;
-            await DefaultResumeConfigurationViewModel.Load(entity.DefaultResumeConfiguration);
+            if(DefaultResumeConfigurationViewModel != null)
+                await DefaultResumeConfigurationViewModel.Load(entity.DefaultResumeConfiguration);
         }
     }
 }

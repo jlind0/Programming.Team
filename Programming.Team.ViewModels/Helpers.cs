@@ -188,11 +188,30 @@ namespace Programming.Team.ViewModels
         {
             return null;
         }
+        protected virtual Task<Expression<Func<TEntity, bool>>?> FilterCondition()
+        {
+            return Task.FromResult<Expression<Func<TEntity, bool>>?>(null);
+        }
         protected virtual async Task<ViewModelResult<TKey, TEntity, TViewModel>?> DoFetch(DataGridRequest<TKey, TEntity> request, CancellationToken token = default)
         {
             try
             {
-                var resp = await Facade.Get(page: request.Pager, filter: request.Filter, orderBy: request.OrderBy, properites: PropertiesToLoad(), token: token);
+                var filter = await FilterCondition();
+                if (filter != null)
+                {
+                    if (request.Filter == null)
+                    {
+                        request.Filter = filter;
+                    }
+                    else
+                    {
+                        request.Filter = (filter).CombineWithAnd(request.Filter);
+                    }
+                }
+                else
+                    filter = request.Filter;
+                
+                var resp = await Facade.Get(page: request.Pager, filter: filter, orderBy: request.OrderBy, properites: PropertiesToLoad(), token: token);
                 if (resp == null)
                     return null;
                 ViewModelResult<TKey, TEntity, TViewModel> vmr = new ViewModelResult<TKey, TEntity, TViewModel>();
@@ -262,7 +281,7 @@ namespace Programming.Team.ViewModels
             }
         }
         protected abstract Task<TViewModel> ConstructViewModel(TEntity entity);
-        protected virtual Task WireupViewModel(TViewModel viewModel)
+        protected virtual async Task WireupViewModel(TViewModel viewModel)
         {
             viewModel.WhenPropertyChanged(p => p.IsSelected).Subscribe(p =>
             {
@@ -271,7 +290,7 @@ namespace Programming.Team.ViewModels
                 else
                     Selected.Remove(p.Sender);
             }).DisposeWith(disposable);
-            return Task.CompletedTask;
+            await viewModel.Load.Execute().GetAwaiter();
         }
         protected readonly object synch = new object();
         protected virtual void Insert(TViewModel vm)
