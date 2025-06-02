@@ -17,7 +17,7 @@
     </MudDataGrid>
     
     <h4>Users</h4>
-    <MudDataGrid T="UserViewModel" SortMode="SortMode.Multiple" Filterable="true" FilterMode="DataGridFilterMode.ColumnFilterMenu" ServerData="ViewModel.Fetch.BindServerDataCommand<Guid, User, UserViewModel>()">
+    <MudDataGrid T="UserViewModel" SortMode="SortMode.Multiple" RowsPerPage="10" Filterable="true" FilterMode="DataGridFilterMode.ColumnFilterMenu" ServerData="ViewModel.Fetch.BindServerDataCommand<Guid, User, UserViewModel>()">
         <Columns>
             <TemplateColumn Title="Selected">
                 <CellTemplate>
@@ -28,6 +28,9 @@
             <PropertyColumn Title="Last Name" Property="x => x.LastName" />
             <PropertyColumn Title="First Name" Property="x => x.FirstName" />
         </Columns>
+        <PagerContent>
+            <MudDataGridPager T="UserViewModel" />
+        </PagerContent>
     </MudDataGrid>
 }
 @code {
