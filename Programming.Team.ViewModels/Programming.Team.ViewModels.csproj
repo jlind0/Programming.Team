@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.11" />
-    <PackageReference Include="ReactiveUI" Version="20.1.63" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.16" />
+    <PackageReference Include="ReactiveUI" Version="20.3.1" />
   </ItemGroup>
 
   <ItemGroup>
