@@ -15,7 +15,7 @@ public class PackageBusinessFacadeTests
         // Arrange
         var logger = new Mock<ILogger<Package>>();
         var repository = new Mock<IRepository<Package, Guid>>();
-        var purchaseManager = new Mock<IPurchaseManager>();
+        var purchaseManager = new Mock<IPurchaseManager<Package, Purchase>>();
         var packageBusinessFacade = new PackageBusinessFacade(purchaseManager.Object, repository.Object, logger.Object);
         var token = new CancellationToken();
         var package = new Package();
@@ -30,7 +30,7 @@ public class PackageBusinessFacadeTests
     {
         var logger = new Mock<ILogger<Package>>();
         var repository = new Mock<IRepository<Package, Guid>>();
-        var purchaseManager = new Mock<IPurchaseManager>();
+        var purchaseManager = new Mock<IPurchaseManager<Package, Purchase>>();
         var packageBusinessFacade = new PackageBusinessFacade(purchaseManager.Object, repository.Object, logger.Object);
         var token = new CancellationToken();
         var package = new Package();

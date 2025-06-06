@@ -5,6 +5,7 @@ using Programming.Team.Data.Core;
 using Programming.Team.PurchaseManager.Core;
 using Stripe;
 using Stripe.Checkout;
+using Stripe.Events;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,7 +16,9 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Programming.Team.PurchaseManager
 {
-    public class PurchaseManager : IPurchaseManager
+    public abstract class PurchaseManager<TPurchaseable, TPurchase> : IPurchaseManager<TPurchaseable, TPurchase>
+        where TPurchaseable: Entity<Guid>, IStripePurchaseable, new()
+        where TPurchase: Entity<Guid>, IStripePurchase, new()
     {
         protected ProductService ProductService { get; }
         protected PriceService PriceService { get; }
@@ -24,15 +27,15 @@ namespace Programming.Team.PurchaseManager
         protected AccountService AccountService { get; }
         protected PayoutService PayoutService { get; }
         protected string PaymentSuccessUri { get; }
-        protected IRepository<Package, Guid> PackageRepository { get; }
-        protected IRepository<Purchase, Guid> PurchaseRepository { get; }
+        protected IRepository<TPurchaseable, Guid> PurchaseableRepository { get; }
+        protected IRepository<TPurchase, Guid> PurchaseRepository { get; }
         protected IUserRepository UserRepository { get; set; }
-        public PurchaseManager(IConfiguration config, IUserRepository userRepository, IRepository<Package, Guid> packageRepository, IRepository<Purchase, Guid> purchaseRepository,
+        public PurchaseManager(IConfiguration config, IUserRepository userRepository, IRepository<TPurchaseable, Guid> packageRepository, IRepository<TPurchase, Guid> purchaseRepository,
             ProductService productService, PriceService priceService, PaymentLinkService paymentLinkService, SessionService sessionService, AccountService accountService, PayoutService payoutService)
         {
             UserRepository = userRepository;
             PurchaseRepository = purchaseRepository;
-            PackageRepository = packageRepository;
+            PurchaseableRepository = packageRepository;
             ProductService = productService;
             PriceService = priceService;
             PaymentLinkService = paymentLinkService;
@@ -42,11 +45,11 @@ namespace Programming.Team.PurchaseManager
             PaymentSuccessUri = config["Stripe:SuccessUrl"] ?? throw new InvalidDataException();
 
         }
-        protected async Task CreateProduct(Package entity, CancellationToken token = default)
+        protected async Task CreateProduct(IStripePurchaseable entity, CancellationToken token = default)
         {
             var prod = new ProductCreateOptions()
             {
-                Name = $"{entity.ResumeGenerations} Resume Generations"
+                Name = entity.StripeName
             };
             var product = await ProductService.CreateAsync(prod, cancellationToken: token);
             if (product != null)
@@ -55,7 +58,7 @@ namespace Programming.Team.PurchaseManager
                 await CreatePrice(entity, token);
             }
         }
-        protected async Task CreatePrice(Package entity, CancellationToken token = default)
+        protected async Task CreatePrice(IStripePurchaseable entity, CancellationToken token = default)
         {
             if (!string.IsNullOrWhiteSpace(entity.StripeProductId))
             {
@@ -84,50 +87,56 @@ namespace Programming.Team.PurchaseManager
 
             }
         }
-        public async Task ConfigurePackage(Package package, CancellationToken token = default)
+
+        public virtual async Task ConfigurePackage(TPurchaseable purchaseable, CancellationToken token = default)
         {
-            var oldPackage = await PackageRepository.GetByID(package.Id, token: token);
-            if (package.StripeProductId == null)
+            var oldPackage = await PurchaseableRepository.GetByID(purchaseable.Id, token: token);
+            if (purchaseable.StripeProductId == null)
             {
-                await CreateProduct(package, token);
+                await CreateProduct(purchaseable, token);
             }
-            if (oldPackage != null && package.Price != oldPackage.Price)
-            { 
-                await CreatePrice(package, token);
+            if (oldPackage != null && purchaseable.Price != oldPackage.Price)
+            {
+                await CreatePrice(purchaseable, token);
             }
-            if(oldPackage != null)
-                await PackageRepository.Update(package, token: token);
+            if (oldPackage != null)
+                await PurchaseableRepository.Update(purchaseable, token: token);
             else
-                await PackageRepository.Add(package, token: token);
+                await PurchaseableRepository.Add(purchaseable, token: token);
         }
-        public async Task<Purchase> StartPurchase(Guid packageId, CancellationToken token = default)
+
+        public async virtual Task FinishPurchase(TPurchase purchase, CancellationToken token = default)
         {
-            var package = await PackageRepository.GetByID(packageId, token: token);
-            if (package == null)
-                throw new InvalidDataException();
-            Purchase purchase = new Purchase()
+            purchase.IsPaid = true;
+            await HandleFinalPurchase(purchase, token);
+            await PurchaseRepository.Update(purchase, token: token);
+        }
+        protected abstract Task HandleFinalPurchase(TPurchase purchase, CancellationToken token = default);
+        public virtual async Task<TPurchase> StartPurchase(TPurchaseable purchaseable, CancellationToken token = default)
+        {
+            TPurchase purchase = new TPurchase()
             {
                 Id = Guid.NewGuid(),
-                PackageId = packageId,
-                PricePaid = package.Price,
-                ResumeGenerations = package.ResumeGenerations,
-                UserId = await PackageRepository.GetCurrentUserId(fetchTrueUserId: true, token: token) ?? throw new InvalidDataException()
+                PricePaid = purchaseable.Price ?? throw new InvalidDataException(),
+                UserId = await PurchaseableRepository.GetCurrentUserId(fetchTrueUserId: true, token: token) ?? throw new InvalidDataException()
             };
+            await HydratePurchase(purchase, purchaseable, token);
             var opts = new Stripe.Checkout.SessionCreateOptions()
             {
-                Mode =  "payment",
+                Mode = "payment",
                 SuccessUrl = PaymentSuccessUri,
                 LineItems = new List<SessionLineItemOptions>()
                 {
                     new SessionLineItemOptions()
                     {
-                        Price = package.StripePriceId,
+                        Price = purchaseable.StripePriceId,
                         Quantity = 1
                     }
                 },
                 Metadata = new Dictionary<string, string>()
                 {
-                    {nameof(Purchase.Id), purchase.Id.ToString() }
+                    {"Id", purchase.Id.ToString() },
+                    {"PurchaseType", purchaseable.GetType().Name }
                 }
             };
             var session = await SessionService.CreateAsync(opts, cancellationToken: token);
@@ -135,15 +144,46 @@ namespace Programming.Team.PurchaseManager
             await PurchaseRepository.Add(purchase, token: token);
             return purchase;
         }
-        public async Task FinishPurchase(Guid purchaseId, CancellationToken token = default)
+
+        protected abstract Task HydratePurchase(TPurchase purchase, TPurchaseable purchaseable, CancellationToken token = default);
+    }
+    public class PackagePurchaseManager : PurchaseManager<Package, Purchase>
+    {
+        public PackagePurchaseManager(IConfiguration config, IUserRepository userRepository, IRepository<Package, Guid> packageRepository, IRepository<Purchase, Guid> purchaseRepository, ProductService productService, PriceService priceService, PaymentLinkService paymentLinkService, SessionService sessionService, AccountService accountService, PayoutService payoutService) : base(config, userRepository, packageRepository, purchaseRepository, productService, priceService, paymentLinkService, sessionService, accountService, payoutService)
         {
-            var purchase = await PurchaseRepository.GetByID(purchaseId, properites: q => q.Include(e => e.User), token: token);
-            if (purchase == null)
+        }
+
+        protected override async Task HandleFinalPurchase(Purchase purchase, CancellationToken token = default)
+        {
+            var package = await PurchaseableRepository.GetByID(purchase.PackageId, token: token);
+            var user = await UserRepository.GetByID(purchase.UserId, token: token);
+            if (user == null || package == null)
                 throw new InvalidDataException();
-            purchase.IsPaid = true;
-            purchase.User.ResumeGenerationsLeft += purchase.ResumeGenerations;
-            await UserRepository.Update(purchase.User, token: token);
-            await PurchaseRepository.Update(purchase, token: token);
+            user.ResumeGenerationsLeft += package.ResumeGenerations;
+            await UserRepository.Update(user, token: token);
+        }
+
+        protected override Task HydratePurchase(Purchase purchase, Package purchaseable, CancellationToken token = default)
+        {
+            purchase.PackageId = purchaseable.Id;
+            return Task.CompletedTask;
+        }
+    }
+    public class DocumentTemplatePurchaseManager : PurchaseManager<DocumentTemplate, DocumentTemplatePurchase>
+    {
+        public DocumentTemplatePurchaseManager(IConfiguration config, IUserRepository userRepository, IRepository<DocumentTemplate, Guid> packageRepository, IRepository<DocumentTemplatePurchase, Guid> purchaseRepository, ProductService productService, PriceService priceService, PaymentLinkService paymentLinkService, SessionService sessionService, AccountService accountService, PayoutService payoutService) : base(config, userRepository, packageRepository, purchaseRepository, productService, priceService, paymentLinkService, sessionService, accountService, payoutService)
+        {
+        }
+
+        protected override Task HandleFinalPurchase(DocumentTemplatePurchase purchase, CancellationToken token = default)
+        {
+            return Task.CompletedTask;
+        }
+
+        protected override Task HydratePurchase(DocumentTemplatePurchase purchase, DocumentTemplate purchaseable, CancellationToken token = default)
+        {
+            purchase.DocumentTemplateId = purchaseable.Id;
+            return Task.CompletedTask;
         }
     }
 }

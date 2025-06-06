@@ -123,6 +123,11 @@ namespace Programming.Team.ViewModels.Admin
             set => this.RaiseAndSetIfChanged(ref price, value);
         }
         public ApprovalStatus ApprovalStatus { get; set; } = ApprovalStatus.Approved;
+        public string? StripeProductId { get; set; }
+        public string? StripePriceId { get; set; }
+        public string? StripeUrl { get; set; }
+
+        public string StripeName => throw new NotImplementedException();
 
         protected override Task Clear()
         {
@@ -232,7 +237,10 @@ namespace Programming.Team.ViewModels.Admin
                 DocumentTypeId = DocumentTypeId,
                 OwnerId = OwnerId,
                 Price = Price,
-                ApprovalStatus = isAdmin ? ApprovalStatus : ApprovalStatus.Pending
+                ApprovalStatus = isAdmin ? ApprovalStatus : ApprovalStatus.Pending,
+                StripeProductId = StripeProductId,
+                StripePriceId = StripePriceId,
+                StripeUrl = StripeUrl
             };
         }
         protected override async Task<DocumentTemplate> DoUpdate(CancellationToken token)
@@ -276,6 +284,12 @@ namespace Programming.Team.ViewModels.Admin
             return await base.DoUpdate(token);
         }
         protected ICollection<DocumentSectionTemplate> DocumentSectionTemplates { get; set; } = [];
+        public string? StripeProductId { get; set; }
+        public string? StripePriceId { get; set; }
+        public string? StripeUrl { get; set; }
+
+        public string StripeName => throw new NotImplementedException();
+
         protected override async Task Read(DocumentTemplate entity)
         {
             Id = entity.Id;
@@ -290,6 +304,9 @@ namespace Programming.Team.ViewModels.Admin
             DocumentSectionTemplates = entity.DocumentSectionTemplates;
             SelectSectionTemplates.DocumentTemplateId = Id;
             SelectSectionTemplates.OwnerId = OwnerId;
+            StripePriceId = entity.StripePriceId;   
+            StripeUrl = entity.StripeUrl;
+            StripeProductId = entity.StripeProductId;
             await SelectSectionTemplates.SetSelected(entity.DocumentSectionTemplates.Select(dst => dst.SectionTemplateId).ToArray());
         }
     }

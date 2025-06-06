@@ -67,21 +67,21 @@ namespace Programming.Team.Business
     }
     public class PackageBusinessFacade : BusinessRepositoryFacade<Package, Guid>
     {
-        protected IPurchaseManager PurchaseManager { get; }
-        public PackageBusinessFacade(IPurchaseManager purchaseManager, IRepository<Package, Guid> repository, ILogger<Package> logger) : base(repository, logger)
+        protected IPurchaseManager<Package, Purchase> PurchaseManager { get; }
+        public PackageBusinessFacade(IPurchaseManager<Package, Purchase> purchaseManager, IRepository<Package, Guid> repository, ILogger<Package> logger) : base(repository, logger)
         {
             PurchaseManager = purchaseManager;
         }
         public override async Task Add(Package entity, IUnitOfWork? work = null, CancellationToken token = default)
         {
-            await base.Add(entity, work, token);
             await PurchaseManager.ConfigurePackage(entity, token);
+            await base.Add(entity, work, token);
         }
         public override async Task<Package> Update(Package entity, IUnitOfWork? work = null, Func<IQueryable<Package>, IQueryable<Package>>? properites = null, CancellationToken token = default)
         {
-            var pack = await base.Update(entity, work, properites, token);
-            await PurchaseManager.ConfigurePackage(pack, token);
-            return pack;
+            
+            await PurchaseManager.ConfigurePackage(entity, token);
+            return await base.Update(entity, work, properites, token);
         }
     }
     public class SectionTemplateBusinessFacade : BusinessRepositoryFacade<SectionTemplate, Guid, ISectionTemplateRepository>, ISectionTemplateBusinessFacade

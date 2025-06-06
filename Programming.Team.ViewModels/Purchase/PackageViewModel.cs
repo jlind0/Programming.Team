@@ -41,13 +41,13 @@ namespace Programming.Team.ViewModels.Purchase
     }
     public class PackagesViewModel : EntitiesDefaultViewModel<Guid, Package, PackageViewModel, AddPackageViewModel>
     {
-        public PackagesViewModel(IPurchaseManager purchaseManager, NavigationManager navMan, AddPackageViewModel addViewModel, IBusinessRepositoryFacade<Package, Guid> facade, ILogger<EntitiesViewModel<Guid, Package, PackageViewModel, IBusinessRepositoryFacade<Package, Guid>>> logger) : base(addViewModel, facade, logger)
+        public PackagesViewModel(IPurchaseManager<Package, P> purchaseManager, NavigationManager navMan, AddPackageViewModel addViewModel, IBusinessRepositoryFacade<Package, Guid> facade, ILogger<EntitiesViewModel<Guid, Package, PackageViewModel, IBusinessRepositoryFacade<Package, Guid>>> logger) : base(addViewModel, facade, logger)
         {
             PurchaseManager = purchaseManager;
             NavMan = navMan;
         }
 
-        protected IPurchaseManager PurchaseManager { get; }
+        protected IPurchaseManager<Package, P> PurchaseManager { get; }
         protected NavigationManager NavMan { get; }
         protected override Task<PackageViewModel> Construct(Package entity, CancellationToken token)
         {
@@ -56,7 +56,7 @@ namespace Programming.Team.ViewModels.Purchase
     }
     public class AddPackageViewModel : AddEntityViewModel<Guid, Package>, IPackage
     {
-        private decimal price;
+        private decimal? price;
         private int resumeGenerations;
         private string? stripeProductId;
         private string? stripePriceId;
@@ -67,7 +67,7 @@ namespace Programming.Team.ViewModels.Purchase
         }
 
         // Price Property with Change Notification
-        public decimal Price
+        public decimal? Price
         {
             get => price;
             set => this.RaiseAndSetIfChanged(ref price, value);
@@ -101,6 +101,7 @@ namespace Programming.Team.ViewModels.Purchase
             set => this.RaiseAndSetIfChanged(ref stripeUrl, value);
         }
 
+        public string StripeName => throw new NotImplementedException();
 
         protected override Task Clear()
         {
@@ -120,9 +121,9 @@ namespace Programming.Team.ViewModels.Purchase
     }
     public class PackageLoaderViewModel : EntityLoaderViewModel<Guid, Package, PackageViewModel, IBusinessRepositoryFacade<Package, Guid>>
     {
-        protected IPurchaseManager PurchaseManager { get; }
+        protected IPurchaseManager<Package, P> PurchaseManager { get; }
         protected NavigationManager NavMan { get; }
-        public PackageLoaderViewModel(NavigationManager navMan, IPurchaseManager purchaseManager, IBusinessRepositoryFacade<Package, Guid> facade, ILogger<EntityLoaderViewModel<Guid, Package, PackageViewModel, IBusinessRepositoryFacade<Package, Guid>>> logger) : base(facade, logger)
+        public PackageLoaderViewModel(NavigationManager navMan, IPurchaseManager<Package, P> purchaseManager, IBusinessRepositoryFacade<Package, Guid> facade, ILogger<EntityLoaderViewModel<Guid, Package, PackageViewModel, IBusinessRepositoryFacade<Package, Guid>>> logger) : base(facade, logger)
         {
             PurchaseManager = purchaseManager;
             NavMan = navMan;
@@ -136,16 +137,16 @@ namespace Programming.Team.ViewModels.Purchase
     public class PackageViewModel : EntityViewModel<Guid, Package>, IPackage
     {
         public ReactiveCommand<Unit, Unit> Purchase { get; }
-        protected IPurchaseManager PurchaseManager { get; }
+        protected IPurchaseManager<Package, P> PurchaseManager { get; }
         protected NavigationManager NavMan { get; } 
-        public PackageViewModel(NavigationManager navMan, IPurchaseManager purchaseManager, ILogger logger, IBusinessRepositoryFacade<Package, Guid> facade, Guid id) : base(logger, facade, id)
+        public PackageViewModel(NavigationManager navMan, IPurchaseManager<Package, P> purchaseManager, ILogger logger, IBusinessRepositoryFacade<Package, Guid> facade, Guid id) : base(logger, facade, id)
         {
             PurchaseManager = purchaseManager;
             Purchase = ReactiveCommand.CreateFromTask(DoPurchase);
             NavMan = navMan;
         }
 
-        public PackageViewModel(NavigationManager navMan, IPurchaseManager purchaseManager, ILogger logger, IBusinessRepositoryFacade<Package, Guid> facade, Package entity) : base(logger, facade, entity)
+        public PackageViewModel(NavigationManager navMan, IPurchaseManager<Package, P> purchaseManager, ILogger logger, IBusinessRepositoryFacade<Package, Guid> facade, Package entity) : base(logger, facade, entity)
         {
             PurchaseManager = purchaseManager;
             Purchase = ReactiveCommand.CreateFromTask(DoPurchase);
@@ -155,7 +156,10 @@ namespace Programming.Team.ViewModels.Purchase
         {
             try
             {
-                var purchase = await PurchaseManager.StartPurchase(Id, token);
+                var package = await Facade.GetByID(Id, token: token);
+                if (package == null)
+                    throw new InvalidDataException("Package not found.");
+                var purchase = await PurchaseManager.StartPurchase(package, token);
                 NavMan.NavigateTo(purchase.StripeSessionUrl);
             }
             catch (Exception ex)
@@ -164,14 +168,14 @@ namespace Programming.Team.ViewModels.Purchase
                 await Alert.Handle(ex.Message).GetAwaiter();
             }
         }
-        private decimal price;
+        private decimal? price;
         private int resumeGenerations;
         private string? stripeProductId;
         private string? stripePriceId;
         private string? stripeUrl;
 
         // Price Property with Change Notification
-        public decimal Price
+        public decimal? Price
         {
             get => price;
             set => this.RaiseAndSetIfChanged(ref price, value);
@@ -205,6 +209,7 @@ namespace Programming.Team.ViewModels.Purchase
             set => this.RaiseAndSetIfChanged(ref stripeUrl, value);
         }
 
+        public string StripeName => throw new NotImplementedException();
 
         protected override Task<Package> Populate()
         {

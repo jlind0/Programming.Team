@@ -12,13 +12,15 @@ namespace Programming.Team.Core
         Guid SectionTemplateId { get; set; }
         bool IsDefault { get; set; }
     }
-    public interface IDocumentTemplatePurchase : IEntity<Guid>, IUserPartionedEntity
+    public interface IStripePurchase : IUserPartionedEntity
     {
-        Guid DocumentTemplateId { get; set; }
         decimal PricePaid { get; set; }
         bool IsPaid { get; set; }
         string StripeSessionUrl { get; set; }
-
+    }
+    public interface IDocumentTemplatePurchase : IEntity<Guid>, IStripePurchase
+    {
+        Guid DocumentTemplateId { get; set; }
     }
     public class DocumentSectionTemplate : Entity<Guid>, IDocumentSectionTemplate
     {

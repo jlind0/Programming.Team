@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 
 namespace Programming.Team.PurchaseManager.Core
 {
-    public interface IPurchaseManager
+    public interface IPurchaseManager<TPurchaseable, TPurchase>
+        where TPurchaseable: Entity<Guid>, IStripePurchaseable, new()
+        where TPurchase: Entity<Guid>, IStripePurchase, new()
     {
-        Task ConfigurePackage(Package package, CancellationToken token = default);
-        Task FinishPurchase(Guid purchaseId, CancellationToken token = default);
-        Task<Purchase> StartPurchase(Guid packageId, CancellationToken token = default);
+        Task ConfigurePackage(TPurchaseable purchaseable, CancellationToken token = default);
+        Task FinishPurchase(TPurchase purchase, CancellationToken token = default);
+        Task<TPurchase> StartPurchase(TPurchaseable purchaseable, CancellationToken token = default);
     }
 }

@@ -6,19 +6,11 @@ using System.Threading.Tasks;
 
 namespace Programming.Team.Core
 {
-    public interface IPurchase : IEntity<Guid>
+    public interface IPurchase : IEntity<Guid>, IStripePurchase
     {
-        Guid UserId { get; set; }
-
         Guid PackageId { get; set; }
 
-        bool IsPaid { get; set; }
-
-        decimal PricePaid { get; set; }
-
         int ResumeGenerations { get; set; }
-
-        string StripeSessionUrl { get; set; }
     }
     public class Purchase : Entity<Guid>, IPurchase
     {

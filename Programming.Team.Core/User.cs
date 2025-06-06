@@ -30,6 +30,9 @@ public interface IUser : IEntity<Guid>
     string? Country { get; set; }
     int ResumeGenerationsLeft { get; set; }
     string? DefaultResumeConfiguration { get; set; }
+    string? StripeAccountId { get; set; }
+    string? StripeStatus { get; set; }
+    DateTime? StripeUpdateDate { get; set; }
 }
 public partial class User : Entity<Guid>, IUser
 {
@@ -151,4 +154,7 @@ public partial class User : Entity<Guid>, IUser
     public virtual ICollection<DocumentTemplatePurchase> DocumentTemplatePurchaseUpdatedByUsers { get; set; } = new List<DocumentTemplatePurchase>();
     public virtual ICollection<DocumentTemplatePurchase> DocumentTemplatePurchases { get; set; } = new List<DocumentTemplatePurchase>();
     public virtual ICollection<SectionTemplate> SectionTemplates { get; set; } = new List<SectionTemplate>();
+    public string? StripeAccountId { get; set; }
+    public string? StripeStatus { get; set; }
+    public DateTime? StripeUpdateDate { get; set; }
 }

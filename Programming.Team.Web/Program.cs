@@ -197,6 +197,7 @@ builder.Services.AddScoped<IRepository<Skill, Guid>, SkillsRepository>();
 builder.Services.AddScoped<IRepository<DocumentType, int>, Repository<DocumentType, int>>();
 builder.Services.AddScoped<IRepository<Education, Guid>, Repository<Education, Guid>>();
 builder.Services.AddScoped<IRepository<DocumentTemplate, Guid>, DocumentTemplateRepository>();
+builder.Services.AddScoped<IRepository<DocumentTemplatePurchase, Guid>, Repository<DocumentTemplatePurchase, Guid>>();
 builder.Services.AddScoped<IDocumentTemplateRepository, DocumentTemplateRepository>();
 builder.Services.AddScoped<IRepository<DocumentSectionTemplate, Guid>, Repository<DocumentSectionTemplate, Guid>>();
 builder.Services.AddScoped<IRepository<Institution, Guid>, Repository<Institution, Guid>>();
@@ -232,7 +233,8 @@ builder.Services.AddScoped<IBusinessRepositoryFacade<Package, Guid>, PackageBusi
 builder.Services.AddScoped<IBusinessRepositoryFacade<SectionTemplate, Guid>, SectionTemplateBusinessFacade>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<DocumentSectionTemplate, Guid>, BusinessRepositoryFacade<DocumentSectionTemplate, Guid, IRepository<DocumentSectionTemplate, Guid>>>();
 builder.Services.AddScoped<ISectionTemplateBusinessFacade, SectionTemplateBusinessFacade>();
-builder.Services.AddScoped<IPurchaseManager, PurchaseManager>();
+builder.Services.AddScoped<IPurchaseManager<Package, Purchase>, PackagePurchaseManager>();
+builder.Services.AddScoped<IPurchaseManager<DocumentTemplate, DocumentTemplatePurchase>, DocumentTemplatePurchaseManager>();
 builder.Services.AddScoped<IChatGPT, ChatGPT>();
 builder.Services.AddScoped<IResumeEnricher, ResumeEnricher>();
 builder.Services.AddScoped<IDocumentTemplator, DocumentTemplator>();

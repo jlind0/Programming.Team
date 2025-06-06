@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
+using Programming.Team.Business.Core;
 using Programming.Team.Core;
 using Programming.Team.PurchaseManager.Core;
 using Stripe;
@@ -16,14 +17,17 @@ namespace Programming.Team.Web.Controllers
         protected string WebHookSecret { get; }
         protected ILogger Logger { get; }
         protected SessionService SessionService { get; }
-        protected IPurchaseManager PurchaseManager { get; }
-        public StripeWebhookController(IConfiguration configuration, IPurchaseManager purchaseManager,
+        protected IPurchaseManager<Package, Purchase> PurchaseManager { get; }
+        protected IBusinessRepositoryFacade<Purchase, Guid> PurchaseFacade { get; }
+        public StripeWebhookController(IConfiguration configuration, IPurchaseManager<Package, Purchase> purchaseManager, 
+            IBusinessRepositoryFacade<Purchase, Guid> purchaseFacade,
             ILogger<StripeWebhookController> logger, SessionService sessionService)
         {
             WebHookSecret = configuration["Stripe:WebHookKey"] ?? throw new InvalidDataException();
             Logger = logger;
             SessionService = sessionService;
             PurchaseManager = purchaseManager;
+            PurchaseFacade = purchaseFacade;
         }
         [HttpPost]
         public async Task<IActionResult> Index()
@@ -46,7 +50,12 @@ namespace Programming.Team.Web.Controllers
                     if (sessionWithLineItems.Metadata.TryGetValue(nameof(Purchase.Id), out var subscriptionId))
                     {
                         if (sessionWithLineItems.AmountTotal != null)
-                            await PurchaseManager.FinishPurchase(Guid.Parse(subscriptionId));
+                        {
+                            var purchase = await PurchaseFacade.GetByID(Guid.Parse(subscriptionId));
+                            if(purchase == null)
+                                throw new InvalidDataException();
+                            await PurchaseManager.FinishPurchase(purchase);
+                        }
                     }
                     else
                         throw new InvalidDataException();

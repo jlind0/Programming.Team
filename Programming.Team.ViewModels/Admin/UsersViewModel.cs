@@ -155,6 +155,14 @@ namespace Programming.Team.ViewModels.Admin
             get => defaultResumeConfiguration;
             set => this.RaiseAndSetIfChanged(ref defaultResumeConfiguration, value);
         }
+        private string? stripeAccountId;
+        public string? StripeAccountId
+        {
+            get => stripeAccountId;
+            set => this.RaiseAndSetIfChanged(ref stripeAccountId, value);
+        }
+        public string? StripeStatus { get; set; }
+        public DateTime? StripeUpdateDate { get; set; }
 
         protected override Task<User> Populate()
         {
@@ -175,6 +183,9 @@ namespace Programming.Team.ViewModels.Admin
             user.Country = Country;
             user.ResumeGenerationsLeft = ResumeGenerationsLeft;
             user.DefaultResumeConfiguration = Configuration?.GetSerializedConfiguration() ?? DefaultResumeConfiguration;
+            user.StripeAccountId = StripeAccountId;
+            user.StripeStatus = StripeStatus;
+            user.StripeUpdateDate = StripeUpdateDate;
             return Task.FromResult(user);
         }
         
@@ -198,6 +209,9 @@ namespace Programming.Team.ViewModels.Admin
             DefaultResumeConfiguration = entity.DefaultResumeConfiguration;
             if(Configuration != null)
                 await Configuration.Load(DefaultResumeConfiguration);
+            StripeAccountId = entity.StripeAccountId;
+            StripeStatus = entity.StripeStatus;
+            StripeUpdateDate = entity.StripeUpdateDate;
         }
     }
 }
