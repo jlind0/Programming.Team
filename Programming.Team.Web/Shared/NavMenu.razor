@@ -28,7 +28,11 @@
                 Icon="@Icons.Material.Filled.SnippetFolder">
                     Section Templates
                 </MudNavLink>
-                
+                @if (isTemplator)
+                {
+                    <MudNavLink Href="templator" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AccountCircle">Stripe Profile</MudNavLink>
+                }
+
             }
             @if (isAdmin)
             {

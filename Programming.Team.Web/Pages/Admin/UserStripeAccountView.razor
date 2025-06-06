@@ -1,0 +1,24 @@
+﻿@inherits ReactiveComponentBase<UserStripeAccountViewModel>
+@if(ViewModel != null)
+{
+    <AlertView Alert="ViewModel.Alert"/>
+    <MudStack>
+        <MudStack Row="true">
+            <MudToggleIconButton @bind-Toggled="ViewModel.SupplyStripeConnect"
+                     Icon="@Icons.Material.Filled.AlarmOff"
+                     Color="@Color.Error"
+                     ToggledIcon="@Icons.Material.Filled.AlarmOn"
+                     ToggledColor="@Color.Success"/>
+            <MudTextField @bind-Value="ViewModel.StripeAccountId" 
+                Label="Stripe Account Id" Disabled="!ViewModel.SupplyStripeConnect"/>
+        </MudStack>
+        <p>
+            Status: @ViewModel.StripeStatus LastUpdated: @ViewModel.StripeUpdateDate?.ToString("yyyy-MM-dd HH:mm")
+        </p>
+        <MudButton Color="Color.Primary" OnClick="ViewModel.CreateAccount.BindCommand<MouseEventArgs>()">Update Account</MudButton>
+    </MudStack>
+}
+
+@code {
+
+}

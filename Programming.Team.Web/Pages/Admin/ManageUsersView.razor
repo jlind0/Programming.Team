@@ -17,6 +17,9 @@
             <PropertyColumn Property="x => x.City" Title="City" />
             <PropertyColumn Property="x => x.State" Title="State" />
             <PropertyColumn Property="x => x.Country" Title="Country" />
+            <PropertyColumn Property="x => x.StripeAccountId" Title="Stripe Acct Id"/>
+            <PropertyColumn Property="x => x.StripeStatus" Title="Stripe Status" />
+            <PropertyColumn Property="x => x.StripeUpdateDate" Title="Stripe Updated Date" />
             <TemplateColumn Title="LinkedIn" Filterable="false">
                <CellTemplate>
                     @if (!string.IsNullOrEmpty(context.Item.LinkedInUrl))

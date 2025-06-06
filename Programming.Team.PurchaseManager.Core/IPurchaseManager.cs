@@ -15,4 +15,11 @@ namespace Programming.Team.PurchaseManager.Core
         Task FinishPurchase(TPurchase purchase, CancellationToken token = default);
         Task<TPurchase> StartPurchase(TPurchaseable purchaseable, CancellationToken token = default);
     }
+
+    public interface IAccountManager
+    {
+        Task<string?> CreateAccountId(User user, string? stripeAccountId = null, CancellationToken token = default);
+        Task FinalizeAccount(User user, CancellationToken token = default);
+        Task<string?> GetAccountId(User user, CancellationToken token = default);
+    }
 }

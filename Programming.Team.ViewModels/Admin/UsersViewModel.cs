@@ -1,11 +1,16 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Programming.Team.Business.Core;
 using Programming.Team.Core;
 using Programming.Team.Data.Core;
+using Programming.Team.PurchaseManager.Core;
 using Programming.Team.ViewModels.Resume;
 using ReactiveUI;
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
+using System.Linq.Expressions;
+using System.Reactive;
 using System.Reactive.Linq;
 
 namespace Programming.Team.ViewModels.Admin
@@ -24,34 +29,109 @@ namespace Programming.Team.ViewModels.Admin
 
         protected override Task<UserViewModel> ConstructViewModel(User entity)
         {
-            return Task.FromResult(new UserViewModel(Logger, Facade, entity, null));
+            return Task.FromResult(new UserViewModel(Logger, Facade, entity, null, null));
         }
     }
-    public class UserLoaderViewModel : EntityLoaderViewModel<Guid, User, UserViewModel, IUserBusinessFacade>
+    public class TrueUserLoaderViewModel : EntityLoaderViewModel<Guid, User, UserViewModel, IUserBusinessFacade>
     {
         protected ResumeConfigurationViewModel Config { get; }
-        public UserLoaderViewModel(IUserBusinessFacade facade, ResumeConfigurationViewModel config, ILogger<EntityLoaderViewModel<Guid, User, UserViewModel, IUserBusinessFacade>> logger) : base(facade, logger)
+        protected IServiceProvider Services { get; }
+        public TrueUserLoaderViewModel(IServiceProvider services, IUserBusinessFacade facade, ResumeConfigurationViewModel config, ILogger<EntityLoaderViewModel<Guid, User, UserViewModel, IUserBusinessFacade>> logger) : base(facade, logger)
         {
             Config = config;
+            Services = services;
         }
-
+        protected override async Task DoLoad(Guid key, CancellationToken token)
+        {
+            key = (await Facade.GetCurrentUserId(fetchTrueUserId: true, token: token)) ?? throw new InvalidDataException();
+            await base.DoLoad(key, token);
+        }
         protected override UserViewModel Construct(User entity)
         {
-            return new UserViewModel(Logger, Facade, entity, Config);
+            return new UserViewModel(Logger, Facade, entity, Config, Services.GetRequiredService<UserStripeAccountViewModel>());
         }
     }
-    
+    public class UserStripeAccountViewModel : ReactiveObject, IStripePayable
+    {
+        public Interaction<string, bool> Alert { get; } = new Interaction<string, bool>();
+        protected IAccountManager AccountManager { get; }
+        protected IUserBusinessFacade UserFacade { get; }
+        protected ILogger Logger { get; }
+        public ReactiveCommand<Unit, Unit> CreateAccount { get; }
+        protected NavigationManager NavMan { get; }
+        public UserStripeAccountViewModel(NavigationManager navMan, IAccountManager accountManager, IUserBusinessFacade facade, ILogger<UserStripeAccountViewModel> logger)
+        {
+            AccountManager = accountManager;
+            UserFacade = facade;
+            NavMan = navMan;
+            Logger = logger;
+            CreateAccount = ReactiveCommand.CreateFromTask(DoCreateAccount);
+        }
+        protected User? User { get; set; }
+        protected async Task DoCreateAccount(CancellationToken token)
+        {
+            try
+            {
+                if (User == null || StripeStatus == "approved")
+                    return;
+                var url = await AccountManager.CreateAccountId(User, StripeAccountId, token);
+                if (url == null) return;
+                NavMan.NavigateTo(url);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
+                await Alert.Handle(ex.Message).GetAwaiter();
+            }
+        }
+        public Task Populate(User user, CancellationToken token = default)
+        {
+            User = user;
+            SupplyStripeConnect = SupplyStripeConnect && !string.IsNullOrEmpty(user.StripeAccountId);
+            StripeAccountId = user.StripeAccountId;
+            StripeStatus = user.StripeStatus;
+            StripeUpdateDate = user.StripeUpdateDate;
+            return Task.CompletedTask;
+        }
+        private bool supplyStripeConnect;
+        public bool SupplyStripeConnect
+        {
+            get => supplyStripeConnect;
+            set => this.RaiseAndSetIfChanged(ref supplyStripeConnect, value);
+        }
+        private string? stripeAccountId;
+        public string? StripeAccountId
+        {
+            get => stripeAccountId;
+            set => this.RaiseAndSetIfChanged(ref stripeAccountId, value);
+        }
+        private string? stripeStatus;
+        public string? StripeStatus
+        {
+            get => stripeStatus;
+            set => this.RaiseAndSetIfChanged(ref stripeStatus, value);
+        }
+        private DateTime? stripeUpdateDate;
+        public DateTime? StripeUpdateDate
+        {
+            get => stripeUpdateDate;
+            set => this.RaiseAndSetIfChanged(ref stripeUpdateDate, value);
+        }
+    }
     public class UserViewModel : EntityViewModel<Guid, User, IUserBusinessFacade>, IUser
     {
         public ResumeConfigurationViewModel? Configuration { get; }
-        public UserViewModel(ILogger logger, IUserBusinessFacade facade, Guid id, ResumeConfigurationViewModel? config) : base(logger, facade, id)
+        public UserStripeAccountViewModel? StripeVM { get; }
+        public UserViewModel(ILogger logger, IUserBusinessFacade facade, Guid id, ResumeConfigurationViewModel? config, UserStripeAccountViewModel? stripeVM) : base(logger, facade, id)
         {
             Configuration = config;
+            StripeVM = stripeVM;
         }
 
-        public UserViewModel(ILogger logger, IUserBusinessFacade facade, User entity, ResumeConfigurationViewModel? config) : base(logger, facade, entity)
+        public UserViewModel(ILogger logger, IUserBusinessFacade facade, User entity, ResumeConfigurationViewModel? config, UserStripeAccountViewModel? stripeVM) : base(logger, facade, entity)
         {
             Configuration = config;
+            StripeVM = stripeVM;    
         }
 
         private string objectId = null!;
@@ -155,14 +235,33 @@ namespace Programming.Team.ViewModels.Admin
             get => defaultResumeConfiguration;
             set => this.RaiseAndSetIfChanged(ref defaultResumeConfiguration, value);
         }
-        private string? stripeAccountId;
         public string? StripeAccountId
         {
-            get => stripeAccountId;
-            set => this.RaiseAndSetIfChanged(ref stripeAccountId, value);
+            get => StripeVM?.StripeAccountId;
+            set
+            {
+                if(StripeVM != null)
+                    StripeVM.StripeAccountId = value;
+            }
         }
-        public string? StripeStatus { get; set; }
-        public DateTime? StripeUpdateDate { get; set; }
+        public string? StripeStatus
+        {
+            get => StripeVM?.StripeStatus;
+            set
+            {
+                if (StripeVM != null)
+                    StripeVM.StripeStatus = value;
+            }
+        }
+        public DateTime? StripeUpdateDate
+        {
+            get => StripeVM?.StripeUpdateDate;
+            set
+            {
+                if (StripeVM != null)
+                    StripeVM.StripeUpdateDate = value;
+            }
+        }
 
         protected override Task<User> Populate()
         {
@@ -209,9 +308,8 @@ namespace Programming.Team.ViewModels.Admin
             DefaultResumeConfiguration = entity.DefaultResumeConfiguration;
             if(Configuration != null)
                 await Configuration.Load(DefaultResumeConfiguration);
-            StripeAccountId = entity.StripeAccountId;
-            StripeStatus = entity.StripeStatus;
-            StripeUpdateDate = entity.StripeUpdateDate;
+            if(StripeVM != null)
+                await StripeVM.Populate(entity);
         }
     }
 }

@@ -1,0 +1,26 @@
+﻿@inherits ReactiveComponentBase<UserViewModel>
+
+@if (ViewModel != null)
+{
+    <AlertView Alert="ViewModel.Alert" />
+    <MudStack>
+        <MudStack Row="true">
+            <MudTextField @bind-Value="ViewModel.FirstName" Label="First Name" Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="ViewModel.LastName" Label="Last Name" Variant="Variant.Outlined" />
+        </MudStack>
+        <MudStack Row="true">
+            <MudTextField @bind-Value="ViewModel.EmailAddress" Label="Email" Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="ViewModel.PhoneNumber" Label="Phone" Variant="Variant.Outlined" />
+        </MudStack>
+        <UserStripeAccountView ViewModel="ViewModel.StripeVM"/>
+        <MudStack Row="true">
+            <MudButton OnClick="ViewModel.Update.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
+                Color="Color.Primary">Update</MudButton>
+        </MudStack>
+    </MudStack>
+
+}
+
+@code {
+
+}

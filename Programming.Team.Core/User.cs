@@ -3,7 +3,13 @@ using System.Collections.Generic;
 
 namespace Programming.Team.Core;
 
-public interface IUser : IEntity<Guid>
+public interface IStripePayable
+{
+    string? StripeAccountId { get; set; }
+    string? StripeStatus { get; set; }
+    DateTime? StripeUpdateDate { get; set; }
+}
+public interface IUser : IEntity<Guid>, IStripePayable
 {
     string ObjectId { get; set; }
     string? FirstName { get; set; }
@@ -30,10 +36,9 @@ public interface IUser : IEntity<Guid>
     string? Country { get; set; }
     int ResumeGenerationsLeft { get; set; }
     string? DefaultResumeConfiguration { get; set; }
-    string? StripeAccountId { get; set; }
-    string? StripeStatus { get; set; }
-    DateTime? StripeUpdateDate { get; set; }
+    
 }
+
 public partial class User : Entity<Guid>, IUser
 {
     public string ObjectId { get; set; } = null!;

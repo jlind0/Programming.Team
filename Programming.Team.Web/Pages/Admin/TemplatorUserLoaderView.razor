@@ -1,0 +1,15 @@
+﻿@page "/templator/"
+@inherits ReactiveInjectableComponentBase<ViewModels.Admin.TrueUserLoaderViewModel>
+@attribute [Authorize(Roles = "Templator")]
+@if(ViewModel != null)
+{
+    <TemplatorUserProfileView ViewModel="ViewModel.ViewModel"/>
+}
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (ViewModel != null && firstRender)
+            await ViewModel.Load.Execute(Guid.Empty).GetAwaiter();
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

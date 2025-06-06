@@ -178,6 +178,7 @@ builder.Services.AddTransient<PaymentLinkService>();
 builder.Services.AddTransient<SessionService>();
 builder.Services.AddTransient<AccountService>();
 builder.Services.AddTransient<PayoutService>();
+builder.Services.AddTransient<AccountLinkService>();
 builder.Services.AddScoped(provider =>
     new BlobServiceClient(builder.Configuration.GetConnectionString("ResumesBlob")));
 var connectionString = builder.Configuration.GetConnectionString("Resumes");
@@ -235,6 +236,7 @@ builder.Services.AddScoped<IBusinessRepositoryFacade<DocumentSectionTemplate, Gu
 builder.Services.AddScoped<ISectionTemplateBusinessFacade, SectionTemplateBusinessFacade>();
 builder.Services.AddScoped<IPurchaseManager<Package, Purchase>, PackagePurchaseManager>();
 builder.Services.AddScoped<IPurchaseManager<DocumentTemplate, DocumentTemplatePurchase>, DocumentTemplatePurchaseManager>();
+builder.Services.AddScoped<IAccountManager, AccountManager>();
 builder.Services.AddScoped<IChatGPT, ChatGPT>();
 builder.Services.AddScoped<IResumeEnricher, ResumeEnricher>();
 builder.Services.AddScoped<IDocumentTemplator, DocumentTemplator>();
@@ -288,8 +290,10 @@ builder.Services.AddTransient<AddSectionTemplateViewModel>();
 builder.Services.AddTransient<SectionTemplatesViewModel>();
 builder.Services.AddTransient<IndexViewModel>();
 builder.Services.AddTransient<SuggestAddSkillsForPositionViewModel>();
-builder.Services.AddTransient<TrueUserLoaderViewModel>();
+builder.Services.AddTransient<Programming.Team.ViewModels.Admin.TrueUserLoaderViewModel>();
+builder.Services.AddTransient<Programming.Team.ViewModels.Resume.TrueUserLoaderViewModel>();
 builder.Services.AddTransient<SelectSectionTemplatesViewModel>();
+builder.Services.AddTransient<UserStripeAccountViewModel>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession(options =>
 {
