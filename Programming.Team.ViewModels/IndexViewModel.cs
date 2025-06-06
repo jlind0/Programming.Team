@@ -21,13 +21,17 @@ namespace Programming.Team.ViewModels
         public Interaction<string, bool> Alert { get; } = new Interaction<string, bool>();
         protected ILogger Logger { get; }
         protected IBusinessRepositoryFacade<Posting, Guid> PostingFacade { get; }
+        protected IBusinessRepositoryFacade<Package, Guid> PackageFacade { get; }
         public ReactiveCommand<Unit, Unit> Load { get; }
         public ObservableCollection<Posting> Postings { get; } = new ObservableCollection<Posting>();
+        public ObservableCollection<Package> Packages { get; } = new ObservableCollection<Package>();
         protected INLP NLP { get; }
         protected IMemoryCache Cache { get; }
-        public IndexViewModel(ILogger<IndexViewModel> logger, IBusinessRepositoryFacade<Posting, Guid> postingFacade, INLP nlp, IMemoryCache cache)
+        public IndexViewModel(ILogger<IndexViewModel> logger, IBusinessRepositoryFacade<Package, Guid> packageFacade,
+            IBusinessRepositoryFacade<Posting, Guid> postingFacade, INLP nlp, IMemoryCache cache)
         {
             Logger = logger;
+            PackageFacade = packageFacade;
             PostingFacade = postingFacade;
             Load = ReactiveCommand.CreateFromTask(DoLoad);
             NLP = nlp;
@@ -38,6 +42,12 @@ namespace Programming.Team.ViewModels
             try
             {
                 Postings.Clear();
+                Packages.Clear();
+                var packages = await PackageFacade.Get(orderBy: e => e.OrderByDescending(p => p.Price));
+                foreach(var p in packages.Entities)
+                {
+                    Packages.Add(p);
+                }
                 var results = await PostingFacade.Get(page: new Pager() { Page = 1, Size = 5}, 
                     orderBy: q => q.OrderByDescending(q => q.UpdateDate), 
                     filter: f => !string.IsNullOrWhiteSpace(f.RenderedLaTex),

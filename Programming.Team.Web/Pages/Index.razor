@@ -1,6 +1,9 @@
 ﻿@page "/"
+@inherits ReactiveInjectableComponentBase<IndexViewModel>
 
-<MudElement Class="d-flex flex-column flex-grow-1" Width="100%">
+@if (ViewModel != null)
+{
+    <MudElement Class="d-flex flex-column flex-grow-1" Width="100%">
    @* <MudImage ObjectFit="ObjectFit.Cover" Height="200" Src="images/logo.png" Alt="Logo of Programming.Team"
         Elevation="25" Class="rounded-lg" />*@
     <MudText Class="z-0 mt-4 display1" Typo="Typo.h4" GutterBottom="true">Programming.Team</MudText>
@@ -18,7 +21,7 @@
             <li class="ml-4">
                 Free Usage and Pricing: The first 15 tailored resume generations are free upon signup.
                 After
-                that, packages start at USD $7.99 for 25 additional resume generations.
+                that, packages start at USD $5.98 for 25 additional resume generations.
             </li>
             <li class="ml-4">
                 PDF and <i>LaTeX</i> Editing: Programming.Team uses <i>LaTeX</i> for rendering resumes into PDF
@@ -30,8 +33,14 @@
     </MudText>
 
     <MudSpacer />
-
-    <IndexCarousel />
+    <MudDataGrid T="Package" Items="ViewModel.Packages" Filterable="false" SortMode="SortMode.None">
+        <Columns>
+            <PropertyColumn Title="Resume Generations" Property="p => p.ResumeGenerations"/>
+            <PropertyColumn Title="Price (USD)" Property="p => p.Price"/>
+        </Columns>
+    </MudDataGrid>
+    <MudSpacer/>
+    <IndexCarousel ViewModel="ViewModel" />
 
     <MudSpacer />
 
@@ -45,3 +54,24 @@
         </MudAlert>
     </MudText>
 </MudElement>
+}
+
+@code{
+    protected override void OnInitialized()
+    {
+        if (ViewModel != null)
+            ViewModel.Packages.CollectionChanged += (s, e) =>
+            {
+                InvokeAsync(StateHasChanged);
+            };
+        base.OnInitialized();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (ViewModel != null && firstRender)
+        {
+            await ViewModel.Load.Execute().GetAwaiter();
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

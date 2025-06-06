@@ -1,4 +1,4 @@
-@inherits ReactiveInjectableComponentBase<IndexViewModel>
+@inherits ReactiveComponentBase<IndexViewModel>
 @attribute [AllowAnonymous]
 
 @inject NavigationManager Navigator
@@ -75,12 +75,5 @@
         base.OnInitialized();
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (ViewModel != null && firstRender)
-        {
-            await ViewModel.Load.Execute().GetAwaiter();
-        }
-        await base.OnAfterRenderAsync(firstRender);
-    }
+    
 }
