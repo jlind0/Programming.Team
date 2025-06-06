@@ -1,0 +1,41 @@
+﻿@inherits ReactiveComponentBase<SelectSectionTemplatesViewModel>
+@if (ViewModel != null && ViewModel.IsInitialzed)
+{
+    <AlertView Alert="ViewModel.Alert" />
+    <h4>Selected Section Templates</h4>
+    <MudDataGrid T="SectionTemplateViewModel" Items="ViewModel.Selected">
+        <Columns>
+            <TemplateColumn Title="Selected">
+                <CellTemplate>
+                    <MudCheckBox @bind-Value="context.Item.IsSelected" />
+                </CellTemplate>
+            </TemplateColumn>
+            <PropertyColumn Title="Part" Property="x => x.SectionId"/>
+            <PropertyColumn Title="Name" Property="x => x.Name" />
+            <TemplateColumn Title="Is Default">
+                <CellTemplate>
+                    <MudCheckBox @bind-Value="context.Item.IsDefault"/>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+    </MudDataGrid>
+
+    <h4>Section Templates</h4>
+    <MudDataGrid T="SectionTemplateViewModel" SortMode="SortMode.Multiple" RowsPerPage="10" Filterable="true" FilterMode="DataGridFilterMode.ColumnFilterMenu" ServerData="ViewModel.Fetch.BindServerDataCommand<Guid, SectionTemplate, SectionTemplateViewModel>()">
+        <Columns>
+            <TemplateColumn Title="Selected">
+                <CellTemplate>
+                    <MudCheckBox @bind-Value="context.Item.IsSelected" />
+                </CellTemplate>
+            </TemplateColumn>
+            <PropertyColumn Title="Part" Property="x => x.SectionId" />
+            <PropertyColumn Title="Name" Property="x => x.Name" />
+        </Columns>
+        <PagerContent>
+            <MudDataGridPager T="SectionTemplateViewModel" />
+        </PagerContent>
+    </MudDataGrid>
+}
+@code {
+
+}

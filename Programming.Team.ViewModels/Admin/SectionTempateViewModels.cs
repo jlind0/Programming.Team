@@ -72,6 +72,30 @@ namespace Programming.Team.ViewModels.Admin
             return Task.FromResult(new SectionTemplate { Name = Name, Template = Template, SectionId = SectionId, OwnerId = OwnerId });
         }
     }
+    public class SelectSectionTemplatesViewModel : SelectEntitiesViewModel<Guid, SectionTemplate, SectionTemplateViewModel>
+    {
+        protected IContextFactory ContextFactory { get; }
+        public SelectSectionTemplatesViewModel(IContextFactory contextFactory, IBusinessRepositoryFacade<SectionTemplate, Guid> facade, ILogger<SelectEntitiesViewModel<Guid, SectionTemplate, SectionTemplateViewModel, IBusinessRepositoryFacade<SectionTemplate, Guid>>> logger) : base(facade, logger)
+        {
+            ContextFactory = contextFactory;
+        }
+        protected override async Task<Expression<Func<SectionTemplate, bool>>?> FilterCondition()
+        {
+            return e => e.OwnerId == OwnerId;
+        }
+        protected override Func<IQueryable<SectionTemplate>, IQueryable<SectionTemplate>>? PropertiesToLoad()
+        {
+            return e => e.Include(e => e.DocumentSectionTemplates).ThenInclude(e => e.DocumentTemplate);
+        }
+        protected override Task<SectionTemplateViewModel> ConstructViewModel(SectionTemplate entity)
+        {
+            var template = new SectionTemplateViewModel(Logger, Facade, entity);
+            template.DocumentTemplateId = DocumentTemplateId;
+            return Task.FromResult(template);
+        }
+        public Guid? OwnerId { get; set; }
+        public Guid DocumentTemplateId { get; set; }
+    }
     public class SectionTemplateViewModel : EntityViewModel<Guid, SectionTemplate>, ISectionTemplate
     {
         private ResumePart sectionId;
@@ -105,6 +129,13 @@ namespace Programming.Team.ViewModels.Admin
             get => owner;
             set => this.RaiseAndSetIfChanged(ref owner, value);
         }
+        private bool isDefault;
+        public bool IsDefault
+        {
+            get => isDefault;
+            set => this.RaiseAndSetIfChanged(ref isDefault, value);
+        }
+        public Guid? DocumentTemplateId { get; set; }
         public SectionTemplateViewModel(ILogger logger, IBusinessRepositoryFacade<SectionTemplate, Guid> facade, Guid id) : base(logger, facade, id)
         {
         }
@@ -112,7 +143,10 @@ namespace Programming.Team.ViewModels.Admin
         public SectionTemplateViewModel(ILogger logger, IBusinessRepositoryFacade<SectionTemplate, Guid> facade, SectionTemplate entity) : base(logger, facade, entity)
         {
         }
-
+        protected override Func<IQueryable<SectionTemplate>, IQueryable<SectionTemplate>>? PropertiesToLoad()
+        {
+            return e => e.Include(d => d.DocumentSectionTemplates).ThenInclude(d => d.DocumentTemplate);
+        }
         protected override Task<SectionTemplate> Populate()
         {
             return Task.FromResult(new SectionTemplate()
@@ -133,6 +167,8 @@ namespace Programming.Team.ViewModels.Admin
             Id = entity.Id;
             OwnerId = entity.OwnerId;
             Owner = entity.Owner;
+            if (DocumentTemplateId != null)
+                IsDefault = entity.DocumentSectionTemplates.Where(d => d.DocumentTemplateId == DocumentTemplateId).SingleOrDefault()?.IsDefault ?? false;
             return Task.CompletedTask;
         }
     }

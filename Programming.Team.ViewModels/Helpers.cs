@@ -264,7 +264,7 @@ namespace Programming.Team.ViewModels
                 }
                     
                 var missingIds = ids.Where(i => !Selected.Any(e => e.Id.Equals(i))).ToArray();
-                var rs = await Facade.Get(filter: q => missingIds.Contains(q.Id), token: token);
+                var rs = await Facade.Get(filter: q => missingIds.Contains(q.Id), properites: PropertiesToLoad(), token: token);
                 foreach (var e in rs.Entities)
                 {
                     var vm = await ConstructViewModel(e);

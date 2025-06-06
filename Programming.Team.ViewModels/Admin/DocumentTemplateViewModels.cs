@@ -1,5 +1,6 @@
 ﻿using DynamicData.Binding;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Programming.Team.Business.Core;
 using Programming.Team.Core;
@@ -10,6 +11,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net.WebSockets;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Text;
@@ -149,6 +151,7 @@ namespace Programming.Team.ViewModels.Admin
     
     public class DocumentTemplateViewModel : EntityViewModel<Guid, DocumentTemplate>, IDocumentTemplate
     {
+        public SelectSectionTemplatesViewModel SelectSectionTemplates { get; }
         private int documentTypeId;
         public int DocumentTypeId
         {
@@ -171,14 +174,19 @@ namespace Programming.Team.ViewModels.Admin
             set => this.RaiseAndSetIfChanged(ref documentType, value);
         }
         protected IContextFactory ContextFactory { get; }
-        public DocumentTemplateViewModel(ILogger logger, IContextFactory contextFactory, IBusinessRepositoryFacade<DocumentTemplate, Guid> facade, Guid id) : base(logger, facade, id)
+        protected IBusinessRepositoryFacade<DocumentSectionTemplate, Guid> DocumentSectionTemplateFacade { get; }
+        public DocumentTemplateViewModel(ILogger logger, SelectSectionTemplatesViewModel selectSectionTemplates, IBusinessRepositoryFacade<DocumentSectionTemplate, Guid> documentSectionTemplateFacade, IContextFactory contextFactory, IBusinessRepositoryFacade<DocumentTemplate, Guid> facade, Guid id) : base(logger, facade, id)
         {
             ContextFactory = contextFactory;
+            SelectSectionTemplates = selectSectionTemplates;
+            DocumentSectionTemplateFacade = documentSectionTemplateFacade;
         }
 
-        public DocumentTemplateViewModel(ILogger logger, IContextFactory contextFactory, IBusinessRepositoryFacade<DocumentTemplate, Guid> facade, DocumentTemplate entity) : base(logger, facade, entity)
+        public DocumentTemplateViewModel(ILogger logger, SelectSectionTemplatesViewModel selectSectionTemplates, IBusinessRepositoryFacade<DocumentSectionTemplate, Guid> documentSectionTemplateFacade, IContextFactory contextFactory, IBusinessRepositoryFacade<DocumentTemplate, Guid> facade, DocumentTemplate entity) : base(logger, facade, entity)
         {
             ContextFactory = contextFactory;
+            SelectSectionTemplates = selectSectionTemplates;
+            DocumentSectionTemplateFacade = documentSectionTemplateFacade;
         }
 
         public string Template
@@ -209,7 +217,6 @@ namespace Programming.Team.ViewModels.Admin
             get => approvalStatus;
             set => this.RaiseAndSetIfChanged(ref approvalStatus, value);
         }
-
         protected override Func<IQueryable<DocumentTemplate>, IQueryable<DocumentTemplate>>? PropertiesToLoad()
         {
             return x => x.Include(e => e.DocumentType).Include(e => e.Owner).Include(e => e.DocumentSectionTemplates).ThenInclude(e => e.SectionTemplate);
@@ -228,8 +235,48 @@ namespace Programming.Team.ViewModels.Admin
                 ApprovalStatus = isAdmin ? ApprovalStatus : ApprovalStatus.Pending
             };
         }
-
-        protected override Task Read(DocumentTemplate entity)
+        protected override async Task<DocumentTemplate> DoUpdate(CancellationToken token)
+        {
+            await using (var uow = Facade.CreateUnitOfWork())
+            {
+                var defaultTemplates = SelectSectionTemplates.Selected.Where(s => s.IsDefault).Select(s => s.Id).ToList();
+                var oldDefaultTemplates = DocumentSectionTemplates.Where(s => s.IsDefault).ToList();
+                foreach(var defaultTemplate in oldDefaultTemplates.Where(odt => !defaultTemplates.Any(dt => odt.SectionTemplateId == dt)))
+                {
+                    defaultTemplate.IsDefault = false;
+                    await DocumentSectionTemplateFacade.Update(defaultTemplate, uow, token:token);
+                }
+                var oldStandardTemplates = DocumentSectionTemplates.Where(s => !s.IsDefault).ToList();
+                foreach (var defaultTemplate in oldStandardTemplates.Where(odt => defaultTemplates.Any(dt => odt.SectionTemplateId == dt)))
+                {
+                    defaultTemplate.IsDefault = true;
+                    await DocumentSectionTemplateFacade.Update(defaultTemplate, uow, token: token);
+                }
+                var selectedTemplates = SelectSectionTemplates.Selected.Select(d => d.Id).ToList();
+                var toRemove = DocumentSectionTemplates
+                    .Where(d => !selectedTemplates.Contains(d.SectionTemplateId))
+                    .ToList();
+                foreach (var orphan in toRemove)
+                {
+                    await DocumentSectionTemplateFacade.Delete(orphan.Id, uow, token);
+                }
+                var currentTemplates = DocumentSectionTemplates.Select(d => d.SectionTemplateId).ToList();
+                selectedTemplates.RemoveAll(currentTemplates.Contains);
+                foreach (var template in selectedTemplates)
+                {
+                    await DocumentSectionTemplateFacade.Add(new DocumentSectionTemplate()
+                    {
+                        DocumentTemplateId = Id,
+                        SectionTemplateId = template,
+                        IsDefault = defaultTemplates.Contains(template)
+                    }, uow, token);
+                }
+                await uow.Commit(token);
+            }
+            return await base.DoUpdate(token);
+        }
+        protected ICollection<DocumentSectionTemplate> DocumentSectionTemplates { get; set; } = [];
+        protected override async Task Read(DocumentTemplate entity)
         {
             Id = entity.Id;
             Template = entity.Template;
@@ -240,15 +287,22 @@ namespace Programming.Team.ViewModels.Admin
             Price = entity.Price;
             ApprovalStatus = entity.ApprovalStatus;
             Owner = entity.Owner;
-            return Task.CompletedTask;
+            DocumentSectionTemplates = entity.DocumentSectionTemplates;
+            SelectSectionTemplates.DocumentTemplateId = Id;
+            SelectSectionTemplates.OwnerId = OwnerId;
+            await SelectSectionTemplates.SetSelected(entity.DocumentSectionTemplates.Select(dst => dst.SectionTemplateId).ToArray());
         }
     }
     public class DocumentTemplatesViewModel : EntitiesDefaultViewModel<Guid, DocumentTemplate, DocumentTemplateViewModel, AddDocumentTemplateViewModel>
     {
         protected IContextFactory ContextFactory { get; }
-        public DocumentTemplatesViewModel(IContextFactory contextFactory, AddDocumentTemplateViewModel addViewModel, IBusinessRepositoryFacade<DocumentTemplate, Guid> facade, ILogger<EntitiesViewModel<Guid, DocumentTemplate, DocumentTemplateViewModel, IBusinessRepositoryFacade<DocumentTemplate, Guid>>> logger) : base(addViewModel, facade, logger)
+        protected IBusinessRepositoryFacade<DocumentSectionTemplate, Guid> DocumentSectionTemplateFacade { get; }
+        protected IServiceProvider Services { get; }
+        public DocumentTemplatesViewModel(IContextFactory contextFactory, IServiceProvider services, IBusinessRepositoryFacade<DocumentSectionTemplate, Guid> documentSectionTemplateFacade, AddDocumentTemplateViewModel addViewModel, IBusinessRepositoryFacade<DocumentTemplate, Guid> facade, ILogger<EntitiesViewModel<Guid, DocumentTemplate, DocumentTemplateViewModel, IBusinessRepositoryFacade<DocumentTemplate, Guid>>> logger) : base(addViewModel, facade, logger)
         {
             ContextFactory = contextFactory;
+            Services = services;
+            DocumentSectionTemplateFacade = documentSectionTemplateFacade;
         }
         protected override Func<IQueryable<DocumentTemplate>, IQueryable<DocumentTemplate>>? PropertiesToLoad()
         {
@@ -272,7 +326,8 @@ namespace Programming.Team.ViewModels.Admin
         }
         protected override Task<DocumentTemplateViewModel> Construct(DocumentTemplate entity, CancellationToken token)
         {
-            return Task.FromResult(new DocumentTemplateViewModel(Logger, ContextFactory, Facade, entity));
+            return Task.FromResult(new DocumentTemplateViewModel(Logger, 
+                Services.GetRequiredService<SelectSectionTemplatesViewModel>(), DocumentSectionTemplateFacade, ContextFactory, Facade, entity));
         }
     }
 }

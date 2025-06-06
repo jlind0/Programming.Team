@@ -28,6 +28,7 @@
             <MudText>Status: @Enum.GetName(ViewModel.ApprovalStatus)</MudText>
         }
         <MudTextField @bind-Value="ViewModel.Template" Label="Template" Lines="20" Variant="Variant.Outlined" />
+        <SelectSectionTemplatesView ViewModel="ViewModel.SelectSectionTemplates"/>
         <MudStack Row="true">
             <MudButton OnClick="ViewModel.Update.BindCommand<MouseEventArgs>()">Update</MudButton>
             <MudButton OnClick="ViewModel.Delete.BindCommand<MouseEventArgs>()">Delete</MudButton>

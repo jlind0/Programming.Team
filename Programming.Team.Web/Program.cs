@@ -198,6 +198,7 @@ builder.Services.AddScoped<IRepository<DocumentType, int>, Repository<DocumentTy
 builder.Services.AddScoped<IRepository<Education, Guid>, Repository<Education, Guid>>();
 builder.Services.AddScoped<IRepository<DocumentTemplate, Guid>, DocumentTemplateRepository>();
 builder.Services.AddScoped<IDocumentTemplateRepository, DocumentTemplateRepository>();
+builder.Services.AddScoped<IRepository<DocumentSectionTemplate, Guid>, Repository<DocumentSectionTemplate, Guid>>();
 builder.Services.AddScoped<IRepository<Institution, Guid>, Repository<Institution, Guid>>();
 builder.Services.AddScoped<IRepository<Certificate, Guid>, Repository<Certificate, Guid>>();
 builder.Services.AddScoped<IRepository<CertificateIssuer, Guid>, Repository<CertificateIssuer, Guid>>();
@@ -229,6 +230,7 @@ builder.Services.AddScoped<IBusinessRepositoryFacade<Posting, Guid>, PostingBusi
 builder.Services.AddScoped<IBusinessRepositoryFacade<Purchase, Guid>, BusinessRepositoryFacade<Purchase, Guid, IRepository<Purchase, Guid>>>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<Package, Guid>, PackageBusinessFacade>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<SectionTemplate, Guid>, SectionTemplateBusinessFacade>();
+builder.Services.AddScoped<IBusinessRepositoryFacade<DocumentSectionTemplate, Guid>, BusinessRepositoryFacade<DocumentSectionTemplate, Guid, IRepository<DocumentSectionTemplate, Guid>>>();
 builder.Services.AddScoped<ISectionTemplateBusinessFacade, SectionTemplateBusinessFacade>();
 builder.Services.AddScoped<IPurchaseManager, PurchaseManager>();
 builder.Services.AddScoped<IChatGPT, ChatGPT>();
@@ -285,6 +287,7 @@ builder.Services.AddTransient<SectionTemplatesViewModel>();
 builder.Services.AddTransient<IndexViewModel>();
 builder.Services.AddTransient<SuggestAddSkillsForPositionViewModel>();
 builder.Services.AddTransient<TrueUserLoaderViewModel>();
+builder.Services.AddTransient<SelectSectionTemplatesViewModel>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession(options =>
 {
