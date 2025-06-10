@@ -20,13 +20,13 @@
         <LoginDisplay />
     </MudAppBar>
 
-    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2" Style="z-index:3">
         <NavMenu />
     </MudDrawer>
     <MudMainContent Class="main-content" >
         @Body
     </MudMainContent>
-    <footer class="footer">
+    <footer class="footer" style="position:relative;z-index:4;">
             <div class="footer-container">
                 <div class="footer-brand">
                     <div class="logo-container">
