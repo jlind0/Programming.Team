@@ -20,36 +20,36 @@
                 </MudPaper>
             </MudItem>
         </MudGrid>
-
+        <MudSpacer/>
         <!-- Features Section -->
         <MudGrid Class="features">
-            <MudItem xs="16" md="4">
-                <MudPaper Class="feature-card" Elevation="1">
+            <MudItem xs="16" md="4" >
+                <MudPaper Class="feature-card" Elevation="1" Style="background-color:white;">
                     <div class="feature-icon"><MudIcon Icon="@Icons.Material.Filled.Scoreboard" /></div>
                     <h3>Free Usage</h3>
                     <p>First 15 tailored resume generations are free upon signup. No credit card required.</p>
                 </MudPaper>
             </MudItem>
-            <MudItem xs="16" md="4">
-                <MudPaper Class="feature-card" Elevation="1">
+            <MudItem xs="16" md="3">
+                <MudPaper Class="feature-card" Elevation="1" Style="background-color:white;">
                     <div class="feature-icon"><MudIcon Icon="@Icons.Material.Filled.PictureAsPdf" /></div>
                     <h3>PDF & LaTeX</h3>
                     <p>Edit the underlying LaTeX code and re-render new PDFs at no additional cost.</p>
                 </MudPaper>
             </MudItem>
-            <MudItem xs="16" md="4">
-                <MudPaper Class="feature-card" Elevation="1">
+            <MudItem xs="16" md="3">
+                <MudPaper Class="feature-card" Elevation="1" Style="background-color:white;">
                     <div class="feature-icon"><MudIcon Icon="@Icons.Material.Filled.Memory" /></div>
                     <h3>AI-Powered</h3>
                     <p>Our algorithms analyze job descriptions to highlight your most relevant skills.</p>
                 </MudPaper>
             </MudItem>
         </MudGrid>
-
+        <MudSpacer/>
         <!-- Pricing Section -->
         <MudContainer Class="pricing">
             <h2 class="section-title">Resume Generation Packages</h2>
-            <MudGrid Class="pricing-cards">
+            <MudGrid Class="pricing-cards" Spacing="2">
                 @foreach(var package in ViewModel.Packages)
                 {
                     string packageClass = ViewModel.Packages.FirstOrDefault() == package ? "pricing-card popular" : "pricing-card";
