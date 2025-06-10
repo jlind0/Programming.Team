@@ -8,7 +8,7 @@
 @* TODO: US-letter ratio *@
 @if (ViewModel != null)
 {
-    <MudCarousel @ref="carPostings" Class="mud-width-full" Style="height:650px;" ShowArrows="@arrows" ShowBullets="@bullets"
+    <MudCarousel @ref="carPostings" Style="height:650px;" ShowArrows="@arrows" ShowBullets="@bullets"
     EnableSwipeGesture="@enableSwipeGesture" AutoCycle="@autocycle" TData="object">
         @foreach (var posting in ViewModel.Postings)
         {
