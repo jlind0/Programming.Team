@@ -444,8 +444,6 @@ body {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
-
-    gap:5px;
     width: 100%;
     margin: 1% auto;
 }

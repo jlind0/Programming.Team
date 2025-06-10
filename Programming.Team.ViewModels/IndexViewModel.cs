@@ -32,6 +32,12 @@ namespace Programming.Team.ViewModels
         protected IMemoryCache Cache { get; }
         protected NavigationManager NavMan { get; }
         protected IPurchaseManager<Package, Core.Purchase> PurchaseManager { get; }
+        private int postingCount = 0;
+        public int PostingCount
+        {
+            get => postingCount;
+            set => this.RaiseAndSetIfChanged(ref postingCount, value);
+        }
         public IndexViewModel(ILogger<IndexViewModel> logger, IBusinessRepositoryFacade<Package, Guid> packageFacade,
             IBusinessRepositoryFacade<Posting, Guid> postingFacade, INLP nlp, IMemoryCache cache, NavigationManager navMan, IPurchaseManager<Package, Core.Purchase> purchaseManager)
         {
@@ -48,6 +54,7 @@ namespace Programming.Team.ViewModels
         {
             try
             {
+                PostingCount = await PostingFacade.Count(filter: f => !string.IsNullOrWhiteSpace(f.RenderedLaTex), token: token);
                 Postings.Clear();
                 Packages.Clear();
                 var packages = await PackageFacade.Get(orderBy: e => e.OrderByDescending(p => p.Price));

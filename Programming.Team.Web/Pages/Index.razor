@@ -4,7 +4,7 @@
 
 @if (ViewModel != null)
 {
-    <MudContainer>
+    <MudStack>
 
         <!-- Hero Section -->
         <MudGrid Class="hero">
@@ -84,33 +84,41 @@
                 <!-- Repeat for other plans... -->
             </MudGrid>
         </MudContainer>
-
+        <MudSpacer/>
         <!-- CTA Section -->
-        @*<MudGrid Class="cta">
-            <MudItem xs="12" md="6" Class="cta-content">
-                <MudPaper Elevation="0">
-                    <h2>Ready to Transform Your Resume?</h2>
-                    <p>Join thousands of professionals who landed their dream jobs with perfectly tailored resumes.</p>
-                    <MudButton Class="btn-cta" EndIcon="@Icons.Material.Filled.ArrowRight">Start Free Trial</MudButton>
+        <MudGrid Class="cta">
+            <MudItem xs="16" md="6">
+                <MudPaper Elevation="0" Class="cta-content" Style="padding: 2rem; text-align: center;color:white;">
+                    <MudText Typo="Typo.h4" GutterBottom="true">Ready to Transform Your Resume?</MudText>
+                    <MudText Typo="Typo.body1" Class="mb-4">
+                        Join other professionals who landed their dream jobs with perfectly tailored resumes.
+                    </MudText>
+                    @if (!isAuthenticated)
+                    {
+                        <MudButton Href="MicrosoftIdentity/Account/SignIn" Variant="Variant.Filled" Color="Color.Primary" EndIcon="@Icons.Material.Filled.ArrowRight" Class="btn-cta">
+                            Start Free Trial
+                        </MudButton>
+                    }
                 </MudPaper>
             </MudItem>
-            <MudItem xs="12" md="6" Class="cta-stats">
-                <MudGrid Spacing="2">
-                    <MudItem xs="4" Class="stat-item">
-                        <div class="stat-number">15,000+</div>
-                        <div class="stat-label">Resumes Generated</div>
+            <MudItem xs="16" md="5">
+                <MudGrid Class="cta-stats">
+                    <MudItem xs="16" md="3" Class="stat-item">
+                        <MudText Typo="Typo.h5" Class="stat-number">@ViewModel.PostingCount</MudText>
+                        <MudText Typo="Typo.subtitle2" Class="stat-label">Resumes Generated</MudText>
                     </MudItem>
-                    <MudItem xs="4" Class="stat-item">
-                        <div class="stat-number">92%</div>
-                        <div class="stat-label">Satisfaction Rate</div>
+                    <MudItem xs="16" md="3" Class="stat-item">
+                        <MudText Typo="Typo.h5" Class="stat-number">92%</MudText>
+                        <MudText Typo="Typo.subtitle2" Class="stat-label">Satisfaction Rate</MudText>
                     </MudItem>
-                    <MudItem xs="4" Class="stat-item">
-                        <div class="stat-number">3.5x</div>
-                        <div class="stat-label">More Interviews</div>
+                    <MudItem xs="16" md="3" Class="stat-item">
+                        <MudText Typo="Typo.h5" Class="stat-number">3.5x</MudText>
+                        <MudText Typo="Typo.subtitle2" Class="stat-label">More Interviews</MudText>
                     </MudItem>
                 </MudGrid>
             </MudItem>
-        </MudGrid>*@
+
+        </MudGrid>
         <MudSpacer />
         
         <MudText Typo="Typo.body1">
@@ -122,7 +130,7 @@
                 </MudLink>
             </MudAlert>
         </MudText>
-    </MudContainer>
+    </MudStack>
 }
 
 @code{
