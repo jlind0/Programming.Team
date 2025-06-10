@@ -50,6 +50,8 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
        options.Events.OnSignedOutCallbackRedirect = context =>
        {
            context.HttpContext.Session.Clear();
+           context.Response.Redirect("/");
+           context.HandleResponse(); // Suppress the default behavior of redirecting to the original URL
            return Task.CompletedTask;
        };
        options.Events.OnRemoteFailure = context =>
