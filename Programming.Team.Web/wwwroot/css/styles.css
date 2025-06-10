@@ -843,32 +843,3 @@ body {
     }
 }
 
-@media (max-width: 480px) {
-    .hero {
-        padding: 2rem 1.5rem;
-    }
-    
-    .hero h2 {
-        font-size: 2rem;
-    }
-    
-    .hero-buttons {
-        flex-direction: column;
-    }
-    
-    .features {
-        grid-template-columns: 1fr;
-    }
-    
-    .pricing {
-        padding: 2rem 1.5rem;
-    }
-    
-    .footer-container {
-        flex-direction: column;
-    }
-    
-    .footer-links-container {
-        grid-template-columns: 1fr 1fr;
-    }
-}
