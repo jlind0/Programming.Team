@@ -42,6 +42,10 @@ namespace Programming.Team.Web.Controllers
                                     locElement.Value = loc.Replace("blog.programming.team/", "programming.team/sitemap.xml/");
                                 else
                                     locElement.Value = loc.Replace("blog.programming.team/", "programming.team/blog/");
+                                if(!locElement.Value.EndsWith("/"))
+                                {
+                                    locElement.Value += "/";
+                                }
                             }
                         }
                         return Content(doc.ToString(), "application/xml");
