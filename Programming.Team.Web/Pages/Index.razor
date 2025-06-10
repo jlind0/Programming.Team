@@ -52,12 +52,13 @@
             <MudGrid Class="pricing-cards">
                 @foreach(var package in ViewModel.Packages)
                 {
+                    string packageClass = ViewModel.Packages.FirstOrDefault() == package ? "pricing-card popular" : "pricing-card";
                     <MudItem xs="16" md="3">
-                        <MudCard Class="pricing-card">
+                        <MudCard Class="@packageClass">
                             <MudCardHeader Class="pricing-header">
                                 <MudStack>
                                     <h3>@package.Name</h3>
-                                    <div class="price">@package.Price?.ToString("F2")</div>
+                                    <div class="price">$@package.Price?.ToString("F2")</div>
                                     <div class="frequency">for @package.ResumeGenerations resumes</div>
                                 </MudStack>
                                 
@@ -85,16 +86,16 @@
         </MudContainer>
 
         <!-- CTA Section -->
-        <MudGrid Class="cta">
-            <MudItem xs="12" md="6">
-                <MudPaper Class="cta-content" Elevation="0">
+        @*<MudGrid Class="cta">
+            <MudItem xs="12" md="6" Class="cta-content">
+                <MudPaper Elevation="0">
                     <h2>Ready to Transform Your Resume?</h2>
                     <p>Join thousands of professionals who landed their dream jobs with perfectly tailored resumes.</p>
                     <MudButton Class="btn-cta" EndIcon="@Icons.Material.Filled.ArrowRight">Start Free Trial</MudButton>
                 </MudPaper>
             </MudItem>
-            <MudItem xs="12" md="6">
-                <MudGrid Class="cta-stats" GutterSize="2">
+            <MudItem xs="12" md="6" Class="cta-stats">
+                <MudGrid Spacing="2">
                     <MudItem xs="4" Class="stat-item">
                         <div class="stat-number">15,000+</div>
                         <div class="stat-label">Resumes Generated</div>
@@ -109,7 +110,7 @@
                     </MudItem>
                 </MudGrid>
             </MudItem>
-        </MudGrid>
+        </MudGrid>*@
         <MudSpacer />
         
         <MudText Typo="Typo.body1">

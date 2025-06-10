@@ -232,7 +232,7 @@ body {
 
 /* Main Content */
 .main-content {
-    grid-area: main;
+    /*grid-area: main;*/
     padding: 2rem;
     display: flex;
     flex-direction: column;
