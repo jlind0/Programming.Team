@@ -40,7 +40,7 @@ namespace Programming.Team.Web.Controllers
                             {
                                 if(loc.EndsWith(".xml"))
                                     locElement.Value = loc.Replace("blog.programming.team/", "programming.team/sitemap.xml/");
-                                else
+                                else if(!loc.Contains("/support-portal"))
                                     locElement.Value = loc.Replace("blog.programming.team/", "programming.team/blog/");
                                 if(!locElement.Value.EndsWith("/"))
                                 {
@@ -48,6 +48,7 @@ namespace Programming.Team.Web.Controllers
                                 }
                             }
                         }
+                        
                         return Content(doc.ToString(), "application/xml");
                     }
                     else

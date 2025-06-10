@@ -126,6 +126,23 @@ builder.Services.AddReverseProxy()
                     }
                 }
 
+            },
+            new RouteConfig
+            {
+                RouteId = "support-route",
+                ClusterId = "support-cluster",
+                Match = new RouteMatch(){
+                    Path = "/support-portal/{**catchAll}" },
+                Transforms = new[]
+                {
+                    // 2) Rewrite the request Host header
+                    new Dictionary<string, string>
+                    {
+                        { "RequestHeader", "Host" },
+                        { "Set", "blog.programming.team" }
+                    }
+                }
+
             }
         },
         clusters: new[]
@@ -147,6 +164,20 @@ builder.Services.AddReverseProxy()
             new ClusterConfig
             {
                 ClusterId = "blog-media-cluster",
+                Destinations = new Dictionary<string, DestinationConfig>
+                {
+                    // The destination is the WordPress subdomain:
+                    {
+                        "blog-dest", new DestinationConfig
+                        {
+                            Address = "https://blog.programming.team/"
+                        }
+                    }
+                }
+            },
+            new ClusterConfig
+            {
+                ClusterId = "support-cluster",
                 Destinations = new Dictionary<string, DestinationConfig>
                 {
                     // The destination is the WordPress subdomain:
