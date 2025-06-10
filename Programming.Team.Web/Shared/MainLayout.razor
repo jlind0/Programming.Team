@@ -9,23 +9,29 @@
 <MudBreakpointProvider />
 
 <MudLayout>
+    <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+        <MudElement Class="d-flex flex-column justify-center flex-grow-1">
+            <MudText>Please view on a large device</MudText>
+        </MudElement>
+    </MudHidden>
+    <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+        <MudAppBar Elevation="1">
+            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
+                OnClick="@((e) => DrawerToggle())" />
+            <MudText Typo="Typo.h5" Class="ml-3">
+                <MudIcon Icon="@Icons.Material.Filled.CodeOff" Class="mr-2" />Programming<MudText Inline="true" Typo="Typo.h5" Class="ml-2" Color="Color.Secondary">Team</MudText>
+            </MudText>
+            <MudSpacer />
+            <LoginDisplay />
+        </MudAppBar>
 
-    <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
-            OnClick="@((e) => DrawerToggle())" />
-        <MudText Typo="Typo.h5" Class="ml-3">
-            <MudIcon Icon="@Icons.Material.Filled.CodeOff" Class="mr-2" />Programming<MudText Inline="true" Typo="Typo.h5" Class="ml-2" Color="Color.Secondary">Team</MudText>
-        </MudText>
-        <MudSpacer />
-        <LoginDisplay />
-    </MudAppBar>
-
-    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2" Style="z-index:3">
-        <NavMenu />
-    </MudDrawer>
-    <MudMainContent Class="main-content" >
-        @Body
-    </MudMainContent>
+        <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2" Style="z-index:3">
+            <NavMenu />
+        </MudDrawer>
+        <MudMainContent Class="main-content" Style="min-height:2000px;">
+            @Body
+        </MudMainContent>
+    </MudHidden>
     <footer class="footer" style="position:relative;z-index:4;">
             <div class="footer-container">
                 <div class="footer-brand">
