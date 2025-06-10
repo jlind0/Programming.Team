@@ -9,6 +9,7 @@
                     Variant="Variant.Outlined" />
                 <MudNumericField @bind-Value="ViewModel.Price" Label="Price" Adornment="Adornment.Start" AdornmentText="$"
                     Variant="Variant.Outlined" />
+                <MudTextField @bind-Value="ViewModel.Name" Label="Name"/>
                 <MudStack Row="true">
                     <MudButton OnClick="ViewModel.Add.BindCommand<MouseEventArgs>()" Class="fw-bold"
                         Variant="Variant.Filled" Color="Color.Primary">Add Package</MudButton>

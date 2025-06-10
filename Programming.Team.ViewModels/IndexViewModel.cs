@@ -1,9 +1,12 @@
 ﻿using DynamicData;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Programming.Team.AI.Core;
 using Programming.Team.Business.Core;
 using Programming.Team.Core;
+using Programming.Team.PurchaseManager.Core;
+using Programming.Team.ViewModels.Purchase;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -24,11 +27,13 @@ namespace Programming.Team.ViewModels
         protected IBusinessRepositoryFacade<Package, Guid> PackageFacade { get; }
         public ReactiveCommand<Unit, Unit> Load { get; }
         public ObservableCollection<Posting> Postings { get; } = new ObservableCollection<Posting>();
-        public ObservableCollection<Package> Packages { get; } = new ObservableCollection<Package>();
+        public ObservableCollection<PackageViewModel> Packages { get; } = new ObservableCollection<PackageViewModel>();
         protected INLP NLP { get; }
         protected IMemoryCache Cache { get; }
+        protected NavigationManager NavMan { get; }
+        protected IPurchaseManager<Package, Core.Purchase> PurchaseManager { get; }
         public IndexViewModel(ILogger<IndexViewModel> logger, IBusinessRepositoryFacade<Package, Guid> packageFacade,
-            IBusinessRepositoryFacade<Posting, Guid> postingFacade, INLP nlp, IMemoryCache cache)
+            IBusinessRepositoryFacade<Posting, Guid> postingFacade, INLP nlp, IMemoryCache cache, NavigationManager navMan, IPurchaseManager<Package, Core.Purchase> purchaseManager)
         {
             Logger = logger;
             PackageFacade = packageFacade;
@@ -36,6 +41,8 @@ namespace Programming.Team.ViewModels
             Load = ReactiveCommand.CreateFromTask(DoLoad);
             NLP = nlp;
             Cache = cache;
+            NavMan = navMan;
+            PurchaseManager = purchaseManager;
         }
         protected async Task DoLoad(CancellationToken token)
         {
@@ -46,7 +53,9 @@ namespace Programming.Team.ViewModels
                 var packages = await PackageFacade.Get(orderBy: e => e.OrderByDescending(p => p.Price));
                 foreach(var p in packages.Entities)
                 {
-                    Packages.Add(p);
+                    var pVM = new PackageViewModel(NavMan, PurchaseManager, Logger, PackageFacade, p);
+                    await pVM.Load.Execute().GetAwaiter();
+                    Packages.Add(pVM);
                 }
                 var results = await PostingFacade.Get(page: new Pager() { Page = 1, Size = 5}, 
                     orderBy: q => q.OrderByDescending(q => q.UpdateDate), 

@@ -2,6 +2,7 @@
 @if (ViewModel != null)
 {
     <MudStack Row="true">
+        <MudText>@ViewModel.Name</MudText>
         <MudText>
             @ViewModel.ResumeGenerations resume generations for $@ViewModel.Price
         </MudText>

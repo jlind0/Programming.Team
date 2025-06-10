@@ -102,11 +102,18 @@ namespace Programming.Team.ViewModels.Purchase
         }
 
         public string StripeName => throw new NotImplementedException();
+        private string name = null!;
+
+        public string Name {
+            get => name;
+            set => this.RaiseAndSetIfChanged(ref name, value);
+        }
 
         protected override Task Clear()
         {
-            price = default; 
-            resumeGenerations = default;
+            Price = null;
+            Name = string.Empty;
+            ResumeGenerations = 0;
             return Task.CompletedTask;
         }
 
@@ -115,7 +122,8 @@ namespace Programming.Team.ViewModels.Purchase
             return Task.FromResult(new Package()
             {
                 Price = price,
-                ResumeGenerations = resumeGenerations
+                ResumeGenerations = resumeGenerations,
+                Name = name,
             });
         }
     }
@@ -210,6 +218,12 @@ namespace Programming.Team.ViewModels.Purchase
         }
 
         public string StripeName => throw new NotImplementedException();
+        private string name = null!;
+
+        public string Name {
+            get => name;
+            set => this.RaiseAndSetIfChanged(ref name, value);
+        }
 
         protected override Task<Package> Populate()
         {
@@ -220,7 +234,8 @@ namespace Programming.Team.ViewModels.Purchase
                 StripeProductId = StripeProductId,
                 StripePriceId = StripePriceId,
                 StripeUrl = StripeUrl,
-                ResumeGenerations = ResumeGenerations
+                ResumeGenerations = ResumeGenerations,
+                Name = Name
             });
         }
 
@@ -232,6 +247,7 @@ namespace Programming.Team.ViewModels.Purchase
             StripePriceId = entity.StripePriceId;
             StripeUrl = entity.StripeUrl;
             ResumeGenerations = entity.ResumeGenerations;
+            Name = entity.Name;
             return Task.CompletedTask;
         }
     }

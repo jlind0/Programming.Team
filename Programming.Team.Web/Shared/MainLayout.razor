@@ -2,7 +2,7 @@
 
 <PageTitle>Programming Team - The Resume Tailorer</PageTitle>
 @* TODO: support theme and manage its state manually in localstorage *@
-<MudThemeProvider Theme="@_customTheme" />
+<MudThemeProvider Theme="@_theme" />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
@@ -13,7 +13,9 @@
     <MudAppBar Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
             OnClick="@((e) => DrawerToggle())" />
-        <MudText Typo="Typo.h5" Class="ml-3"></MudText>
+        <MudText Typo="Typo.h5" Class="ml-3">
+            <MudIcon Icon="@Icons.Material.Filled.Code" Class="mr-2" />Programming<MudText Inline="true" Typo="Typo.h5" Class="ml-2" Color="Color.Secondary">Team</MudText>
+        </MudText>
         <MudSpacer />
         <LoginDisplay />
     </MudAppBar>
@@ -40,11 +42,7 @@
     {
         base.OnInitialized();
 
-        _theme = new()
-            {
-                PaletteLight = _lightPalette,
-                LayoutProperties = new LayoutProperties()
-            };
+        _theme = LightGlassTheme;
     }
 
     private void DrawerToggle()
@@ -52,46 +50,31 @@
         _drawerOpen = !_drawerOpen;
     }
 
-    private readonly PaletteLight _lightPalette = new()
+    public static MudTheme LightGlassTheme = new MudTheme()
+    {
+        PaletteLight = new PaletteLight()
         {
-            Black = "#110e2d",
-            AppbarText = "#424242",
+            Primary = "#4361ee",             // var(--primary)
+            PrimaryDarken = "#3a56d4",       // var(--primary-dark)
+            Secondary = "#3f37c9",           // var(--secondary)
+            Tertiary = "#4895ef",            // var(--accent)
+            Dark = "#2b2d42",                // var(--dark)
+            TextPrimary = "#2b2d42",
+            Background = "#f8f9fa",          // var(--light)
+            Surface = "rgba(255,255,255,0.15)", // var(--glass)
             AppbarBackground = "rgba(255,255,255,0.8)",
-            DrawerBackground = "#ffffff",
-            GrayLight = "#e8e8e8",
-            GrayLighter = "#f9f9f9",
-        };
-    private MudTheme _customTheme = new MudTheme()
+            DrawerBackground = "rgba(255,255,255,0.15)",
+            AppbarText = "#2b2d42",
+            DrawerText = "#2b2d42",
+            Success = "#4cc9f0",             // var(--success)
+            Warning = "#f72585",             // var(--warning)
+            Error = "#ef233c",               // var(--danger)
+            Info = "#4895ef"                 // using accent for info
+        },
+        LayoutProperties = new LayoutProperties()
         {
-            
-            PaletteLight = new PaletteLight()
-            {
-                Primary = "#0d6efd",          // Bootstrap Primary
-                Secondary = "#6c757d",        // Bootstrap Secondary
-                Tertiary = "#6610f2",         // Bootstrap Indigo
-                Info = "#0dcaf0",             // Bootstrap Info
-                Success = "#198754",          // Bootstrap Success
-                Warning = "#ffc107",          // Bootstrap Warning
-                Error = "#dc3545",            // Bootstrap Danger
-                Dark = "#212529",
-                Background = "#ffffff",
-                Surface = "#ffffff",
-            },
-            Typography = new Typography()
-            {
-                Default = new DefaultTypography()
-                {
-                    FontFamily = new[] { "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif" },
-                    FontSize = "0.9rem",
-                    FontWeight = "400",
-                },
-                H1 = new H1Typography() { FontSize = "2.5rem", FontWeight = "500" },
-                H2 = new H2Typography() { FontSize = "2rem", FontWeight = "500" },
-                H3 = new H3Typography() { FontSize = "1.75rem", FontWeight = "500" },
-            },
-            LayoutProperties = new LayoutProperties()
-            {
-                DefaultBorderRadius = "0.375rem",  // Bootstrap default border radius
-            }
-        };
+            DefaultBorderRadius = "8px",
+            DrawerWidthLeft = "280px"
+        }
+    };
 }

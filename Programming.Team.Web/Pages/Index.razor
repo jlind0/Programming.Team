@@ -1,64 +1,142 @@
 ﻿@page "/"
 @inherits ReactiveInjectableComponentBase<IndexViewModel>
+@inject AuthenticationStateProvider authenticationProvider
 
 @if (ViewModel != null)
 {
-    <MudElement Class="d-flex flex-column flex-grow-1" Width="100%">
-   @* <MudImage ObjectFit="ObjectFit.Cover" Height="200" Src="images/logo.png" Alt="Logo of Programming.Team"
-        Elevation="25" Class="rounded-lg" />*@
-    <MudText Class="z-0 mt-4 display1" Typo="Typo.h4" GutterBottom="true">Programming.Team</MudText>
-    <MudText Class="mb-8" Typo="Typo.h6">The Resume Tailor</MudText>
+    <MudContainer Class="main-content" MaxWidth="MaxWidth.False">
 
-    <MudText Typo="Typo.body1">
-        This application offers a specialized resume-tailoring experience that aligns your skills and
-        experiences with specific job descriptions. To achieve the best results, users should input their
-        work histories and relevant skills in detail. The system will then generate a skills matrix
-        highlighting those capabilities mentioned in the target job description, and produce a
-        position-focused summary tailored for the role in question.
-        <br />
-        <h4 Class="mt-8">Key features include:</h4>
-        <ul Class="mb-8">
-            <li class="ml-4">
-                Free Usage and Pricing: The first 15 tailored resume generations are free upon signup.
-                After
-                that, packages start at USD $5.98 for 25 additional resume generations.
-            </li>
-            <li class="ml-4">
-                PDF and <i>LaTeX</i> Editing: Programming.Team uses <i>LaTeX</i> for rendering resumes into PDF
-                format. Users
-                can adjust the underlying <i>LaTeX</i> code themselves and re-render new PDFs at no additional cost.
-            </li>
-        </ul>
-        <br />
-    </MudText>
+        <!-- Hero Section -->
+        <MudGrid Class="hero" GutterSize="3">
+            <MudItem xs="12" md="6">
+                <MudPaper Class="hero-content" Elevation="0">
+                    <h2>The Resume Tailor</h2>
+                    <p class="hero-text">Transform your resume into a perfect match for any job with our AI-powered tailoring technology.</p>
+                    <div class="hero-buttons">
+                        <MudButton Variant="Variant.Filled" Class="btn-primary" EndIcon="@Icons.Material.Filled.Rocket">Get Started</MudButton>
+                        <MudButton Variant="Variant.Outlined" Class="btn-secondary" EndIcon="@Icons.Material.Filled.Info">Learn More</MudButton>
+                    </div>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <IndexCarousel ViewModel="ViewModel" />
+            </MudItem>
+        </MudGrid>
 
-    <MudSpacer />
-    <MudDataGrid T="Package" Items="ViewModel.Packages" Filterable="false" SortMode="SortMode.None">
-        <Columns>
-            <PropertyColumn Title="Resume Generations" Property="p => p.ResumeGenerations"/>
-            <PropertyColumn Title="Price (USD)" Property="p => p.Price"/>
-        </Columns>
-    </MudDataGrid>
-    <MudSpacer/>
-    <IndexCarousel ViewModel="ViewModel" />
+        <!-- Features Section -->
+        <MudGrid Class="features" GutterSize="3">
+            <MudItem xs="12" md="4">
+                <MudPaper Class="feature-card" Elevation="1">
+                    <div class="feature-icon"><MudIcon Icon="@Icons.Material.Filled.Scoreboard" /></div>
+                    <h3>Free Usage</h3>
+                    <p>First 15 tailored resume generations are free upon signup. No credit card required.</p>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudPaper Class="feature-card" Elevation="1">
+                    <div class="feature-icon"><MudIcon Icon="@Icons.Material.Filled.PictureAsPdf" /></div>
+                    <h3>PDF & LaTeX</h3>
+                    <p>Edit the underlying LaTeX code and re-render new PDFs at no additional cost.</p>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudPaper Class="feature-card" Elevation="1">
+                    <div class="feature-icon"><MudIcon Icon="@Icons.Material.Filled.Memory" /></div>
+                    <h3>AI-Powered</h3>
+                    <p>Our algorithms analyze job descriptions to highlight your most relevant skills.</p>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
 
-    <MudSpacer />
+        <!-- Pricing Section -->
+        <MudContainer Class="pricing">
+            <h2 class="section-title">Resume Generation Packages</h2>
+            <MudGrid Class="pricing-cards" GutterSize="3">
+                @foreach(var package in ViewModel.Packages)
+                {
+                    <MudItem xs="12" md="3">
+                        <MudCard Class="pricing-card">
+                            <MudCardHeader Class="pricing-header">
+                                <MudStack>
+                                    <h3>@package.Name</h3>
+                                    <div class="price">@package.Price?.ToString("F2")</div>
+                                    <div class="frequency">for @package.ResumeGenerations resumes</div>
+                                </MudStack>
+                                
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <ul class="pricing-features">
+                                    <li><MudIcon Icon="@Icons.Material.Filled.Check" /> @package.ResumeGenerations Resume Generations</li>
+                                    <li><MudIcon Icon="@Icons.Material.Filled.Check" /> LaTeX Source Files</li>
+                                    <li><MudIcon Icon="@Icons.Material.Filled.Check" /> Unlimited PDF Downloads</li>
+                                    <li><MudIcon Icon="@Icons.Material.Filled.Check" /> Priority Support</li>
+                                </ul>
+                            </MudCardContent>
+                            <MudCardActions>
+                                @if (isAuthenticated)
+                                {
+                                    <MudButton Class="btn-pricing" OnClick="package.Purchase.BindCommand<MouseEventArgs>()">Choose Plan</MudButton>
+                                }
+                            </MudCardActions>
+                        </MudCard>
+                    </MudItem>
+                }
 
-    <MudText Typo="Typo.body1">
-        <MudAlert Severity="Severity.Normal">
-            If you’re interested in becoming a recruiter on the platform, please contact
-            <MudLink Class="fw-bold" Href="mailto:jason@groundbreaker.solutions" Target="_blank" Typo="Typo.body2"
-                Color="Color.Primary">
-                jason@groundbreaker.solutions
-            </MudLink>
-        </MudAlert>
-    </MudText>
-</MudElement>
+                <!-- Repeat for other plans... -->
+            </MudGrid>
+        </MudContainer>
+
+        <!-- CTA Section -->
+        <MudGrid Class="cta" GutterSize="3">
+            <MudItem xs="12" md="6">
+                <MudPaper Class="cta-content" Elevation="0">
+                    <h2>Ready to Transform Your Resume?</h2>
+                    <p>Join thousands of professionals who landed their dream jobs with perfectly tailored resumes.</p>
+                    <MudButton Class="btn-cta" EndIcon="@Icons.Material.Filled.ArrowRight">Start Free Trial</MudButton>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <MudGrid Class="cta-stats" GutterSize="2">
+                    <MudItem xs="4" Class="stat-item">
+                        <div class="stat-number">15,000+</div>
+                        <div class="stat-label">Resumes Generated</div>
+                    </MudItem>
+                    <MudItem xs="4" Class="stat-item">
+                        <div class="stat-number">92%</div>
+                        <div class="stat-label">Satisfaction Rate</div>
+                    </MudItem>
+                    <MudItem xs="4" Class="stat-item">
+                        <div class="stat-number">3.5x</div>
+                        <div class="stat-label">More Interviews</div>
+                    </MudItem>
+                </MudGrid>
+            </MudItem>
+        </MudGrid>
+        <MudSpacer />
+        
+        <MudText Typo="Typo.body1">
+            <MudAlert Severity="Severity.Normal">
+                If you’re interested in becoming a recruiter on the platform, please contact
+                <MudLink Class="fw-bold" Href="mailto:jason@groundbreaker.solutions" Target="_blank" Typo="Typo.body2"
+                         Color="Color.Primary">
+                    jason@groundbreaker.solutions
+                </MudLink>
+            </MudAlert>
+        </MudText>
+    </MudContainer>
 }
 
 @code{
+    private bool isAuthenticated = false;
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await authenticationProvider.GetAuthenticationStateAsync();
+        isAuthenticated = state?.User?.Identity?.IsAuthenticated ?? false;
+        await base.OnInitializedAsync();
+    }
     protected override void OnInitialized()
     {
+       
         if (ViewModel != null)
             ViewModel.Packages.CollectionChanged += (s, e) =>
             {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Programming.Team.Core
 {
-    public interface IPackage : IEntity<Guid>, IStripePurchaseable
+    public interface IPackage : IEntity<Guid>, IStripePurchaseable, INamedEntity
     {
         int ResumeGenerations { get; set; }
     }
@@ -19,5 +19,7 @@ namespace Programming.Team.Core
         public string? StripeUrl { get; set; }
         public virtual ICollection<Purchase> Purchases { get; set; } = new List<Purchase>();
         public string StripeName => $"{ResumeGenerations} Resume Generations Package";
+
+        public string Name { get; set; } = null!;
     }
 }
