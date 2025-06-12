@@ -18,6 +18,18 @@ namespace Programming.Team.Core
         Certifications,
         Publications
     }
+    public interface ICoverLetterConfiguration
+    {
+        int? TargetLength { get; set; }
+        Guid? DocumentTemplateId { get; set; }
+        int? NumberOfBullets { get; set; }
+    }
+    public class CoverLetterConfiguration : ICoverLetterConfiguration
+    {
+        public int? TargetLength { get; set; } = 2000;
+        public Guid? DocumentTemplateId { get; set; }
+        public int? NumberOfBullets { get; set; } = 10;
+    }
     public interface IResumeConfiguration
     {
         double? MatchThreshold { get; set; }

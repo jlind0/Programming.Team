@@ -13,8 +13,8 @@ public class DocumnetTypeViewModelTests
     [TestMethod]
     public async Task DocumnetTypeViewModelTests_AddDocumentTypeViewModel_Init()
     {
-        var facade = new Mock<IBusinessRepositoryFacade<DocumentType, int>>();
-        var logger = new Mock<ILogger<AddEntityViewModel<int, DocumentType, IBusinessRepositoryFacade<DocumentType, int>>>>();
+        var facade = new Mock<IBusinessRepositoryFacade<DocumentType, DocumentTypes>>();
+        var logger = new Mock<ILogger<AddEntityViewModel<DocumentTypes, DocumentType, IBusinessRepositoryFacade<DocumentType, DocumentTypes>>>>();
         var vm = new AddDocumentTypeViewModel(facade.Object, logger.Object);
         await vm.Init.Execute().GetAwaiter();
         Assert.IsFalse(vm.CanAdd);

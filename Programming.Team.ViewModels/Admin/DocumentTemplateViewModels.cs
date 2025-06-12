@@ -22,14 +22,14 @@ namespace Programming.Team.ViewModels.Admin
     public class AddDocumentTemplateViewModel : AddEntityViewModel<Guid, DocumentTemplate>, IDocumentTemplate
     {
         public ObservableCollection<DocumentType> DocumentTypes { get; } = new ObservableCollection<DocumentType>();
-        protected IBusinessRepositoryFacade<DocumentType, int> DocumentTypesFacade { get; }
+        protected IBusinessRepositoryFacade<DocumentType, DocumentTypes> DocumentTypesFacade { get; }
         protected readonly CompositeDisposable disposables = new CompositeDisposable();
         protected IContextFactory ContextFactory { get; }
         ~AddDocumentTemplateViewModel()
         {
             disposables.Dispose();
         }
-        public AddDocumentTemplateViewModel(IContextFactory contextFactory, IBusinessRepositoryFacade<DocumentType, int> documentTypesFacade, IBusinessRepositoryFacade<DocumentTemplate, Guid> facade, ILogger<AddEntityViewModel<Guid, DocumentTemplate, IBusinessRepositoryFacade<DocumentTemplate, Guid>>> logger) : base(facade, logger)
+        public AddDocumentTemplateViewModel(IContextFactory contextFactory, IBusinessRepositoryFacade<DocumentType, DocumentTypes> documentTypesFacade, IBusinessRepositoryFacade<DocumentTemplate, Guid> facade, ILogger<AddEntityViewModel<Guid, DocumentTemplate, IBusinessRepositoryFacade<DocumentTemplate, Guid>>> logger) : base(facade, logger)
         {
             DocumentTypesFacade = documentTypesFacade;
             ContextFactory = contextFactory;
@@ -84,8 +84,8 @@ namespace Programming.Team.ViewModels.Admin
                 this.RaisePropertyChanged(nameof(CanAdd));
             }
         }
-        private int documentTypeId;
-        public int DocumentTypeId
+        private DocumentTypes documentTypeId;
+        public DocumentTypes DocumentTypeId
         {
             get => documentTypeId;
             set => this.RaiseAndSetIfChanged(ref documentTypeId, value);
@@ -157,8 +157,8 @@ namespace Programming.Team.ViewModels.Admin
     public class DocumentTemplateViewModel : EntityViewModel<Guid, DocumentTemplate>, IDocumentTemplate
     {
         public SelectSectionTemplatesViewModel SelectSectionTemplates { get; }
-        private int documentTypeId;
-        public int DocumentTypeId
+        private DocumentTypes documentTypeId;
+        public DocumentTypes DocumentTypeId
         {
             get => documentTypeId;
             set => this.RaiseAndSetIfChanged(ref documentTypeId, value);

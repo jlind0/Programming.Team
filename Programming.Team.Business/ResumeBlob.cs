@@ -14,6 +14,7 @@ namespace Programming.Team.Business
         protected static class Containers
         {
             public const string resumes = nameof(resumes);
+            public const string coverletters = nameof(coverletters);
         }
         protected BlobServiceClient Client { get; }
         protected BlobClient GetClient(string container, Guid id)
@@ -25,9 +26,13 @@ namespace Programming.Team.Business
         {
             Client = client;
         }
-        public async Task<byte[]?> GetResume(Guid postingId, CancellationToken token = default)
+        public Task<byte[]?> GetResume(Guid postingId, CancellationToken token = default)
         {
             var client = GetClient(Containers.resumes, postingId);
+            return GetBytes(client, token);
+        }
+        protected async Task<byte[]?> GetBytes(BlobClient client, CancellationToken token = default)
+        {
             var blobDownloadInfo = await client.DownloadContentAsync(token);
             using (MemoryStream memoryStream = new MemoryStream())
             {
@@ -35,14 +40,29 @@ namespace Programming.Team.Business
                 return memoryStream.ToArray();
             }
         }
-
-        public async Task UploadResume(Guid postingId, byte[] pdfData, CancellationToken token = default)
+        protected async Task UploadBytes(BlobClient client, byte[] pdfData, CancellationToken token = default)
         {
-            var client = GetClient(Containers.resumes, postingId);
             using (var stream = new MemoryStream(pdfData))
             {
                 await client.UploadAsync(stream, true, token);
             }
+        }
+        public Task UploadResume(Guid postingId, byte[] pdfData, CancellationToken token = default)
+        {
+            var client = GetClient(Containers.resumes, postingId);
+            return UploadBytes(client, pdfData, token);
+        }
+
+        public Task UploadCoverLetter(Guid postingId, byte[] pdfData, CancellationToken token = default)
+        {
+            var client = GetClient(Containers.coverletters, postingId);
+            return UploadBytes(client, pdfData, token);
+        }
+
+        public Task<byte[]?> GetCoverLetter(Guid postingId, CancellationToken token = default)
+        {
+            var client = GetClient(Containers.coverletters, postingId);
+            return GetBytes(client, token);
         }
     }
 }

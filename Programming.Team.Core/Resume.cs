@@ -17,6 +17,11 @@ namespace Programming.Team.Core
         public List<Publication> Publications { get; set; } = new List<Publication>();
         public ResumePart[] Parts { get; set; } = [ResumePart.Bio, ResumePart.Recommendations, ResumePart.Skills, ResumePart.Positions, ResumePart.Education, ResumePart.Certifications, ResumePart.Publications];
     }
+    public class CoverLetter
+    {
+        public User User { get; set; } = null!;
+        public string Body { get; set; } = string.Empty;
+    }
     public class SkillRollup
     {
         public double YearsOfExperience { get; set; }

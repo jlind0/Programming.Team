@@ -1,0 +1,39 @@
+﻿@inherits ReactiveComponentBase<CoverLetterConfigurationViewModel>
+
+@if(ViewModel != null)
+{
+    <MudStack>
+        <MudText>Cover Letter Configuration</MudText>
+        <MudSelect Label="Document Template" T="DocumentTemplate" @bind-Value="ViewModel.SelectedTemplate" ToStringFunc="e => e?.Name">
+            @foreach (var template in ViewModel.DocumentTemplates)
+            {
+                <MudSelectItem T="DocumentTemplate" Value="template">@template.Name</MudSelectItem>
+            }
+        </MudSelect>
+        <MudNumericField @bind-Value="ViewModel.TargetLength" Label="Target Length"/>
+        <MudNumericField @bind-Value="ViewModel.NumberOfBullets" Label="Number of Bullets" Variant="Variant.Outlined" />
+    </MudStack>
+}
+@code {
+    private readonly CompositeDisposable disposables = new();
+    protected override void Dispose(bool disposing)
+    {
+        disposables.Dispose();
+        base.Dispose(disposing);
+    }
+    protected override void OnInitialized()
+    {
+        if (ViewModel != null)
+        {
+            ViewModel.WhenPropertyChanged(p => p.IsLoaded).Subscribe(p =>
+            {
+                if (p.Value)
+                {
+                    StateHasChanged();
+                }
+            }).DisposeWith(disposables);
+        }
+
+        base.OnInitialized();
+    }
+}

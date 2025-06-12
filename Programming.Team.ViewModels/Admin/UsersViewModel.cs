@@ -29,17 +29,20 @@ namespace Programming.Team.ViewModels.Admin
 
         protected override Task<UserViewModel> ConstructViewModel(User entity)
         {
-            return Task.FromResult(new UserViewModel(Logger, Facade, entity, null, null));
+            return Task.FromResult(new UserViewModel(Logger, Facade, entity, null, null, null));
         }
     }
     public class TrueUserLoaderViewModel : EntityLoaderViewModel<Guid, User, UserViewModel, IUserBusinessFacade>
     {
         protected ResumeConfigurationViewModel Config { get; }
+        protected CoverLetterConfigurationViewModel CoverLetterConfiguration { get; }
         protected IServiceProvider Services { get; }
-        public TrueUserLoaderViewModel(IServiceProvider services, IUserBusinessFacade facade, ResumeConfigurationViewModel config, ILogger<EntityLoaderViewModel<Guid, User, UserViewModel, IUserBusinessFacade>> logger) : base(facade, logger)
+        public TrueUserLoaderViewModel(IServiceProvider services, IUserBusinessFacade facade, 
+            ResumeConfigurationViewModel config, CoverLetterConfigurationViewModel coverVM, ILogger<EntityLoaderViewModel<Guid, User, UserViewModel, IUserBusinessFacade>> logger) : base(facade, logger)
         {
             Config = config;
             Services = services;
+            CoverLetterConfiguration = coverVM;
         }
         protected override async Task DoLoad(Guid key, CancellationToken token)
         {
@@ -48,7 +51,7 @@ namespace Programming.Team.ViewModels.Admin
         }
         protected override UserViewModel Construct(User entity)
         {
-            return new UserViewModel(Logger, Facade, entity, Config, Services.GetRequiredService<UserStripeAccountViewModel>());
+            return new UserViewModel(Logger, Facade, entity, Config, CoverLetterConfiguration, Services.GetRequiredService<UserStripeAccountViewModel>());
         }
     }
     public class UserStripeAccountViewModel : ReactiveObject, IStripePayable
@@ -121,17 +124,20 @@ namespace Programming.Team.ViewModels.Admin
     public class UserViewModel : EntityViewModel<Guid, User, IUserBusinessFacade>, IUser
     {
         public ResumeConfigurationViewModel? Configuration { get; }
+        public CoverLetterConfigurationViewModel? CoverLetterConfiguration { get; }
         public UserStripeAccountViewModel? StripeVM { get; }
-        public UserViewModel(ILogger logger, IUserBusinessFacade facade, Guid id, ResumeConfigurationViewModel? config, UserStripeAccountViewModel? stripeVM) : base(logger, facade, id)
+        public UserViewModel(ILogger logger, IUserBusinessFacade facade, Guid id, ResumeConfigurationViewModel? config, CoverLetterConfigurationViewModel? coverConfig, UserStripeAccountViewModel? stripeVM) : base(logger, facade, id)
         {
             Configuration = config;
             StripeVM = stripeVM;
+            CoverLetterConfiguration = coverConfig;
         }
 
-        public UserViewModel(ILogger logger, IUserBusinessFacade facade, User entity, ResumeConfigurationViewModel? config, UserStripeAccountViewModel? stripeVM) : base(logger, facade, entity)
+        public UserViewModel(ILogger logger, IUserBusinessFacade facade, User entity, ResumeConfigurationViewModel? config, CoverLetterConfigurationViewModel? coverConfig, UserStripeAccountViewModel? stripeVM) : base(logger, facade, entity)
         {
             Configuration = config;
-            StripeVM = stripeVM;    
+            StripeVM = stripeVM;
+            CoverLetterConfiguration = coverConfig;
         }
 
         private string objectId = null!;
@@ -263,6 +269,13 @@ namespace Programming.Team.ViewModels.Admin
             }
         }
 
+        private string? defaultCoverLetterConfiguration;
+        public string? DefaultCoverLetterConfiguration
+        {
+            get => defaultCoverLetterConfiguration;
+            set => this.RaiseAndSetIfChanged(ref defaultCoverLetterConfiguration, value);
+        }
+
         protected override Task<User> Populate()
         {
             User user = new User();
@@ -282,6 +295,7 @@ namespace Programming.Team.ViewModels.Admin
             user.Country = Country;
             user.ResumeGenerationsLeft = ResumeGenerationsLeft;
             user.DefaultResumeConfiguration = Configuration?.GetSerializedConfiguration() ?? DefaultResumeConfiguration;
+            user.DefaultCoverLetterConfiguration = CoverLetterConfiguration?.GetSerializedConfiguration() ?? DefaultCoverLetterConfiguration;
             user.StripeAccountId = StripeAccountId;
             user.StripeStatus = StripeStatus;
             user.StripeUpdateDate = StripeUpdateDate;
@@ -308,7 +322,9 @@ namespace Programming.Team.ViewModels.Admin
             DefaultResumeConfiguration = entity.DefaultResumeConfiguration;
             if(Configuration != null)
                 await Configuration.Load(DefaultResumeConfiguration);
-            if(StripeVM != null)
+            if(CoverLetterConfiguration != null)
+                await CoverLetterConfiguration.Load(DefaultCoverLetterConfiguration);
+            if (StripeVM != null)
                 await StripeVM.Populate(entity);
         }
     }

@@ -9,7 +9,8 @@ public interface IPosting : IEntity<Guid>, IUserPartionedEntity, INamedEntity
 
     string? RenderedLaTex { get; set; }
 
-
+    string? CoverLetterLaTeX { get; set; }
+    string? CoverLetterConfiguration { get; set; }
     string? Configuration { get; set; }
 }
 public partial class Posting : Entity<Guid>, IPosting
@@ -30,4 +31,6 @@ public partial class Posting : Entity<Guid>, IPosting
     public virtual DocumentTemplate DocumentTemplate { get; set; } = null!;
 
     public virtual User User { get; set; } = null!;
+    public string? CoverLetterLaTeX { get; set; }
+    public string? CoverLetterConfiguration { get; set; }
 }

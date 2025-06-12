@@ -24,6 +24,7 @@
         <MudTextField @bind-Value="ViewModel.LinkedInUrl" Label="LinkedIn Url" Variant="Variant.Outlined" />
         <MudTextField @bind-Value="ViewModel.GitHubUrl" Label="Github Url" Variant="Variant.Outlined" />
         <ResumeConfigurationView ViewModel="ViewModel.DefaultResumeConfigurationViewModel" />
+        <CoverLetterConfigurationView ViewModel="ViewModel.DefaultCoverLetterConfigurationViewModel"/>
         <MudStack Row="true">
             <MudButton OnClick="ViewModel.Update.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
                 Color="Color.Primary">Update</MudButton>

@@ -3,10 +3,15 @@ using System.Collections.Generic;
 
 namespace Programming.Team.Core;
 
-public interface IDocumentType : IEntity<int>, INamedEntity
+public enum DocumentTypes
+{
+    Resume = 1,
+    CoverLetter = 2
+}
+public interface IDocumentType : IEntity<DocumentTypes>, INamedEntity
 {
 }
-public partial class DocumentType : Entity<int>, IDocumentType
+public partial class DocumentType : Entity<DocumentTypes>, IDocumentType
 {
     public string Name { get; set; } = null!;
 

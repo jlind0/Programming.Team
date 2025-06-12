@@ -157,9 +157,9 @@ namespace Programming.Team.Business
             await ApplyPurchase(entity, work, token);
             return await base.Update(entity, work, properites, token);
         }
-        public Task<DocumentTemplate[]> GetForUser(Guid userId, IUnitOfWork? work = null, CancellationToken token = default)
+        public Task<DocumentTemplate[]> GetForUser(Guid userId, DocumentTypes type = DocumentTypes.Resume, IUnitOfWork? work = null, CancellationToken token = default)
         {
-            return Repository.GetForUser(userId, work, token);
+            return Repository.GetForUser(userId, type, work, token);
         }
     }
 }

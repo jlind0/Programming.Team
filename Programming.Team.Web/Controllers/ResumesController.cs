@@ -22,4 +22,20 @@ namespace Programming.Team.Web.Controllers
             return RS.Bytes(await ResumeBlob.GetResume(postingId, token) ?? throw new InvalidDataException(), "application/pdf");
         }
     }
+    [Route("api/[controller]")]
+    [ApiController]
+    [AllowAnonymous]
+    public class CoverLettersController : ControllerBase
+    {
+        protected IResumeBlob ResumeBlob { get; }
+        public CoverLettersController(IResumeBlob resumeBlob)
+        {
+            ResumeBlob = resumeBlob;
+        }
+        [HttpGet("{postingId}")]
+        public async Task<IResult> GetThumbnail(Guid postingId, CancellationToken token = default)
+        {
+            return RS.Bytes(await ResumeBlob.GetCoverLetter(postingId, token) ?? throw new InvalidDataException(), "application/pdf");
+        }
+    }
 }

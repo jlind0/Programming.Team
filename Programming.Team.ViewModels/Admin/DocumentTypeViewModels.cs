@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace Programming.Team.ViewModels.Admin
 {
-    public class AddDocumentTypeViewModel : AddEntityViewModel<int, DocumentType>, IDocumentType
+    public class AddDocumentTypeViewModel : AddEntityViewModel<DocumentTypes, DocumentType>, IDocumentType
     {
-        public AddDocumentTypeViewModel(IBusinessRepositoryFacade<DocumentType, int> facade, ILogger<AddEntityViewModel<int, DocumentType, IBusinessRepositoryFacade<DocumentType, int>>> logger) : base(facade, logger)
+        public AddDocumentTypeViewModel(IBusinessRepositoryFacade<DocumentType, DocumentTypes> facade, ILogger<AddEntityViewModel<DocumentTypes, DocumentType, IBusinessRepositoryFacade<DocumentType, DocumentTypes>>> logger) : base(facade, logger)
         {
         }
         public override bool CanAdd => base.CanAdd && !string.IsNullOrWhiteSpace(Name);
@@ -38,13 +38,13 @@ namespace Programming.Team.ViewModels.Admin
             return Task.FromResult(new DocumentType { Name = Name });
         }
     }
-    public class DocumentTypeViewModel : EntityViewModel<int, DocumentType>, IDocumentType
+    public class DocumentTypeViewModel : EntityViewModel<DocumentTypes, DocumentType>, IDocumentType
     {
-        public DocumentTypeViewModel(ILogger logger, IBusinessRepositoryFacade<DocumentType, int> facade, int id) : base(logger, facade, id)
+        public DocumentTypeViewModel(ILogger logger, IBusinessRepositoryFacade<DocumentType, DocumentTypes> facade, DocumentTypes id) : base(logger, facade, id)
         {
         }
 
-        public DocumentTypeViewModel(ILogger logger, IBusinessRepositoryFacade<DocumentType, int> facade, DocumentType entity) : base(logger, facade, entity)
+        public DocumentTypeViewModel(ILogger logger, IBusinessRepositoryFacade<DocumentType, DocumentTypes> facade, DocumentType entity) : base(logger, facade, entity)
         {
         }
         
@@ -71,9 +71,9 @@ namespace Programming.Team.ViewModels.Admin
             return Task.CompletedTask;
         }
     }
-    public class DocumentTypesViewModel : EntitiesDefaultViewModel<int, DocumentType, DocumentTypeViewModel, AddDocumentTypeViewModel>
+    public class DocumentTypesViewModel : EntitiesDefaultViewModel<DocumentTypes, DocumentType, DocumentTypeViewModel, AddDocumentTypeViewModel>
     {
-        public DocumentTypesViewModel(AddDocumentTypeViewModel addViewModel, IBusinessRepositoryFacade<DocumentType, int> facade, ILogger<EntitiesViewModel<int, DocumentType, DocumentTypeViewModel, IBusinessRepositoryFacade<DocumentType, int>>> logger) : base(addViewModel, facade, logger)
+        public DocumentTypesViewModel(AddDocumentTypeViewModel addViewModel, IBusinessRepositoryFacade<DocumentType, DocumentTypes> facade, ILogger<EntitiesViewModel<DocumentTypes, DocumentType, DocumentTypeViewModel, IBusinessRepositoryFacade<DocumentType, DocumentTypes>>> logger) : base(addViewModel, facade, logger)
         {
         }
         protected override Func<IQueryable<DocumentType>, IOrderedQueryable<DocumentType>>? OrderBy()

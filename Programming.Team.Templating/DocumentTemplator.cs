@@ -78,5 +78,23 @@ namespace Programming.Team.Templating
         }
     }
 
-}
+        public async Task<string> ApplyTemplate(string template, CoverLetter coverLetter, CancellationToken token = default)
+        {
+            try
+            {
+                var templator = Template.Parse(template);
+                var context = new ScriptObject();
+                context.Import(coverLetter);
+                var scriptContext = new TemplateContext { MemberRenamer = member => member.Name };
+                scriptContext.PushGlobal(context);
+
+                return await templator.RenderAsync(scriptContext);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
+                throw;
+            }
+        }
+    }
 }

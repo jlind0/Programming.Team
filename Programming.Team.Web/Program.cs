@@ -197,7 +197,7 @@ builder.Services.AddScoped<IRepository<Recommendation, Guid>, Repository<Recomme
 builder.Services.AddScoped<IRepository<Position, Guid>, Repository<Position, Guid>>();
 builder.Services.AddScoped<IRepository<PositionSkill, Guid>, Repository<PositionSkill, Guid>>();
 builder.Services.AddScoped<IRepository<Skill, Guid>, SkillsRepository>();
-builder.Services.AddScoped<IRepository<DocumentType, int>, Repository<DocumentType, int>>();
+builder.Services.AddScoped<IRepository<DocumentType, DocumentTypes>, Repository<DocumentType, DocumentTypes>>();
 builder.Services.AddScoped<IRepository<Education, Guid>, Repository<Education, Guid>>();
 builder.Services.AddScoped<IRepository<DocumentTemplate, Guid>, DocumentTemplateRepository>();
 builder.Services.AddScoped<IRepository<DocumentTemplatePurchase, Guid>, Repository<DocumentTemplatePurchase, Guid>>();
@@ -229,7 +229,7 @@ builder.Services.AddScoped<IBusinessRepositoryFacade<CertificateIssuer, Guid>, B
 builder.Services.AddScoped<IBusinessRepositoryFacade<Publication, Guid>, BusinessRepositoryFacade<Publication, Guid, IRepository<Publication, Guid>>>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<DocumentTemplate, Guid>, DocumentTemplateBusinessFacade>();
 builder.Services.AddScoped<IDocumentTemplateBusinessFacade, DocumentTemplateBusinessFacade>();
-builder.Services.AddScoped<IBusinessRepositoryFacade<DocumentType, int>, BusinessRepositoryFacade<DocumentType, int, IRepository<DocumentType, int>>>();
+builder.Services.AddScoped<IBusinessRepositoryFacade<DocumentType, DocumentTypes>, BusinessRepositoryFacade<DocumentType, DocumentTypes, IRepository<DocumentType, DocumentTypes>>>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<Posting, Guid>, PostingBusinessFacade>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<Purchase, Guid>, BusinessRepositoryFacade<Purchase, Guid, IRepository<Purchase, Guid>>>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<Package, Guid>, PackageBusinessFacade>();
@@ -294,6 +294,7 @@ builder.Services.AddTransient<AddSectionTemplateViewModel>();
 builder.Services.AddTransient<SectionTemplatesViewModel>();
 builder.Services.AddTransient<IndexViewModel>();
 builder.Services.AddTransient<SuggestAddSkillsForPositionViewModel>();
+builder.Services.AddTransient<CoverLetterConfigurationViewModel>();
 builder.Services.AddTransient<Programming.Team.ViewModels.Admin.TrueUserLoaderViewModel>();
 builder.Services.AddTransient<Programming.Team.ViewModels.Resume.TrueUserLoaderViewModel>();
 builder.Services.AddTransient<SelectSectionTemplatesViewModel>();

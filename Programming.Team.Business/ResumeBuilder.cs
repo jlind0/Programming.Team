@@ -206,5 +206,45 @@ namespace Programming.Team.Business
                 throw;
             }
         }
+
+        public async Task BuildCoverLetter(Posting posting, Guid documentTemplateId, IProgress<string>? progress = null, bool renderPDF = true, CancellationToken token = default)
+        {
+            try
+            {
+                progress?.Report("Preparing Cover Letter");
+                var doucmentTemplate = await DocumentTemplateFacade.GetByID(documentTemplateId, token: token);
+                if (doucmentTemplate == null)
+                    throw new InvalidDataException("Document Template not found.");
+                var cl = await Enricher.GenerateCoverLetter(posting, progress, token);
+                if(cl == null)
+                    throw new InvalidDataException("Cover Letter could not be generated.");
+                cl.User = await UserFacade.GetByID(posting.UserId, token: token) ?? throw new InvalidDataException("User not found.");
+                posting.CoverLetterLaTeX = await Templator.ApplyTemplate(doucmentTemplate.Template, cl, token);
+                posting = await PostingFacade.Update(posting, token: token);
+                if (!string.IsNullOrWhiteSpace(posting.CoverLetterLaTeX) && renderPDF)
+                    await RenderCoverLetter(posting, token);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
+                throw;
+            }
+        }
+
+        public async Task RenderCoverLetter(Posting posting, CancellationToken token = default)
+        {
+            try
+            {
+                if (posting.CoverLetterLaTeX != null)
+                {
+                    await ResumeBlob.UploadCoverLetter(posting.Id, await Templator.RenderLatex(posting.CoverLetterLaTeX, token), token);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
+                throw;
+            }
+        }
     }
 }

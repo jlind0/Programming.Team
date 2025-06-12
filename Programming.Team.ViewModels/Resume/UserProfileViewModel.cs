@@ -29,7 +29,7 @@ namespace Programming.Team.ViewModels.Resume
                     var user = await Facade.GetByID(userId.Value, token: token);
                     if (user != null)
                     {
-                        ViewModel = new UserProfileViewModel(Logger, null, Facade, user);
+                        ViewModel = new UserProfileViewModel(Logger, null, null, Facade, user);
                         await ViewModel.Load.Execute().GetAwaiter();
                     }
                 }
@@ -75,7 +75,9 @@ namespace Programming.Team.ViewModels.Resume
                     var user = await Facade.GetByID(userId.Value, token: token);
                     if (user != null)
                     {
-                        ViewModel = new UserProfileViewModel(Logger, new ResumeConfigurationViewModel(SectionFacade, DocumentTemplateFacade), Facade, user);
+                        ViewModel = new UserProfileViewModel(Logger, 
+                            new ResumeConfigurationViewModel(SectionFacade, DocumentTemplateFacade), 
+                            new CoverLetterConfigurationViewModel(DocumentTemplateFacade), Facade, user);
                         await ViewModel.Load.Execute().GetAwaiter();
                     }
                 }
@@ -92,9 +94,11 @@ namespace Programming.Team.ViewModels.Resume
     public class TrueUserLoaderViewModel : EntityLoaderViewModel<Guid, User, UserProfileViewModel, IUserBusinessFacade>
     {
         protected ResumeConfigurationViewModel Config { get; }
-        public TrueUserLoaderViewModel(IUserBusinessFacade facade, ResumeConfigurationViewModel config, ILogger<EntityLoaderViewModel<Guid, User, UserProfileViewModel, IUserBusinessFacade>> logger) : base(facade, logger)
+        protected CoverLetterConfigurationViewModel CoverLetterConfig { get; }
+        public TrueUserLoaderViewModel(IUserBusinessFacade facade, ResumeConfigurationViewModel config, CoverLetterConfigurationViewModel coverConfig, ILogger<EntityLoaderViewModel<Guid, User, UserProfileViewModel, IUserBusinessFacade>> logger) : base(facade, logger)
         {
             Config = config;
+            CoverLetterConfig = coverConfig;
         }
         protected override async Task DoLoad(Guid key, CancellationToken token)
         {
@@ -103,20 +107,23 @@ namespace Programming.Team.ViewModels.Resume
         }
         protected override UserProfileViewModel Construct(User entity)
         {
-            return new UserProfileViewModel(Logger, Config, Facade, entity);
+            return new UserProfileViewModel(Logger, Config, CoverLetterConfig, Facade, entity);
         }
     }
     public class UserProfileViewModel : EntityViewModel<Guid, User>, IUser
     {
         public ResumeConfigurationViewModel? DefaultResumeConfigurationViewModel { get; }
-        public UserProfileViewModel(ILogger logger, ResumeConfigurationViewModel? config, IBusinessRepositoryFacade<User, Guid> facade, Guid id) : base(logger, facade, id)
+        public CoverLetterConfigurationViewModel? DefaultCoverLetterConfigurationViewModel { get;}
+        public UserProfileViewModel(ILogger logger, ResumeConfigurationViewModel? config, CoverLetterConfigurationViewModel? coverLetterConfig, IBusinessRepositoryFacade<User, Guid> facade, Guid id) : base(logger, facade, id)
         {
             DefaultResumeConfigurationViewModel = config;
+            DefaultCoverLetterConfigurationViewModel = coverLetterConfig;
         }
 
-        public UserProfileViewModel(ILogger logger, ResumeConfigurationViewModel? config, IBusinessRepositoryFacade<User, Guid> facade, User entity) : base(logger, facade, entity)
+        public UserProfileViewModel(ILogger logger, ResumeConfigurationViewModel? config, CoverLetterConfigurationViewModel? coverLetterConfig, IBusinessRepositoryFacade<User, Guid> facade, User entity) : base(logger, facade, entity)
         {
             DefaultResumeConfigurationViewModel = config;
+            DefaultCoverLetterConfigurationViewModel = coverLetterConfig;
         }
 
         private string objectId = string.Empty;
@@ -229,6 +236,13 @@ namespace Programming.Team.ViewModels.Resume
         }
         public string? StripeStatus { get; set; }
         public DateTime? StripeUpdateDate { get; set; }
+        private string? defaultCoverLetterConfiguration;
+
+        public string? DefaultCoverLetterConfiguration 
+        {
+            get => defaultCoverLetterConfiguration;
+            set => this.RaiseAndSetIfChanged(ref defaultCoverLetterConfiguration, value);
+        }
 
         protected override Task<User> Populate()
         {
@@ -250,6 +264,7 @@ namespace Programming.Team.ViewModels.Resume
                 Country = Country,
                 ResumeGenerationsLeft = ResumeGenerationsLeft,
                 DefaultResumeConfiguration = DefaultResumeConfigurationViewModel?.GetSerializedConfiguration() ?? DefaultResumeConfiguration,
+                DefaultCoverLetterConfiguration = DefaultCoverLetterConfigurationViewModel?.GetSerializedConfiguration() ?? DefaultCoverLetterConfiguration,
                 StripeAccountId = StripeAccountId,
                 StripeStatus = StripeStatus,
                 StripeUpdateDate = StripeUpdateDate,
@@ -279,6 +294,8 @@ namespace Programming.Team.ViewModels.Resume
             StripeUpdateDate = entity.StripeUpdateDate;
             if(DefaultResumeConfigurationViewModel != null)
                 await DefaultResumeConfigurationViewModel.Load(entity.DefaultResumeConfiguration);
+            if(DefaultCoverLetterConfigurationViewModel != null)
+                await DefaultCoverLetterConfigurationViewModel.Load(entity.DefaultCoverLetterConfiguration);
         }
     }
 }

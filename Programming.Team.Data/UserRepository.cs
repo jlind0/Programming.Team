@@ -162,18 +162,18 @@ namespace Programming.Team.Data
         public DocumentTemplateRepository(IContextFactory contextFactory, IMemoryCache cache) : base(contextFactory, cache)
         {
         }
-        public async Task<DocumentTemplate[]> GetForUser(Guid userId, IUnitOfWork? work = null, CancellationToken token = default)
+        public async Task<DocumentTemplate[]> GetForUser(Guid userId, DocumentTypes type = DocumentTypes.Resume, IUnitOfWork? work = null, CancellationToken token = default)
         {
             DocumentTemplate[] templates = [];
             await Use(async (w, t) =>
             {
                 templates = await w.ResumesContext.DocumentTemplates
-                 .Where(d =>
+                 .Where(d => d.DocumentTypeId == type && (
                      (d.OwnerId == null || d.OwnerId == userId) ||
                      w.ResumesContext.DocumentTemplatePurchases
                          .Any(p => p.UserId == userId && p.IsPaid &&
                                    p.DocumentTemplateId == d.Id &&
-                                   p.DocumentTemplate.ApprovalStatus == ApprovalStatus.Approved))
+                                   p.DocumentTemplate.ApprovalStatus == ApprovalStatus.Approved)))
                  .ToArrayAsync(token);
             }, work, token);
             return templates;

@@ -59,40 +59,100 @@ namespace Programming.Team.ViewModels.Resume
         }
         protected override PostingViewModel Construct(Posting entity)
         {
-            return new PostingViewModel(Builder, new ResumeConfigurationViewModel(SectionFacade, DocumentTemplateFacade), DocumentTemplateFacade, Logger, Facade, entity);
+            return new PostingViewModel(Builder, 
+                new ResumeConfigurationViewModel(SectionFacade, DocumentTemplateFacade),
+                new CoverLetterConfigurationViewModel(DocumentTemplateFacade), DocumentTemplateFacade, Logger, Facade, entity);
         }
     }
     public class PostingViewModel : EntityViewModel<Guid, Posting>, IPosting
     {
         protected readonly CompositeDisposable disposables = new CompositeDisposable();
         public ResumeConfigurationViewModel ConfigurationViewModel { get; }
+        public CoverLetterConfigurationViewModel CoverLetterConfigurationViewModel { get; }
         public ObservableCollection<DocumentTemplate> DocumentTemplates { get; } = new ObservableCollection<DocumentTemplate>();
         protected IBusinessRepositoryFacade<DocumentTemplate, Guid> DocumentTemplateFacade { get; }
         protected IResumeBuilder Builder { get; }
         public ReactiveCommand<Unit, Unit> Rebuild { get; }
         public ReactiveCommand<Unit, Unit> Render { get; }
+        public ReactiveCommand<Unit, Unit> GenerateCoverLetter { get; }
+        public ReactiveCommand<Unit, Unit> RenderCoverLetter { get; }
         ~PostingViewModel()
         {
             disposables.Dispose();
         }
-        public PostingViewModel(IResumeBuilder builder, ResumeConfigurationViewModel config, IBusinessRepositoryFacade<DocumentTemplate, Guid>  documentTemplateFacade, ILogger logger, IBusinessRepositoryFacade<Posting, Guid> facade, Guid id) : base(logger, facade, id)
+        public PostingViewModel(IResumeBuilder builder, ResumeConfigurationViewModel config, CoverLetterConfigurationViewModel coverConfig, IBusinessRepositoryFacade<DocumentTemplate, Guid>  documentTemplateFacade, ILogger logger, IBusinessRepositoryFacade<Posting, Guid> facade, Guid id) : base(logger, facade, id)
         {
             ConfigurationViewModel = config;
             DocumentTemplateFacade = documentTemplateFacade;
             Builder = builder;
             Rebuild = ReactiveCommand.CreateFromTask(DoRebuild);
             Render = ReactiveCommand.CreateFromTask(DoRender);
+            GenerateCoverLetter = ReactiveCommand.CreateFromTask(DoGenerateCoverLetter);
+            RenderCoverLetter = ReactiveCommand.CreateFromTask(DoRenderCoverLetter);
+            CoverLetterConfigurationViewModel = coverConfig;
             WireUpEvents();
         }
 
-        public PostingViewModel(IResumeBuilder builder, ResumeConfigurationViewModel config, IBusinessRepositoryFacade<DocumentTemplate, Guid> documentTemplateFacade, ILogger logger, IBusinessRepositoryFacade<Posting, Guid> facade, Posting entity) : base(logger, facade, entity)
+        public PostingViewModel(IResumeBuilder builder, ResumeConfigurationViewModel config, CoverLetterConfigurationViewModel coverConfig, IBusinessRepositoryFacade<DocumentTemplate, Guid> documentTemplateFacade, ILogger logger, IBusinessRepositoryFacade<Posting, Guid> facade, Posting entity) : base(logger, facade, entity)
         {
             ConfigurationViewModel = config;
             DocumentTemplateFacade = documentTemplateFacade;
             Builder = builder;
             Rebuild = ReactiveCommand.CreateFromTask(DoRebuild);
             Render = ReactiveCommand.CreateFromTask(DoRender);
+            GenerateCoverLetter = ReactiveCommand.CreateFromTask(DoGenerateCoverLetter);
+            RenderCoverLetter = ReactiveCommand.CreateFromTask(DoRenderCoverLetter);
+            CoverLetterConfigurationViewModel = coverConfig;
             WireUpEvents();
+        }
+        protected async Task DoRenderCoverLetter(CancellationToken token)
+        {
+            try
+            {
+                Progress<string> prog = new Progress<string>(str =>
+                {
+                    Progress = str;
+                });
+                await Update.Execute().GetAwaiter();
+                await Builder.RenderCoverLetter(await Populate(), token);
+                await Alert.Handle("Cover Letter Rendered!").GetAwaiter();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
+                await Alert.Handle(ex.Message).GetAwaiter();
+            }
+            finally
+            {
+                Progress = null;
+            }
+        }
+        protected async Task DoGenerateCoverLetter(CancellationToken token)
+        {
+            try
+            {
+                Progress<string> prog = new Progress<string>(str =>
+                {
+                    Progress = str;
+                });
+                await Update.Execute().GetAwaiter();
+                await Builder.BuildCoverLetter(await Populate(),
+                    CoverLetterConfigurationViewModel.DocumentTemplateId ??
+                    throw new InvalidDataException("No Document Template Selected"), prog, token: token);
+                Progress = null;
+                await Load.Execute().GetAwaiter();
+                await Alert.Handle("Cover Letter Generated!").GetAwaiter();
+
+            }
+            catch(Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
+                await Alert.Handle(ex.Message).GetAwaiter();
+            }
+            finally
+            {
+                Progress = null;
+            }
         }
         protected async Task DoRebuild(CancellationToken token)
         {
@@ -115,6 +175,10 @@ namespace Programming.Team.ViewModels.Resume
             {
                 Logger.LogError(ex, ex.Message);
                 await Alert.Handle(ex.Message).GetAwaiter();
+            }
+            finally
+            {
+                Progress = null;
             }
         }
         protected async Task DoRender(CancellationToken token)
@@ -206,6 +270,19 @@ namespace Programming.Team.ViewModels.Resume
             set { }
         }
         public Guid UserId { get; set; }
+        private string? coverLetterLaTeX;
+        public string? CoverLetterLaTeX
+        {
+            get => coverLetterLaTeX;
+            set => this.RaiseAndSetIfChanged(ref coverLetterLaTeX, value);
+        }
+        private string? coverLetterConfiguration;
+        public string? CoverLetterConfiguration
+        {
+            get => coverLetterConfiguration;
+            set => this.RaiseAndSetIfChanged(ref coverLetterConfiguration, value);
+        }
+
         protected override async Task<Posting?> DoLoad(CancellationToken token)
         {
             try
@@ -232,6 +309,8 @@ namespace Programming.Team.ViewModels.Resume
                 RenderedLaTex = RenderedLaTex,
                 DocumentTemplateId = DocumentTemplateId,
                 Configuration = ConfigurationViewModel.GetSerializedConfiguration(),
+                CoverLetterConfiguration = CoverLetterConfigurationViewModel.GetSerializedConfiguration(),
+                CoverLetterLaTeX = CoverLetterLaTeX,
                 UserId = UserId
             });
         }
@@ -243,9 +322,11 @@ namespace Programming.Team.ViewModels.Resume
             Details = entity.Details;
             Configuration = entity.Configuration;
             RenderedLaTex = entity.RenderedLaTex;
+            CoverLetterLaTeX = entity.CoverLetterLaTeX;
             SelectedTemplate = DocumentTemplates.SingleOrDefault(d => d.Id == entity.DocumentTemplateId);
             UserId = entity.UserId;
             await ConfigurationViewModel.Load(entity.Configuration);
+            await CoverLetterConfigurationViewModel.Load(entity.CoverLetterConfiguration);
         }
     }
     public class ResumePartViewModel : ReactiveObject
@@ -257,13 +338,11 @@ namespace Programming.Team.ViewModels.Resume
             get => selectedTemplate;
             set => this.RaiseAndSetIfChanged(ref selectedTemplate, value);
         }
-        private Guid? InitalSelectedTemplateId { get; }
         public ResumePartViewModel(ResumePart part, int order, bool selected, SectionTemplate[] templates, Guid? selectedTemplateId)
         {
             Part = part;
             Selected = selected;
             Order = order;
-            InitalSelectedTemplateId = selectedTemplateId;
             SectionTemplates.AddRange(templates);
             SelectedTemplate = templates.SingleOrDefault(p => p.Id == selectedTemplateId);
         }
@@ -283,6 +362,79 @@ namespace Programming.Team.ViewModels.Resume
             set => this.RaiseAndSetIfChanged(ref selected, value);
         }
         public ResumePart Part{ get; }
+    }
+    public class CoverLetterConfigurationViewModel : ReactiveObject, ICoverLetterConfiguration
+    {
+        private bool isLoaded = false;
+        public bool IsLoaded
+        {
+            get => isLoaded;
+            set => this.RaiseAndSetIfChanged(ref isLoaded, value);
+        }
+        protected IDocumentTemplateBusinessFacade DocumentTemplateFacade { get; }
+        private int? targetLength;
+        public int? TargetLength
+        {
+            get => targetLength;
+            set => this.RaiseAndSetIfChanged(ref targetLength, value);
+        }
+        private Guid? defaultDocumentTemplateId;
+        public Guid? DocumentTemplateId 
+        {
+            get => defaultDocumentTemplateId;
+            set => this.RaiseAndSetIfChanged(ref defaultDocumentTemplateId, value);
+        }
+        private int? numberOfBullets;
+        public int? NumberOfBullets
+        {
+            get => numberOfBullets;
+            set => this.RaiseAndSetIfChanged(ref numberOfBullets, value);
+        }
+        public ObservableCollection<DocumentTemplate> DocumentTemplates { get; } = new ObservableCollection<DocumentTemplate>();
+        private DocumentTemplate? selectedTemplate;
+        public DocumentTemplate? SelectedTemplate
+        {
+            get => selectedTemplate;
+            set => this.RaiseAndSetIfChanged(ref selectedTemplate, value);
+        }
+        private readonly CompositeDisposable disposables = new CompositeDisposable();
+        public CoverLetterConfigurationViewModel(IDocumentTemplateBusinessFacade docTemplateFacade)
+        {
+            DocumentTemplateFacade = docTemplateFacade;
+            this.WhenPropertyChanged(p => p.SelectedTemplate).Subscribe(p =>
+            {
+                DocumentTemplateId = p.Value?.Id;
+            }).DisposeWith(disposables);
+        }
+        ~CoverLetterConfigurationViewModel()
+        {
+            disposables.Dispose();
+        }
+        public async Task Load(string? configuration)
+        {
+            IsLoaded = false;
+            var config = configuration != null ? JsonSerializer.Deserialize<CoverLetterConfiguration>(configuration) ?? new CoverLetterConfiguration() : new CoverLetterConfiguration();
+            TargetLength = config.TargetLength;
+            NumberOfBullets = config.NumberOfBullets;
+            DocumentTemplates.Clear();
+            DocumentTemplates.AddRange(await DocumentTemplateFacade.GetForUser((await DocumentTemplateFacade.GetCurrentUserId(fetchTrueUserId: true))!.Value, DocumentTypes.CoverLetter));
+            SelectedTemplate = DocumentTemplates.SingleOrDefault(dt => dt.Id == (config.DocumentTemplateId ?? DocumentTemplates.FirstOrDefault()?.Id));
+            IsLoaded = true;
+        }
+        public CoverLetterConfiguration GetConfiguration()
+        {
+            var config = new CoverLetterConfiguration()
+            {
+                TargetLength = TargetLength,
+                DocumentTemplateId = DocumentTemplateId,
+                NumberOfBullets = NumberOfBullets
+            };
+            return config;
+        }
+        public string GetSerializedConfiguration()
+        {
+            return JsonSerializer.Serialize(GetConfiguration());
+        }
     }
     public class ResumeConfigurationViewModel : ReactiveObject, IResumeConfiguration
     {

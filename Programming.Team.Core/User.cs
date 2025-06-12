@@ -8,6 +8,7 @@ public interface IStripePayable
     string? StripeAccountId { get; set; }
     string? StripeStatus { get; set; }
     DateTime? StripeUpdateDate { get; set; }
+    
 }
 public interface IUser : IEntity<Guid>, IStripePayable
 {
@@ -36,7 +37,8 @@ public interface IUser : IEntity<Guid>, IStripePayable
     string? Country { get; set; }
     int ResumeGenerationsLeft { get; set; }
     string? DefaultResumeConfiguration { get; set; }
-    
+    string? DefaultCoverLetterConfiguration { get; set; }
+
 }
 
 public partial class User : Entity<Guid>, IUser
@@ -162,4 +164,5 @@ public partial class User : Entity<Guid>, IUser
     public string? StripeAccountId { get; set; }
     public string? StripeStatus { get; set; }
     public DateTime? StripeUpdateDate { get; set; }
+    public string? DefaultCoverLetterConfiguration { get; set; }
 }

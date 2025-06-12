@@ -18,7 +18,7 @@ public interface IStripePurchaseable
 }
 public interface IDocumentTemplate : IEntity<Guid>, INamedEntity, IStripePurchaseable
 {
-    int DocumentTypeId { get; set; }
+    DocumentTypes DocumentTypeId { get; set; }
 
     string Template { get; set; }
     Guid? OwnerId { get; set; }
@@ -27,7 +27,7 @@ public interface IDocumentTemplate : IEntity<Guid>, INamedEntity, IStripePurchas
 }
 public partial class DocumentTemplate : Entity<Guid>, IDocumentTemplate
 {
-    public int DocumentTypeId { get; set; }
+    public DocumentTypes DocumentTypeId { get; set; }
     public Guid? OwnerId { get; set; }
     public string Name { get; set; } = null!;
 

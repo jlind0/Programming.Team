@@ -13,19 +13,28 @@
         </MudSelect>
         <ResumeConfigurationView ViewModel="ViewModel.ConfigurationViewModel"/>
         <MudTextField Lines="10" @bind-Value="ViewModel.Details" Label="Details" Variant="Variant.Outlined" />
-        <MudTextField Lines="10" @bind-Value="ViewModel.RenderedLaTex" Label="LaTex" Variant="Variant.Outlined" />
+        <MudTextField Lines="10" @bind-Value="ViewModel.RenderedLaTex" Label="Resume LaTeX" Variant="Variant.Outlined" />
         @{
             var str = $"/api/resumes/{ViewModel.Id}";
             <MudLink Href="@str" Target="_blank">Download Resume</MudLink>
+        }
+        <CoverLetterConfigurationView ViewModel="ViewModel.CoverLetterConfigurationViewModel"/>
+        @if (!string.IsNullOrWhiteSpace(ViewModel.CoverLetterLaTeX))
+        {
+            var strCover = $"/api/coverletters/{ViewModel.Id}";
+            <MudTextField Lines="10" @bind-Value="ViewModel.CoverLetterLaTeX" Label="Cover Letter LaTeX" Variant="Variant.Outlined" />
+            <MudLink Href="@strCover" Target="_blank">Download Cover Letter</MudLink>
         }
         <MudStack Row="true">
             <MudButton OnClick="ViewModel.Update.BindCommand<MouseEventArgs>()">Update</MudButton>
             <MudStack Row="true">
                 <MudCheckBox @bind-Value="ViewModel.Enrich" Label="Enrich?"/>
                 <MudCheckBox @bind-Value="ViewModel.RenderPDF" Label="RenderPDF?"/>
-                <MudButton OnClick="ViewModel.Rebuild.BindCommand<MouseEventArgs>()">Rebuild</MudButton>
+                <MudButton OnClick="ViewModel.Rebuild.BindCommand<MouseEventArgs>()">Rebuild Resume</MudButton>
             </MudStack>
-            <MudButton OnClick="ViewModel.Render.BindCommand<MouseEventArgs>()">Render</MudButton>
+            <MudButton OnClick="ViewModel.Render.BindCommand<MouseEventArgs>()">Render Resume</MudButton>
+            <MudButton OnClick="ViewModel.GenerateCoverLetter.BindCommand<MouseEventArgs>()">Generate Cover Letter</MudButton>
+            <MudButton OnClick="ViewModel.RenderCoverLetter.BindCommand<MouseEventArgs>()">Render Cover Letter</MudButton>
             <MudButton OnClick="ViewModel.Delete.BindCommand<MouseEventArgs>()">Delete</MudButton>
         </MudStack>
     </MudStack>

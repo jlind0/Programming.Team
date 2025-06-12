@@ -143,6 +143,7 @@ public partial class ResumesContext : DbContext
 
         modelBuilder.Entity<DocumentTemplate>(entity =>
         {
+            entity.Property(e => e.DocumentTypeId).HasConversion<int>();
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             entity.Property(e => e.CreateDate)
                 .HasDefaultValueSql("(getutcdate())")
@@ -175,6 +176,7 @@ public partial class ResumesContext : DbContext
 
         modelBuilder.Entity<DocumentType>(entity =>
         {
+            entity.Property(e => e.Id).HasConversion<int>();
             entity.Property(e => e.CreateDate)
                 .HasDefaultValueSql("(getutcdate())")
                 .HasColumnType("datetime");

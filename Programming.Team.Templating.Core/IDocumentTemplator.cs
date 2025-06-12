@@ -10,6 +10,7 @@ namespace Programming.Team.Templating.Core
     public interface IDocumentTemplator
     {
         Task<string> ApplyTemplate(string template, Resume resume, CancellationToken token = default);
+        Task<string> ApplyTemplate(string template, CoverLetter coverLetter, CancellationToken token = default);
         Task<byte[]> RenderLatex(string latex, CancellationToken token = default);
     }
 }

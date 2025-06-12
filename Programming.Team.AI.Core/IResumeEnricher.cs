@@ -31,6 +31,7 @@ namespace Programming.Team.AI.Core
         /// <param name="token">Used to cancel the operation.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
         Task EnrichResume(Resume resume, Posting posting, IProgress<string>? progress = null, CancellationToken token = default);
+        Task<CoverLetter?> GenerateCoverLetter(Posting posting, IProgress<string>? progress = null, CancellationToken token = default);
     }
     /// <summary>
     /// Interact with the AI model to generate responses.

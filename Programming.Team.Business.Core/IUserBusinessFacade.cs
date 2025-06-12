@@ -100,6 +100,6 @@ namespace Programming.Team.Business.Core
 
     public interface IDocumentTemplateBusinessFacade : IBusinessRepositoryFacade<DocumentTemplate, Guid>
     {
-        Task<DocumentTemplate[]> GetForUser(Guid userId, IUnitOfWork? work = null, CancellationToken token = default);
+        Task<DocumentTemplate[]> GetForUser(Guid userId, DocumentTypes type = DocumentTypes.Resume, IUnitOfWork? work = null, CancellationToken token = default);
     }
 }

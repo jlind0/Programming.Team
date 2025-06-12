@@ -142,5 +142,28 @@ namespace Programming.Team.AI
             }
             return null;
         }
+
+        public async Task<CoverLetter?> GenerateCoverLetter(Posting posting, IProgress<string>? progress = null, CancellationToken token = default)
+        {
+            try 
+            { 
+                if(string.IsNullOrWhiteSpace(posting.RenderedLaTex))
+                    throw new InvalidDataException("Posting must have a rendered LaTeX to generate a cover letter.");
+                progress?.Report("Starting Cover Letter Generation");
+                CoverLetterConfiguration config = posting.CoverLetterConfiguration != null ? 
+                    JsonSerializer.Deserialize<CoverLetterConfiguration>(posting.CoverLetterConfiguration) ?? new CoverLetterConfiguration() : new CoverLetterConfiguration();
+                posting.CoverLetterConfiguration = JsonSerializer.Serialize(config);
+                progress?.Report("Generating Cover Letter");
+                var coverLetter = await ChatGPT.GetRepsonse($"Output a LaTex snippet that will be added to an existing latex document - do not generate opening or closing article, document sections or headers. The user message is a latex resume: tailor/summarize it, to generate a cover letter, highlighting how it pertains the following job description, write up to {config.TargetLength ?? 2000} characters and {config.NumberOfBullets ?? 10} bullet points (written with itemize, no dashes) - stick to what you know, don't make things up: {JsonSerializer.Serialize(posting.Details)}", posting.RenderedLaTex, token: token);
+                coverLetter = coverLetter?.Replace("#", "\\#").Replace("$", "\\$").Replace("&", "\\&").Replace("%", "\\%").Replace("```latex", "").Replace("```", "");
+                progress?.Report("Cover Letter Generated Successfully");
+                return new CoverLetter() { Body = coverLetter ?? throw new InvalidOperationException() };
+            }
+            catch(Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
+                throw;
+            }
+        }
     }
 }
