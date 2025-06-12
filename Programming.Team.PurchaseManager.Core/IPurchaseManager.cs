@@ -14,6 +14,7 @@ namespace Programming.Team.PurchaseManager.Core
         Task ConfigurePackage(TPurchaseable purchaseable, CancellationToken token = default);
         Task FinishPurchase(TPurchase purchase, CancellationToken token = default);
         Task<TPurchase> StartPurchase(TPurchaseable purchaseable, CancellationToken token = default);
+        Task RefundPurchase(TPurchase purchase, CancellationToken token = default);
     }
 
     public interface IAccountManager

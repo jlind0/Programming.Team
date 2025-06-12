@@ -18,9 +18,11 @@ namespace Programming.Team.Web.Controllers
         protected ILogger Logger { get; }
         protected SessionService SessionService { get; }
         protected IPurchaseManager<Package, Purchase> PurchaseManager { get; }
+        protected IPurchaseManager<DocumentTemplate, DocumentTemplatePurchase> DocumentTemplatePurchaseManager { get; }
+        protected IBusinessRepositoryFacade<DocumentTemplatePurchase, Guid> DocumentTemplatePurchaseFacade { get; }
         protected IBusinessRepositoryFacade<Purchase, Guid> PurchaseFacade { get; }
-        public StripeWebhookController(IConfiguration configuration, IPurchaseManager<Package, Purchase> purchaseManager, 
-            IBusinessRepositoryFacade<Purchase, Guid> purchaseFacade,
+        public StripeWebhookController(IConfiguration configuration, IPurchaseManager<Package, Purchase> purchaseManager, IPurchaseManager<DocumentTemplate, DocumentTemplatePurchase> documentTemplatePurchaseManager,
+            IBusinessRepositoryFacade<Purchase, Guid> purchaseFacade, IBusinessRepositoryFacade<DocumentTemplatePurchase, Guid> documentTemplatePurchaseFacade,
             ILogger<StripeWebhookController> logger, SessionService sessionService)
         {
             WebHookSecret = configuration["Stripe:WebHookKey"] ?? throw new InvalidDataException();
@@ -28,6 +30,8 @@ namespace Programming.Team.Web.Controllers
             SessionService = sessionService;
             PurchaseManager = purchaseManager;
             PurchaseFacade = purchaseFacade;
+            DocumentTemplatePurchaseManager = documentTemplatePurchaseManager;
+            DocumentTemplatePurchaseFacade = documentTemplatePurchaseFacade;
         }
         [HttpPost]
         public async Task<IActionResult> Index()
@@ -40,6 +44,7 @@ namespace Programming.Team.Web.Controllers
                 if (stripeEvent.Type == "checkout.session.completed")
                 {
                     var session = stripeEvent.Data.Object as Session;
+                    
                     if (session == null)
                         throw new InvalidDataException();
                     var options = new SessionGetOptions();
@@ -47,18 +52,50 @@ namespace Programming.Team.Web.Controllers
 
                     // Retrieve the session. If you require line items in the response, you may include them by expanding line_items.
                     var sessionWithLineItems = await SessionService.GetAsync(session.Id, options);
-                    if (sessionWithLineItems.Metadata.TryGetValue(nameof(Purchase.Id), out var subscriptionId))
+                    if (sessionWithLineItems.Metadata.TryGetValue("Id", out var subscriptionId) &&
+                        sessionWithLineItems.Metadata.TryGetValue("PurchaseType", out var purchseType))
                     {
                         if (sessionWithLineItems.AmountTotal != null)
                         {
-                            var purchase = await PurchaseFacade.GetByID(Guid.Parse(subscriptionId));
-                            if(purchase == null)
-                                throw new InvalidDataException();
-                            await PurchaseManager.FinishPurchase(purchase);
+                            if(purchseType == typeof(DocumentTemplate).Name)
+                            {
+                                var documentPurchase = await DocumentTemplatePurchaseFacade.GetByID(Guid.Parse(subscriptionId));
+                                if (documentPurchase == null)
+                                    throw new InvalidDataException();
+                                documentPurchase.StripePaymentIntentId = session.PaymentIntentId;
+                                await DocumentTemplatePurchaseManager.FinishPurchase(documentPurchase);
+                            }
+                            else if(purchseType == typeof(Package).Name)
+                            {
+                                var purchase = await PurchaseFacade.GetByID(Guid.Parse(subscriptionId));
+                                if (purchase == null)
+                                    throw new InvalidDataException();
+                                purchase.StripePaymentIntentId = session.PaymentIntentId;
+                                await PurchaseManager.FinishPurchase(purchase);
+                            }    
                         }
                     }
                     else
                         throw new InvalidDataException();
+                }
+                else if(stripeEvent.Type == "charge.refunded")
+                {
+                    var payment = stripeEvent.Data.Object as Charge;
+                    if(payment == null)
+                        throw new InvalidDataException();
+                    var purchases = await PurchaseFacade.Get(filter: x => x.StripePaymentIntentId == payment.PaymentIntentId);
+                    if(purchases.Count == 0)
+                    {
+                        var documentTemplatePurchases = await DocumentTemplatePurchaseFacade.Get(filter: x => x.StripePaymentIntentId == payment.PaymentIntentId);
+                        if(documentTemplatePurchases.Count == 0)
+                            throw new InvalidDataException("No purchases found for the refunded payment intent.");
+                        await DocumentTemplatePurchaseManager.RefundPurchase(documentTemplatePurchases.Entities.Single());
+                    }
+                    else
+                    {
+                        await PurchaseManager.RefundPurchase(purchases.Entities.Single());
+                    }
+
                 }
                 return Ok();
             }

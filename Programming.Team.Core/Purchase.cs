@@ -29,5 +29,8 @@ namespace Programming.Team.Core
         public virtual Package Package { get; set; } = null!;
 
         public virtual User User { get; set; } = null!;
+        public bool IsRefunded { get; set; }
+        public DateTime? RefundDate { get; set; }
+        public string? StripePaymentIntentId { get; set; }
     }
 }

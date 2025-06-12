@@ -17,6 +17,9 @@ namespace Programming.Team.Core
         decimal PricePaid { get; set; }
         bool IsPaid { get; set; }
         string StripeSessionUrl { get; set; }
+        bool IsRefunded { get; set; }
+        DateTime? RefundDate { get; set; }
+        string? StripePaymentIntentId { get; set; }
     }
     public interface IDocumentTemplatePurchase : IEntity<Guid>, IStripePurchase
     {
@@ -40,5 +43,8 @@ namespace Programming.Team.Core
         public Guid UserId { get; set; }
         public virtual DocumentTemplate DocumentTemplate { get; set; } = null!;
         public virtual User User { get; set; } = null!;
+        public bool IsRefunded { get; set; }
+        public DateTime? RefundDate { get; set; }
+        public string? StripePaymentIntentId { get; set; }
     }
 }

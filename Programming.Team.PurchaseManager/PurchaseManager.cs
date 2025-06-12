@@ -45,7 +45,7 @@ namespace Programming.Team.PurchaseManager
             PaymentSuccessUri = config["Stripe:SuccessUrl"] ?? throw new InvalidDataException();
 
         }
-        protected async Task CreateProduct(IStripePurchaseable entity, CancellationToken token = default)
+        protected virtual async Task CreateProduct(IStripePurchaseable entity, CancellationToken token = default)
         {
             var prod = new ProductCreateOptions()
             {
@@ -58,7 +58,7 @@ namespace Programming.Team.PurchaseManager
                 await CreatePrice(entity, token);
             }
         }
-        protected async Task CreatePrice(IStripePurchaseable entity, CancellationToken token = default)
+        protected virtual async Task CreatePrice(IStripePurchaseable entity, CancellationToken token = default)
         {
             if (!string.IsNullOrWhiteSpace(entity.StripeProductId))
             {
@@ -146,6 +146,15 @@ namespace Programming.Team.PurchaseManager
         }
 
         protected abstract Task HydratePurchase(TPurchase purchase, TPurchaseable purchaseable, CancellationToken token = default);
+        protected abstract Task ReversePurchase(TPurchase purchase, CancellationToken token = default);
+        public virtual async Task RefundPurchase(TPurchase purchase, CancellationToken token = default)
+        {
+            purchase.IsRefunded = true;
+            purchase.RefundDate = DateTime.UtcNow;
+            purchase.IsPaid = false;
+            await ReversePurchase(purchase, token);
+            await PurchaseRepository.Update(purchase, token: token);
+        }
     }
     public class PackagePurchaseManager : PurchaseManager<Package, Purchase>
     {
@@ -168,6 +177,15 @@ namespace Programming.Team.PurchaseManager
             purchase.PackageId = purchaseable.Id;
             return Task.CompletedTask;
         }
+
+        protected override async Task ReversePurchase(Purchase purchase, CancellationToken token = default)
+        {
+            var user = await UserRepository.GetByID(purchase.UserId, token: token);
+            if (user == null)
+                throw new InvalidDataException();
+            user.ResumeGenerationsLeft -= purchase.ResumeGenerations;
+            await UserRepository.Update(user, token: token);
+        }
     }
     public class DocumentTemplatePurchaseManager : PurchaseManager<DocumentTemplate, DocumentTemplatePurchase>
     {
@@ -183,6 +201,11 @@ namespace Programming.Team.PurchaseManager
         protected override Task HydratePurchase(DocumentTemplatePurchase purchase, DocumentTemplate purchaseable, CancellationToken token = default)
         {
             purchase.DocumentTemplateId = purchaseable.Id;
+            return Task.CompletedTask;
+        }
+
+        protected override Task ReversePurchase(DocumentTemplatePurchase purchase, CancellationToken token = default)
+        {
             return Task.CompletedTask;
         }
     }
