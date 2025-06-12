@@ -9,6 +9,7 @@
         @if(ViewModel.Owner != null)
         {
             <MudText>Owner: @ViewModel.Owner.EmailAddress</MudText>
+            <MudNumericField @bind-Value="ViewModel.Price" Label="Price" Variant="Variant.Outlined"/>
         }
         else
         {

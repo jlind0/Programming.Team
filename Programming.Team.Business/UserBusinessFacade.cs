@@ -74,8 +74,9 @@ namespace Programming.Team.Business
         }
         public override async Task Add(Package entity, IUnitOfWork? work = null, CancellationToken token = default)
         {
-            await PurchaseManager.ConfigurePackage(entity, token);
             await base.Add(entity, work, token);
+            await PurchaseManager.ConfigurePackage(entity, token);
+            await RepositoryDefault.Update(entity, work, token: token);
         }
         public override async Task<Package> Update(Package entity, IUnitOfWork? work = null, Func<IQueryable<Package>, IQueryable<Package>>? properites = null, CancellationToken token = default)
         {
@@ -130,10 +131,32 @@ namespace Programming.Team.Business
     }
     public class DocumentTemplateBusinessFacade : BusinessRepositoryFacade<DocumentTemplate, Guid, IDocumentTemplateRepository>, IDocumentTemplateBusinessFacade
     {
-        public DocumentTemplateBusinessFacade(IDocumentTemplateRepository repository, ILogger<DocumentTemplate> logger) : base(repository, logger)
+        protected IPurchaseManager<DocumentTemplate, DocumentTemplatePurchase> PurchaseManager { get; }
+        public DocumentTemplateBusinessFacade(IPurchaseManager<DocumentTemplate, DocumentTemplatePurchase> purchaseManager, IDocumentTemplateRepository repository, ILogger<DocumentTemplate> logger) : base(repository, logger)
         {
+            PurchaseManager = purchaseManager;
         }
-
+        public override async Task Add(DocumentTemplate entity, IUnitOfWork? work = null, CancellationToken token = default)
+        {
+            await base.Add(entity, work, token);
+            await ApplyPurchase(entity, work, token);
+        }
+        protected virtual async Task ApplyPurchase(DocumentTemplate entity, IUnitOfWork? work = null, CancellationToken token = default)
+        {
+            if (entity.OwnerId != null && entity.Price > 0)
+                await PurchaseManager.ConfigurePackage(entity, token);
+            else
+            {
+                entity.StripeProductId = null;
+                entity.StripePriceId = null;
+                entity.StripeUrl = null;
+            }
+        }
+        public override async Task<DocumentTemplate> Update(DocumentTemplate entity, IUnitOfWork? work = null, Func<IQueryable<DocumentTemplate>, IQueryable<DocumentTemplate>>? properites = null, CancellationToken token = default)
+        {
+            await ApplyPurchase(entity, work, token);
+            return await base.Update(entity, work, properites, token);
+        }
         public Task<DocumentTemplate[]> GetForUser(Guid userId, IUnitOfWork? work = null, CancellationToken token = default)
         {
             return Repository.GetForUser(userId, work, token);
