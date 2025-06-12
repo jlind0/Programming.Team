@@ -21,9 +21,11 @@ namespace Programming.Team.Web.Controllers
         protected IPurchaseManager<DocumentTemplate, DocumentTemplatePurchase> DocumentTemplatePurchaseManager { get; }
         protected IBusinessRepositoryFacade<DocumentTemplatePurchase, Guid> DocumentTemplatePurchaseFacade { get; }
         protected IBusinessRepositoryFacade<Purchase, Guid> PurchaseFacade { get; }
-        public StripeWebhookController(IConfiguration configuration, IPurchaseManager<Package, Purchase> purchaseManager, IPurchaseManager<DocumentTemplate, DocumentTemplatePurchase> documentTemplatePurchaseManager,
+        protected IAccountManager AccountManager { get; }
+        protected IUserBusinessFacade UserFacade { get; }
+        public StripeWebhookController(IConfiguration configuration, IUserBusinessFacade userFacade, IPurchaseManager<Package, Purchase> purchaseManager, IPurchaseManager<DocumentTemplate, DocumentTemplatePurchase> documentTemplatePurchaseManager,
             IBusinessRepositoryFacade<Purchase, Guid> purchaseFacade, IBusinessRepositoryFacade<DocumentTemplatePurchase, Guid> documentTemplatePurchaseFacade,
-            ILogger<StripeWebhookController> logger, SessionService sessionService)
+            ILogger<StripeWebhookController> logger, SessionService sessionService, IAccountManager accountManager)
         {
             WebHookSecret = configuration["Stripe:WebHookKey"] ?? throw new InvalidDataException();
             Logger = logger;
@@ -32,6 +34,8 @@ namespace Programming.Team.Web.Controllers
             PurchaseFacade = purchaseFacade;
             DocumentTemplatePurchaseManager = documentTemplatePurchaseManager;
             DocumentTemplatePurchaseFacade = documentTemplatePurchaseFacade;
+            AccountManager = accountManager;
+            UserFacade = userFacade;
         }
         [HttpPost]
         public async Task<IActionResult> Index()
@@ -96,6 +100,63 @@ namespace Programming.Team.Web.Controllers
                         await PurchaseManager.RefundPurchase(purchases.Entities.Single());
                     }
 
+                }
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
+                return BadRequest(ex);
+            }
+        }
+    }
+    [Route("/api/stripeconnected")]
+    [ApiController]
+    public class ConnectedStripeWebhookController : Controller
+    {
+        protected string WebHookSecret { get; }
+        protected ILogger Logger { get; }
+        protected SessionService SessionService { get; }
+        protected IPurchaseManager<Package, Purchase> PurchaseManager { get; }
+        protected IPurchaseManager<DocumentTemplate, DocumentTemplatePurchase> DocumentTemplatePurchaseManager { get; }
+        protected IBusinessRepositoryFacade<DocumentTemplatePurchase, Guid> DocumentTemplatePurchaseFacade { get; }
+        protected IBusinessRepositoryFacade<Purchase, Guid> PurchaseFacade { get; }
+        protected IAccountManager AccountManager { get; }
+        protected IUserBusinessFacade UserFacade { get; }
+        public ConnectedStripeWebhookController(IConfiguration configuration, IUserBusinessFacade userFacade, IPurchaseManager<Package, Purchase> purchaseManager, IPurchaseManager<DocumentTemplate, DocumentTemplatePurchase> documentTemplatePurchaseManager,
+            IBusinessRepositoryFacade<Purchase, Guid> purchaseFacade, IBusinessRepositoryFacade<DocumentTemplatePurchase, Guid> documentTemplatePurchaseFacade,
+            ILogger<StripeWebhookController> logger, SessionService sessionService, IAccountManager accountManager)
+        {
+            WebHookSecret = configuration["Stripe:ConnectedWebHookKey"] ?? throw new InvalidDataException();
+            Logger = logger;
+            SessionService = sessionService;
+            PurchaseManager = purchaseManager;
+            PurchaseFacade = purchaseFacade;
+            DocumentTemplatePurchaseManager = documentTemplatePurchaseManager;
+            DocumentTemplatePurchaseFacade = documentTemplatePurchaseFacade;
+            AccountManager = accountManager;
+            UserFacade = userFacade;
+        }
+        [HttpPost]
+        public async Task<IActionResult> Index()
+        {
+            try
+            {
+                var str = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+                Logger.LogInformation(str);
+                var stripeEvent = EventUtility.ConstructEvent(str, Request.Headers["Stripe-Signature"], WebHookSecret);
+                if (stripeEvent.Type == "account.application.authorized" || stripeEvent.Type == "account.application.deauthorized" ||
+                    stripeEvent.Type == "account.updated" || stripeEvent.Type == "account.external_account.created" ||
+                    stripeEvent.Type == "account.external_account.updated")
+                {
+                    var acct = stripeEvent.Account;
+                    
+                    if (acct == null)
+                        throw new InvalidDataException("Account not found in event data.");
+                    var users = await UserFacade.Get(filter: x => x.StripeAccountId == acct);
+                    if (users.Count != 1)
+                        throw new InvalidDataException("No users found for the authorized account.");
+                    await AccountManager.FinalizeAccount(users.Entities.Single());
                 }
                 return Ok();
             }

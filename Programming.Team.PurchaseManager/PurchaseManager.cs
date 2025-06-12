@@ -45,12 +45,17 @@ namespace Programming.Team.PurchaseManager
             PaymentSuccessUri = config["Stripe:SuccessUrl"] ?? throw new InvalidDataException();
 
         }
-        protected virtual async Task CreateProduct(IStripePurchaseable entity, CancellationToken token = default)
+        protected virtual Task ApplyProductCreateOptions(ProductCreateOptions options, TPurchaseable purchaseable, CancellationToken token = default)
+        {
+            return Task.CompletedTask;
+        }
+        protected virtual async Task CreateProduct(TPurchaseable entity, CancellationToken token = default)
         {
             var prod = new ProductCreateOptions()
             {
                 Name = entity.StripeName
             };
+            await ApplyProductCreateOptions(prod, entity, token);
             var product = await ProductService.CreateAsync(prod, cancellationToken: token);
             if (product != null)
             {
@@ -58,7 +63,15 @@ namespace Programming.Team.PurchaseManager
                 await CreatePrice(entity, token);
             }
         }
-        protected virtual async Task CreatePrice(IStripePurchaseable entity, CancellationToken token = default)
+        protected virtual Task ApplyPriceOptions(PriceCreateOptions options, TPurchaseable purchaseable, CancellationToken token = default)
+        {
+            return Task.CompletedTask;
+        }
+        protected virtual Task ApplyPaymentLinkOptions(PaymentLinkCreateOptions options, TPurchaseable purchaseable, CancellationToken token = default)
+        {
+            return Task.CompletedTask;
+        }
+        protected virtual async Task CreatePrice(TPurchaseable entity, CancellationToken token = default)
         {
             if (!string.IsNullOrWhiteSpace(entity.StripeProductId))
             {
@@ -68,6 +81,7 @@ namespace Programming.Team.PurchaseManager
                     Currency = "usd",
                     Product = entity.StripeProductId
                 };
+                await ApplyPriceOptions(price, entity, token);
                 var p = await PriceService.CreateAsync(price, cancellationToken: token);
                 if (p != null)
                 {
@@ -81,6 +95,7 @@ namespace Programming.Team.PurchaseManager
                             Quantity = 1
                         }
                     ];
+                    await ApplyPaymentLinkOptions(options, entity, token);
                     var link = await PaymentLinkService.CreateAsync(options, cancellationToken: token);
                     entity.StripeUrl = link.Id;
                 }
@@ -189,15 +204,33 @@ namespace Programming.Team.PurchaseManager
     }
     public class DocumentTemplatePurchaseManager : PurchaseManager<DocumentTemplate, DocumentTemplatePurchase>
     {
+        protected decimal CreatorFeePercentage { get; }
         public DocumentTemplatePurchaseManager(IConfiguration config, IUserRepository userRepository, IRepository<DocumentTemplate, Guid> packageRepository, IRepository<DocumentTemplatePurchase, Guid> purchaseRepository, ProductService productService, PriceService priceService, PaymentLinkService paymentLinkService, SessionService sessionService, AccountService accountService, PayoutService payoutService) : base(config, userRepository, packageRepository, purchaseRepository, productService, priceService, paymentLinkService, sessionService, accountService, payoutService)
         {
+            CreatorFeePercentage = decimal.Parse(config["Stripe:CreatorFeePercentage"] ?? throw new InvalidDataException()); // Default to 10% if not set
         }
 
         protected override Task HandleFinalPurchase(DocumentTemplatePurchase purchase, CancellationToken token = default)
         {
             return Task.CompletedTask;
         }
-
+        protected override async Task ApplyPaymentLinkOptions(PaymentLinkCreateOptions options, DocumentTemplate purchaseable, CancellationToken token = default)
+        {
+            if (purchaseable.OwnerId != null && purchaseable.Price > 0)
+            {
+                var user = await UserRepository.GetByID(purchaseable.OwnerId.Value, token: token);
+                if(!string.IsNullOrWhiteSpace(user?.StripeAccountId) && user.StripeStatus == "approved")
+                {
+                    var price = purchaseable.Price * 100 * CreatorFeePercentage;
+                    options.ApplicationFeeAmount = Convert.ToInt64(price);
+                    options.TransferData = new PaymentLinkTransferDataOptions()
+                    {
+                        Destination = user.StripeAccountId
+                    };
+                }
+                else throw new InvalidDataException("User does not have a valid Stripe account for payouts.");
+            }
+        }
         protected override Task HydratePurchase(DocumentTemplatePurchase purchase, DocumentTemplate purchaseable, CancellationToken token = default)
         {
             purchase.DocumentTemplateId = purchaseable.Id;

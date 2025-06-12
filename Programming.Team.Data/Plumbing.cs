@@ -305,6 +305,8 @@ namespace Programming.Team.Data
                 results.Entities = await orderBy(query).ToArrayAsync(t);
             else
                 results.Entities = await query.ToArrayAsync(t);
+            if(page == null)
+                results.Count = results.Entities.Count();
         }
         public virtual async Task<RepositoryResultSet<TKey, TEntity>> Get(IUnitOfWork? work = null,
             Pager? page = null,
