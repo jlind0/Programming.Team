@@ -276,7 +276,7 @@ namespace Programming.Team.ViewModels.Admin
             set => this.RaiseAndSetIfChanged(ref defaultCoverLetterConfiguration, value);
         }
 
-        protected override Task<User> Populate()
+        internal override Task<User> Populate()
         {
             User user = new User();
             user.Id = Id;
@@ -301,8 +301,8 @@ namespace Programming.Team.ViewModels.Admin
             user.StripeUpdateDate = StripeUpdateDate;
             return Task.FromResult(user);
         }
-        
-        protected override async Task Read(User entity)
+
+        internal override async Task Read(User entity)
         {
             Id = entity.Id;
             ObjectId = entity.ObjectId;

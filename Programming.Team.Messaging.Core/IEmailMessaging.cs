@@ -13,6 +13,6 @@ namespace Programming.Team.Messaging.Core
     }
     public interface IEmailMessaging
     {
-        Task SendEmails(string messageTemplate, string subjectTemplate, MessageType type = MessageType.PlainText, Guid[]? userIds = null, CancellationToken token = default);
+        Task SendEmails(string messageTemplate, string subjectTemplate, IProgress<string>? progress = null, MessageType type = MessageType.PlainText, Guid[]? userIds = null, CancellationToken token = default);
     }
 }

@@ -225,7 +225,7 @@ namespace Programming.Team.ViewModels.Purchase
             set => this.RaiseAndSetIfChanged(ref name, value);
         }
 
-        protected override Task<Package> Populate()
+        internal override Task<Package> Populate()
         {
             return Task.FromResult(new Package()
             {
@@ -239,7 +239,7 @@ namespace Programming.Team.ViewModels.Purchase
             });
         }
 
-        protected override Task Read(Package entity)
+        internal override Task Read(Package entity)
         {
             Id = entity.Id;
             Price = entity.Price;

@@ -299,7 +299,7 @@ namespace Programming.Team.ViewModels.Resume
             }
             return await base.DoLoad(token);
         }
-        protected override Task<Posting> Populate()
+        internal override Task<Posting> Populate()
         {
             return Task.FromResult(new Posting()
             {
@@ -315,7 +315,7 @@ namespace Programming.Team.ViewModels.Resume
             });
         }
 
-        protected override async Task Read(Posting entity)
+        internal override async Task Read(Posting entity)
         {
             Id = entity.Id;
             Name = entity.Name;

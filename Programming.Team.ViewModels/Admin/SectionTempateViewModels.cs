@@ -147,7 +147,7 @@ namespace Programming.Team.ViewModels.Admin
         {
             return e => e.Include(d => d.DocumentSectionTemplates).ThenInclude(d => d.DocumentTemplate);
         }
-        protected override Task<SectionTemplate> Populate()
+        internal override Task<SectionTemplate> Populate()
         {
             return Task.FromResult(new SectionTemplate()
             {
@@ -159,7 +159,7 @@ namespace Programming.Team.ViewModels.Admin
             });
         }
 
-        protected override Task Read(SectionTemplate entity)
+        internal override Task Read(SectionTemplate entity)
         {
             Name = entity.Name;
             Template = entity.Template;

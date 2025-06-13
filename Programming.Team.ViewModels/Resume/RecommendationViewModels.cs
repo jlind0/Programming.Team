@@ -153,7 +153,7 @@ namespace Programming.Team.ViewModels.Resume
             return e => e.Include(x => x.Position).ThenInclude(x => x.Company);
         }
 
-        protected override Task<Recommendation> Populate()
+        internal override Task<Recommendation> Populate()
         {
             return Task.FromResult(new Recommendation()
             {
@@ -167,7 +167,7 @@ namespace Programming.Team.ViewModels.Resume
             });
         }
 
-        protected override Task Read(Recommendation entity)
+        internal override Task Read(Recommendation entity)
         {
             Id = entity.Id;
             UserId = entity.UserId;

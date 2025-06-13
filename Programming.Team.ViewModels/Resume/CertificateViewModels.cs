@@ -114,7 +114,7 @@ namespace Programming.Team.ViewModels.Resume
             set => this.RaiseAndSetIfChanged(ref url, value);
         }
 
-        protected override Task<CertificateIssuer> Populate()
+        internal override Task<CertificateIssuer> Populate()
         {
             return Task.FromResult(new CertificateIssuer()
             {
@@ -125,7 +125,7 @@ namespace Programming.Team.ViewModels.Resume
             });
         }
 
-        protected override Task Read(CertificateIssuer entity)
+        internal override Task Read(CertificateIssuer entity)
         {
             Description = entity.Description;
             Url = entity.Url;
@@ -316,7 +316,7 @@ namespace Programming.Team.ViewModels.Resume
             set => this.RaiseAndSetIfChanged(ref issuer, value);
         }
 
-        protected override Task<Certificate> Populate()
+        internal override Task<Certificate> Populate()
         {
             return Task.FromResult(new Certificate()
             {
@@ -331,7 +331,7 @@ namespace Programming.Team.ViewModels.Resume
             });
         }
 
-        protected override Task Read(Certificate entity)
+        internal override Task Read(Certificate entity)
         {
             IssuerId = entity.IssuerId;
             Name = entity.Name;

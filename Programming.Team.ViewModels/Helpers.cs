@@ -152,8 +152,8 @@ namespace Programming.Team.ViewModels
             set => this.RaiseAndSetIfChanged(ref isSelected, value);
         }
 
-        protected abstract Task<TEntity> Populate();
-        protected abstract Task Read(TEntity entity);
+        internal abstract Task<TEntity> Populate();
+        internal abstract Task Read(TEntity entity);
     }
     public abstract class EntityViewModel<TKey, TEntity> : EntityViewModel<TKey, TEntity, IBusinessRepositoryFacade<TEntity, TKey>>
         where TKey : struct

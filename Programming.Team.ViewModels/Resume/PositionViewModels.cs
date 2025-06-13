@@ -282,7 +282,7 @@ namespace Programming.Team.ViewModels.Resume
         {
             return e => e.Include(x => x.Company).Include(x => x.PositionSkills).ThenInclude(c => c.Skill);
         }
-        protected override Task<Position> Populate()
+        internal override Task<Position> Populate()
         {
             return Task.FromResult(new Position()
             {
@@ -298,7 +298,7 @@ namespace Programming.Team.ViewModels.Resume
             });
         }
 
-        protected override async Task Read(Position entity)
+        internal override async Task Read(Position entity)
         {
             Id = entity.Id;
             CompanyId = entity.CompanyId;

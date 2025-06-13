@@ -126,7 +126,7 @@ namespace Programming.Team.ViewModels.Resume
         }
         public Guid UserId { get; set; }
 
-        protected override Task<Publication> Populate()
+        internal override Task<Publication> Populate()
         {
             return Task.FromResult(new Publication()
             {
@@ -139,7 +139,7 @@ namespace Programming.Team.ViewModels.Resume
             });
         }
 
-        protected override Task Read(Publication entity)
+        internal override Task Read(Publication entity)
         {
             Title = entity.Title;
             Description = entity.Description;

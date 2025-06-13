@@ -244,7 +244,7 @@ namespace Programming.Team.ViewModels.Resume
             set => this.RaiseAndSetIfChanged(ref defaultCoverLetterConfiguration, value);
         }
 
-        protected override Task<User> Populate()
+        internal override Task<User> Populate()
         {
             return Task.FromResult(new User()
             {
@@ -271,7 +271,7 @@ namespace Programming.Team.ViewModels.Resume
             });
         }
 
-        protected async override Task Read(User entity)
+        internal async override Task Read(User entity)
         {
             Id = entity.Id;
             ObjectId = entity.ObjectId;

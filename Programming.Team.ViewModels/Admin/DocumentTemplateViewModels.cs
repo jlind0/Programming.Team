@@ -226,7 +226,7 @@ namespace Programming.Team.ViewModels.Admin
         {
             return x => x.Include(e => e.DocumentType).Include(e => e.Owner).Include(e => e.DocumentSectionTemplates).ThenInclude(e => e.SectionTemplate);
         }
-        protected override async Task<DocumentTemplate> Populate()
+        internal override async Task<DocumentTemplate> Populate()
         {
             bool isAdmin = await ContextFactory.IsInRole("Admin");
             return new DocumentTemplate()
@@ -290,7 +290,7 @@ namespace Programming.Team.ViewModels.Admin
 
         public string StripeName => throw new NotImplementedException();
 
-        protected override async Task Read(DocumentTemplate entity)
+        internal override async Task Read(DocumentTemplate entity)
         {
             Id = entity.Id;
             Template = entity.Template;

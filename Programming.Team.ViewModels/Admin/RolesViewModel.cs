@@ -55,7 +55,7 @@ namespace Programming.Team.ViewModels.Admin
             set => this.RaiseAndSetIfChanged(ref name, value);
         }
 
-        protected override Task<Role> Populate()
+        internal override Task<Role> Populate()
         {
             var role = new Role()
             {
@@ -70,7 +70,7 @@ namespace Programming.Team.ViewModels.Admin
             var role = await base.DoUpdate(token);
             return role;
         }
-        protected override async Task Read(Role entity)
+        internal override async Task Read(Role entity)
         {
             try
             {

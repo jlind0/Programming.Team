@@ -298,7 +298,7 @@ namespace Programming.Team.ViewModels.Resume
         {
             return x => x.Include(x => x.Institution);
         }
-        protected override Task<Education> Populate()
+        internal override Task<Education> Populate()
         {
             return Task.FromResult(new Education()
             {
@@ -313,7 +313,7 @@ namespace Programming.Team.ViewModels.Resume
             });
         }
 
-        protected override Task Read(Education entity)
+        internal override Task Read(Education entity)
         {
             Id = entity.Id;
             Description = entity.Description;

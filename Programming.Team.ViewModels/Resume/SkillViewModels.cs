@@ -67,7 +67,7 @@ namespace Programming.Team.ViewModels.Resume
             set => this.RaiseAndSetIfChanged(ref name, value);
         }
 
-        protected override Task<Skill> Populate()
+        internal override Task<Skill> Populate()
         {
             return Task.FromResult(new Skill()
             {
@@ -76,7 +76,7 @@ namespace Programming.Team.ViewModels.Resume
             });
         }
 
-        protected override Task Read(Skill entity)
+        internal override Task Read(Skill entity)
         {
             Id = entity.Id;
             Name = entity.Name;
@@ -208,7 +208,7 @@ namespace Programming.Team.ViewModels.Resume
             get => skill;
             set => this.RaiseAndSetIfChanged(ref skill, value);
         }
-        protected override Task<PositionSkill> Populate()
+        internal override Task<PositionSkill> Populate()
         {
             return Task.FromResult(new PositionSkill()
             {
@@ -219,7 +219,7 @@ namespace Programming.Team.ViewModels.Resume
             });
         }
 
-        protected override Task Read(PositionSkill entity)
+        internal override Task Read(PositionSkill entity)
         {
             Id = entity.Id;
             PositionId = entity.PositionId;

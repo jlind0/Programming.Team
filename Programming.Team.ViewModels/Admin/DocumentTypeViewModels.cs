@@ -55,7 +55,7 @@ namespace Programming.Team.ViewModels.Admin
             set => this.RaiseAndSetIfChanged(ref name, value);
         }
 
-        protected override Task<DocumentType> Populate()
+        internal override Task<DocumentType> Populate()
         {
             return Task.FromResult(new DocumentType()
             {
@@ -64,7 +64,7 @@ namespace Programming.Team.ViewModels.Admin
             });
         }
 
-        protected override Task Read(DocumentType entity)
+        internal override Task Read(DocumentType entity)
         {
             Name = entity.Name;
             Id = entity.Id;
