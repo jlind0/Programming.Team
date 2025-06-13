@@ -22,13 +22,14 @@ namespace Programming.Team.Templating
         {
             Logger = logger;
         }
-        public async Task<string> ApplyTemplate(string template, Resume resume, CancellationToken token = default)
+        public async Task<string> ApplyTemplate<TObject>(string template, TObject obj, CancellationToken token = default)
+            where TObject : class, new()
         {
             try
             {
                 var templator = Template.Parse(template);
                 var context = new ScriptObject();
-                context.Import(resume);
+                context.Import(obj);
                 var scriptContext = new TemplateContext { MemberRenamer = member => member.Name };
                 scriptContext.PushGlobal(context);
 
@@ -44,57 +45,39 @@ namespace Programming.Team.Templating
         {
             public string latex { get; set; } = null!;
         }
-       
 
-    public async Task<byte[]> RenderLatex(string latex, CancellationToken token = default)
-    {
-        string url = "https://api.programming.team/Latex/compile"; 
 
-        try
+        public async Task<byte[]> RenderLatex(string latex, CancellationToken token = default)
         {
-            // Define the HTTP request payload
-            LatexRequest request = new LatexRequest()
-            {
-                latex = latex
-            };
+            string url = "https://api.programming.team/Latex/compile";
 
-            // Serialize the request object to JSON
-            var content = JsonContent.Create(request);
-
-            // Send the HTTP POST request
-            using var client = new HttpClient();
-            var response = await client.PostAsync(url, content, token);
-
-            // Ensure the response indicates success
-            response.EnsureSuccessStatusCode();
-
-            // Return the response content as a byte array
-            return await response.Content.ReadAsByteArrayAsync();
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, ex.Message);
-            throw; // Re-throw the exception to let the caller handle it
-        }
-    }
-
-        public async Task<string> ApplyTemplate(string template, CoverLetter coverLetter, CancellationToken token = default)
-        {
             try
             {
-                var templator = Template.Parse(template);
-                var context = new ScriptObject();
-                context.Import(coverLetter);
-                var scriptContext = new TemplateContext { MemberRenamer = member => member.Name };
-                scriptContext.PushGlobal(context);
+                // Define the HTTP request payload
+                LatexRequest request = new LatexRequest()
+                {
+                    latex = latex
+                };
 
-                return await templator.RenderAsync(scriptContext);
+                // Serialize the request object to JSON
+                var content = JsonContent.Create(request);
+
+                // Send the HTTP POST request
+                using var client = new HttpClient();
+                var response = await client.PostAsync(url, content, token);
+
+                // Ensure the response indicates success
+                response.EnsureSuccessStatusCode();
+
+                // Return the response content as a byte array
+                return await response.Content.ReadAsByteArrayAsync();
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, ex.Message);
-                throw;
+                throw; // Re-throw the exception to let the caller handle it
             }
         }
+
     }
 }

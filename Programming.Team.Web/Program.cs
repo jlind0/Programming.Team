@@ -35,6 +35,9 @@ using Programming.Team.PurchaseManager;
 using Programming.Team.ViewModels;
 using Yarp.ReverseProxy.Configuration;
 using System.Collections.ObjectModel;
+using Azure.Communication.Email;
+using Programming.Team.Messaging.Core;
+using Programming.Team.Messaging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -182,6 +185,12 @@ builder.Services.AddTransient<AccountService>();
 builder.Services.AddTransient<PayoutService>();
 builder.Services.AddTransient<AccountLinkService>();
 builder.Services.AddScoped(provider =>
+{
+    return new EmailClient(builder.Configuration["ACS:EmailConnectionString"] ??
+        throw new InvalidDataException("ACS Email Connection String is not configured."));
+});
+builder.Services.AddScoped<IEmailMessaging, EmailMessaging>();
+builder.Services.AddScoped(provider =>
     new BlobServiceClient(builder.Configuration.GetConnectionString("ResumesBlob")));
 var connectionString = builder.Configuration.GetConnectionString("Resumes");
 builder.Services.AddDbContext<ResumesContext>(options =>
@@ -238,7 +247,6 @@ builder.Services.AddScoped<IBusinessRepositoryFacade<DocumentSectionTemplate, Gu
 builder.Services.AddScoped<IBusinessRepositoryFacade<DocumentTemplatePurchase, Guid>, BusinessRepositoryFacade<DocumentTemplatePurchase, Guid, IRepository<DocumentTemplatePurchase, Guid>>>();
 builder.Services.AddScoped<ISectionTemplateBusinessFacade, SectionTemplateBusinessFacade>();
 builder.Services.AddScoped<IPurchaseManager<Package, Purchase>, PackagePurchaseManager>();
-
 builder.Services.AddScoped<IPurchaseManager<DocumentTemplate, DocumentTemplatePurchase>, DocumentTemplatePurchaseManager>();
 builder.Services.AddScoped<IAccountManager, AccountManager>();
 builder.Services.AddScoped<IChatGPT, ChatGPT>();

@@ -57,7 +57,7 @@ namespace Programming.Team.Core
     }
     public struct Pager
     {
-        public int Size { get; set; }
-        public int Page { get; set; }
+        public int Size { get; init; }
+        public int Page { get; init; }
     }
 }

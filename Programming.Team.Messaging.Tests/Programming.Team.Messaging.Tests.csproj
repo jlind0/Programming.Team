@@ -1,0 +1,23 @@
+<Project Sdk="MSTest.Sdk/3.6.4">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UseVSTest>true</UseVSTest>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Moq" Version="4.20.72" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Programming.Team.Core\Programming.Team.Core.csproj" />
+    <ProjectReference Include="..\Programming.Team.Data.Core\Programming.Team.Data.Core.csproj" />
+    <ProjectReference Include="..\Programming.Team.Messaging.Core\Programming.Team.Messaging.Core.csproj" />
+    <ProjectReference Include="..\Programming.Team.Messaging\Programming.Team.Messaging.csproj" />
+    <ProjectReference Include="..\Programming.Team.Templating.Core\Programming.Team.Templating.Core.csproj" />
+  </ItemGroup>
+
+</Project>
