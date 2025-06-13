@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
 namespace Programming.Team.Messaging
@@ -52,12 +53,12 @@ namespace Programming.Team.Messaging
                             PlainText = message
                         } : new EmailContent(subject)
                         {
-                            Html = message
+                            Html =  $"<html><body>{message}</body></html>"
                         }
                     );
                     emailMessage.ReplyTo.Add(new EmailAddress(ReplyToAddress));
                     progress?.Report($"Sending email {++count} to {user.EmailAddress}");
-                    await Client.SendAsync(Azure.WaitUntil.Started, emailMessage, token);
+                    await Client.SendAsync(Azure.WaitUntil.Completed, emailMessage, token);
                     Logger.LogTrace("Email sent to {Email} with subject {Subject}", user.EmailAddress, subject);
                 }
             }

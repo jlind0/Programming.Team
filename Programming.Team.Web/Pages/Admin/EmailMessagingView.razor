@@ -1,0 +1,46 @@
+﻿@page "/admin/messaging/email"
+@inherits ReactiveInjectableComponentBase<MessagingViewModel>
+@attribute [Authorize(Roles = "Admin")]
+
+@if(ViewModel != null)
+{
+    <AlertView Alert="ViewModel.Alert"/>
+    <MudStack>
+        <SelectUsersView ViewModel="ViewModel.SelectUsersVM" />
+        <MudTextField @bind-Value="ViewModel.SubjectTemplate" Label="Subject Template" Variant="Variant.Outlined"/>
+        <MudTextField @bind-Value="ViewModel.MessageTemplate" Lines="10" Label="Message Template" Variant="Variant.Outlined" />
+        <MudStack Row="true">
+            <MudCheckBox @bind-Value="ViewModel.IsHtml" Label="Is Html Message" />
+            <MudButton Color="Color.Secondary" OnClick="ViewModel.TestTemplate.BindCommand<MouseEventArgs>()">Test</MudButton>
+        </MudStack>
+        
+        @if (ViewModel.IsReadyToSend)
+        {
+            <p>Subject Example: @ViewModel.ExampleSubject</p>
+            @if (ViewModel.IsHtml)
+            {
+                <MudPaper>@((MarkupString)ViewModel.ExampleMessage!)</MudPaper>
+            }
+            else
+            {
+                <p>@ViewModel.ExampleMessage</p>
+            }
+           <MudButton Color="Color.Primary" OnClick="ViewModel.Send.BindCommand<MouseEventArgs>()">Send</MudButton>
+        }
+    </MudStack>
+    <MudOverlay @bind-Visible="ViewModel.IsOverlayOpen" DarkBackground="true" AutoClose="false">
+        <MudProgressCircular Color="Color.Secondary" Size="Size.Large" Indeterminate="true" />
+        <h1>
+            <MudText Color="Color.Secondary">@ViewModel.Progress</MudText>
+        </h1>
+    </MudOverlay>
+}
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        if(ViewModel != null)
+            await ViewModel.Load.Execute().GetAwaiter();
+        await base.OnInitializedAsync();
+    }
+}

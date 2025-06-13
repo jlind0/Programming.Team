@@ -307,6 +307,7 @@ builder.Services.AddTransient<Programming.Team.ViewModels.Admin.TrueUserLoaderVi
 builder.Services.AddTransient<Programming.Team.ViewModels.Resume.TrueUserLoaderViewModel>();
 builder.Services.AddTransient<SelectSectionTemplatesViewModel>();
 builder.Services.AddTransient<UserStripeAccountViewModel>();
+builder.Services.AddTransient<MessagingViewModel>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession(options =>
 {

@@ -50,16 +50,15 @@ namespace Programming.Team.ViewModels.Admin
         }
         protected Task DoLoad(CancellationToken token)
         {
-            return Task.CompletedTask;
+            return SelectUsersVM.SetSelected([], token);
         }
         protected async Task DoTestTemplate(CancellationToken token)
         {
             try
             {
                 IsReadyToSend = false;
-                if (!string.IsNullOrWhiteSpace(MessageTemplate) || !string.IsNullOrWhiteSpace(SubjectTemplate))
+                if (!string.IsNullOrWhiteSpace(MessageTemplate) && !string.IsNullOrWhiteSpace(SubjectTemplate))
                 {
-                    await Alert.Handle("Message and Subject templates cannot be empty.");
                     var userVm = SelectUsersVM.Selected.FirstOrDefault();
                     User? testUser = null;
                     if (userVm != null)

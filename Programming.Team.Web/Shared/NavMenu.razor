@@ -15,9 +15,10 @@
                 <MudNavLink Href="admin/roles" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Badge">
                     Roles
                 </MudNavLink>
-                <MudNavLink Href="admin/documenttypes" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AccountTree">
+                @*<MudNavLink Href="admin/documenttypes" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AccountTree">
                     Document Types
-                </MudNavLink>
+                </MudNavLink>*@
+                <MudNavLink Href="admin/messaging/email" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Email">Email</MudNavLink>
             }
             @if (isAdmin || isTemplator)
             {
