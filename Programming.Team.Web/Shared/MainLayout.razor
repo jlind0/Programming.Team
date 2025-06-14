@@ -9,18 +9,40 @@
 <MudBreakpointProvider />
 
 <MudLayout>
+    <!-- Mobile View (sm and down) -->
     <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
-        <MudElement Class="d-flex flex-column justify-center flex-grow-1">
-            <MudText>Please view on a large device</MudText>
-        </MudElement>
-        <Footer/>
+        <MudAppBar Elevation="1">
+            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
+                           OnClick="@((e) => DrawerToggle())" />
+            <MudText Typo="Typo.h5" Class="ml-3">
+                <MudIcon Icon="@Icons.Material.Filled.CodeOff" Class="mr-2" />
+                <MudText Inline="true" Typo="Typo.h5" Class="logo-text">Programming</MudText>
+                <MudText Inline="true" Typo="Typo.h5" Class="secondary-logo-text" Color="Color.Primary">Team</MudText>
+            </MudText>
+        </MudAppBar>
+
+        <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+            <NavMenu />
+        </MudDrawer>
+
+        <MudMainContent Class="main-content">
+            <MudContainer Class="d-flex flex-column justify-center align-center" Style="height: 80vh;">
+                <MudText Typo="Typo.h4" Class="mb-4 text-center">Please view on a larger device</MudText>
+                <MudIcon Icon="@Icons.Material.Filled.Devices" Size="Size.Large" Color="Color.Primary" />
+            </MudContainer>
+            <Footer />
+        </MudMainContent>
     </MudHidden>
+
+    <!-- Desktop View (md and up) -->
     <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
         <MudAppBar Elevation="1">
             <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
-                OnClick="@((e) => DrawerToggle())" />
+                           OnClick="@((e) => DrawerToggle())" />
             <MudText Typo="Typo.h5" Class="ml-3">
-                <MudIcon Icon="@Icons.Material.Filled.CodeOff" Class="mr-2" />Programming<MudText Inline="true" Typo="Typo.h5" Class="ml-2" Color="Color.Secondary">Team</MudText>
+                <MudIcon Icon="@Icons.Material.Filled.CodeOff" Class="mr-2" />
+                <MudText Inline="true" Typo="Typo.h5" Class="logo-text">Programming</MudText>
+                <MudText Inline="true" Typo="Typo.h5" Class="secondary-logo-text" Color="Color.Primary">Team</MudText>
             </MudText>
             <MudSpacer />
             <LoginDisplay />
@@ -29,12 +51,13 @@
         <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
             <NavMenu />
         </MudDrawer>
+
         <MudMainContent Class="main-content">
             @Body
-            <Footer/>
+
         </MudMainContent>
     </MudHidden>
-    
+    <Footer />
 </MudLayout>
 
 <div id="blazor-error-ui" data-nosnippet>
@@ -60,30 +83,30 @@
     }
 
     public static MudTheme LightGlassTheme = new MudTheme()
-    {
-        PaletteLight = new PaletteLight()
         {
-            Primary = "#4361ee",             // var(--primary)
-            PrimaryDarken = "#3a56d4",       // var(--primary-dark)
-            Secondary = "#3f37c9",           // var(--secondary)
-            Tertiary = "#4895ef",            // var(--accent)
-            Dark = "#2b2d42",                // var(--dark)
-            TextPrimary = "#2b2d42",
-            Background = "#f8f9fa",          // var(--light)
-            Surface = "rgba(255,255,255,1)", // var(--glass)
-            AppbarBackground = "rgba(255,255,255,0.8)",
-            DrawerBackground = "rgba(255,255,255,0.15)",
-            AppbarText = "#2b2d42",
-            DrawerText = "#2b2d42",
-            Success = "#4cc9f0",             // var(--success)
-            Warning = "#f72585",             // var(--warning)
-            Error = "#ef233c",               // var(--danger)
-            Info = "#4895ef"                 // using accent for info
-        },
-        LayoutProperties = new LayoutProperties()
-        {
-            DefaultBorderRadius = "8px",
-            DrawerWidthLeft = "280px"
-        }
-    };
+            PaletteLight = new PaletteLight()
+            {
+                Primary = "#4361ee",             // var(--primary)
+                PrimaryDarken = "#3a56d4",       // var(--primary-dark)
+                Secondary = "#3f37c9",           // var(--secondary)
+                Tertiary = "#4895ef",            // var(--accent)
+                Dark = "#2b2d42",                // var(--dark)
+                TextPrimary = "#2b2d42",
+                Background = "#f8f9fa",          // var(--light)
+                Surface = "rgba(255,255,255,1)", // var(--glass)
+                AppbarBackground = "rgba(255,255,255,0.8)",
+                DrawerBackground = "rgba(255,255,255,0.15)",
+                AppbarText = "#2b2d42",
+                DrawerText = "#2b2d42",
+                Success = "#4cc9f0",             // var(--success)
+                Warning = "#f72585",             // var(--warning)
+                Error = "#ef233c",               // var(--danger)
+                Info = "#4895ef"                 // using accent for info
+            },
+            LayoutProperties = new LayoutProperties()
+            {
+                DefaultBorderRadius = "8px",
+                DrawerWidthLeft = "280px"
+            }
+        };
 }
