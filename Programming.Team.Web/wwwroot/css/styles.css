@@ -50,19 +50,21 @@ d-flex > div > .justify-start {
     justify-content: space-evenly !important;
     align-items:center !important;
 }
-
-
-
-
-.container {
-    min-height: 100vh;
-    position: relative;
-    padding-left: var(--sidebar-width);
-    transition: padding-left 0.3s ease;
+/**************** mudblazor isolation **************/
+::deep .mud-grid {
+    /* Reset spacing */
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 0 !important;
+    /* Remove negative margins (default in MudBlazor) */
+    --mud-grid-justify-content: flex-start;
 }
+.mud-grid-spacing-xs-6{
+   margin:0 !important;
 
-/* Modern Header */
-.header {
+}
+    /* Modern Header */
+    .header {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -78,41 +80,29 @@ d-flex > div > .justify-start {
     z-index: 100;
     height: var(--header-height);
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-.logo-container {
+} .logo-container {
     display: flex;
     align-items: center;
     gap: 0.8rem;
-}
-
-.logo-icon {
+} .logo-icon {
     font-size: 1.8rem;
     color: var(--primary);
     background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-}
-
-.logo-text {
+} .logo-text {
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--dark);
-}
-
-    .logo-text span {
+} .logo-text span {
         color: var(--primary);
         font-weight: 800;
-    }
-
-.top-nav {
+    } .top-nav {
     display: flex;
     align-items: center;
     gap: 1.5rem;
-}
-
-.btn-signup {
+} .btn-signup {
     background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
     color: white;
     padding: 0.6rem 1.2rem;
@@ -124,16 +114,13 @@ d-flex > div > .justify-start {
     gap: 0.5rem;
     transition: var(--transition);
     box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
-}
-
-    .btn-signup:hover {
+} .btn-signup:hover {
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
         background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary) 100%);
     }
-
-/* Glassmorphism Sidebar */
-.sidebar {
+    /* Glassmorphism Sidebar */
+    .sidebar {
     position: fixed;
     top: 0;
     left: 0;
@@ -150,27 +137,17 @@ d-flex > div > .justify-start {
     height: 100vmax;
     overflow:hidden !important;
 
-}
-
-.overlay {
+} .overlay {
     padding: 1.5rem 0;
-}
-
-.menu-header {
+} .menu-header {
     padding: 0 1.5rem 1.5rem;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.main-menu ul {
+} .main-menu ul {
     list-style: none;
     padding: 1rem 0;
-}
-
-.main-menu li {
+} .main-menu li {
     position: relative;
-}
-
-    .main-menu li a {
+} .main-menu li a {
         display: flex;
         align-items: center;
         padding: 0.9rem 1.5rem;
@@ -179,49 +156,31 @@ d-flex > div > .justify-start {
         transition: var(--transition);
         gap: 0.75rem;
         font-size: 0.95rem;
-    }
-
-        .main-menu li a i {
+    } .main-menu li a i {
             font-size: 1.1rem;
             width: 24px;
             text-align: center;
             color: var(--primary);
-        }
-
-        .main-menu li a:hover:not(.disabled a) {
+        } .main-menu li a:hover:not(.disabled a) {
             background: rgba(67, 97, 238, 0.05);
             padding-left: 1.75rem;
-        }
-
-    .main-menu li.active a {
+        } .main-menu li.active a {
         background: linear-gradient(90deg, rgba(67, 97, 238, 0.1) 0%, rgba(67, 97, 238, 0) 100%);
         color: var(--primary);
         border-left: 3px solid var(--primary);
         font-weight: 500;
-    }
-
-        .main-menu li.active a i {
+    } .main-menu li.active a i {
             color: var(--primary);
-        }
-
-    .main-menu li.disabled a {
+        } .main-menu li.disabled a {
         color: var(--gray);
         cursor: not-allowed;
-    }
-
-        .main-menu li.disabled a:hover {
+    } .main-menu li.disabled a:hover {
             background: transparent;
             padding-left: 1.5rem;
         }
-
-/* Main Content */
-.main-content {
-
-    padding:1%;
-    }
-
-/* Hero Section */
-.hero {
+    /* Main Content */
+    /* Hero Section */
+    .hero {
     display: flex;
     align-items: center;
     gap: 3rem;
@@ -233,9 +192,7 @@ d-flex > div > .justify-start {
     position: relative;
     backdrop-filter: blur(8px);
     border: 1px solid rgba(255, 255, 255, 0.5);
-}
-
-    .hero::before {
+} .hero::before {
         content: '';
         position: absolute;
         top: -50%;
@@ -244,15 +201,11 @@ d-flex > div > .justify-start {
         height: 200%;
         background: radial-gradient(circle, rgba(72, 149, 239, 0.1) 0%, rgba(72, 149, 239, 0) 70%);
         z-index: 0;
-    }
-
-.hero-content {
+    } .hero-content {
     flex: 1;
     position: relative;
     z-index: 1;
-}
-
-.hero h2 {
+} .hero h2 {
     font-size: 2.5rem;
     margin-bottom: 1.5rem;
     color: var(--dark);
@@ -262,22 +215,16 @@ d-flex > div > .justify-start {
     background-clip: text;
     -webkit-text-fill-color: transparent;
     max-width: 500px;
-}
-
-.hero-text {
+} .hero-text {
     font-size: 1.1rem;
     color: var(--dark);
     margin-bottom: 2rem;
     max-width: 600px;
     opacity: 0.85;
-}
-
-.hero-buttons {
+} .hero-buttons {
     display: flex;
     gap: 1rem;
-}
-
-.btn-primary, .btn-secondary {
+} .btn-primary, .btn-secondary {
     padding: 0.9rem 1.8rem;
     border-radius: 50px;
     font-weight: 500;
@@ -287,41 +234,29 @@ d-flex > div > .justify-start {
     transition: var(--transition);
     text-decoration: none;
     font-size: 1rem;
-}
-
-.btn-primary {
+} .btn-primary {
     background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
     color: white;
     box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
-}
-
-    .btn-primary:hover {
+} .btn-primary:hover {
         transform: translateY(-3px);
         box-shadow: 0 8px 25px rgba(67, 97, 238, 0.4);
         background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary) 100%);
-    }
-
-.btn-secondary {
+    } .btn-secondary {
     background: white;
     color: var(--primary);
     border: 1px solid var(--primary);
-}
-
-    .btn-secondary:hover {
+} .btn-secondary:hover {
         background: rgba(67, 97, 238, 0.05);
         transform: translateY(-3px);
         box-shadow: 0 4px 15px rgba(67, 97, 238, 0.1);
-    }
-
-.hero-image {
+    } .hero-image {
     flex: 1;
     position: relative;
     z-index: 1;
     display: flex;
     justify-content: flex-end;
-}
-
-.resume-mockup {
+} .resume-mockup {
     background: white;
     border-radius: 12px;
     width: 100%;
@@ -335,47 +270,32 @@ d-flex > div > .justify-start {
     border: 1px solid rgba(0, 0, 0, 0.05);
     transform: perspective(1000px) rotateY(-5deg);
     transition: var(--transition);
-}
-
-    .resume-mockup:hover {
+} .resume-mockup:hover {
         transform: perspective(1000px) rotateY(0deg);
-    }
-
-.mockup-header {
+    } .mockup-header {
     height: 45px;
     background: linear-gradient(90deg, #f8f9fa 0%, #e9ecef 100%);
     border-radius: 8px;
-}
-
-.mockup-content {
+} .mockup-content {
     flex: 1;
     display: flex;
     flex-direction: column;
     gap: 0.9rem;
-}
-
-.mockup-line {
+} .mockup-line {
     height: 12px;
     background: linear-gradient(90deg, #f8f9fa 0%, #e9ecef 100%);
     border-radius: 4px;
-}
-
-    .mockup-line.medium {
+} .mockup-line.medium {
         width: 70%;
-    }
-
-    .mockup-line.short {
+    } .mockup-line.short {
         width: 40%;
     }
-
-/* Features Section */
-.features {
+    /* Features Section */
+    .features {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1.8rem;
-}
-
-.feature-card {
+} .feature-card {
     background: var(--glass);
     border-radius: 16px;
     padding: 2.2rem;
@@ -385,15 +305,11 @@ d-flex > div > .justify-start {
     backdrop-filter: blur(8px);
     display: flex;
     flex-direction: column;
-}
-
-    .feature-card:hover {
+} .feature-card:hover {
         transform: translateY(-7px);
         box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
         border-color: rgba(67, 97, 238, 0.2);
-    }
-
-.feature-icon {
+    } .feature-icon {
     width: 65px;
     height: 65px;
     background: linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(72, 149, 239, 0.1) 100%);
@@ -404,31 +320,23 @@ d-flex > div > .justify-start {
     margin-bottom: 1.8rem;
     color: var(--primary);
     font-size: 1.7rem;
-}
-
-.feature-card h3 {
+} .feature-card h3 {
     font-size: 1.3rem;
     margin-bottom: 1rem;
     color: var(--dark);
-}
-
-.feature-card p {
+} .feature-card p {
     color: var(--dark);
     font-size: 0.98rem;
     opacity: 0.85;
     line-height: 1.7;
-}
-
-.mud-grid, .mud-container {
+} .mud-grid, .mud-container {
     width: 100%;
     max-width: 100% !important;
     padding-left: 0 !important;
     padding-right: 0 !important;
 }
-
-
-/* Pricing Section */
-.pricing {
+    /* Pricing Section */
+    .pricing {
     background: var(--glass);
     border-radius: 20px;
     padding: 3.5rem 2.5rem;
@@ -437,17 +345,13 @@ d-flex > div > .justify-start {
     backdrop-filter: blur(8px);
     width:80vmax !important;
 
-}
-
-.section-title {
+} .section-title {
     text-align: center;
     font-size: 2.2rem;
     margin-bottom: 3.5rem;
     color: var(--dark);
     position: relative;
-}
-
-    .section-title::after {
+} .section-title::after {
         content: '';
         position: absolute;
         bottom: -1.2rem;
@@ -457,16 +361,12 @@ d-flex > div > .justify-start {
         height: 5px;
         background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
         border-radius: 3px;
-    }
-
-.pricing-cards {
+    } .pricing-cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1.8rem;
     padding:2%;
-}
-
-.pricing-card {
+} .pricing-card {
     background: white;
     border-radius: 16px;
     padding: 2.2rem;
@@ -477,15 +377,11 @@ d-flex > div > .justify-start {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-}
-
-    .pricing-card.popular {
+} .pricing-card.popular {
         border: 1px solid var(--primary);
         box-shadow: 0 5px 25px rgba(67, 97, 238, 0.12);
         transform: scale(1.03);
-    }
-
-        .pricing-card.popular::before {
+    } .pricing-card.popular::before {
             content: 'Most Popular';
             position: absolute;
             top: 0;
@@ -497,59 +393,41 @@ d-flex > div > .justify-start {
             padding: 0.3rem 1.2rem;
             border-bottom-left-radius: 16px;
             letter-spacing: 0.5px;
-        }
-
-.pricing-header {
+        } .pricing-header {
     text-align: center;
     margin-bottom: 2.2rem;
-}
-
-    .pricing-header h3 {
+} .pricing-header h3 {
         font-size: 1.3rem;
         color: var(--dark);
         margin-bottom: 0.7rem;
-    }
-
-.price {
+    } .price {
     font-size: 2.7rem;
     font-weight: 700;
     color: var(--primary);
     margin-bottom: 0.3rem;
     line-height: 1;
-}
-
-    .price span {
+} .price span {
         font-size: 1.2rem;
         font-weight: 500;
-    }
-
-.frequency {
+    } .frequency {
     font-size: 0.95rem;
     color: var(--dark);
     opacity: 0.7;
-}
-
-.pricing-features {
+} .pricing-features {
     list-style: none;
     margin-bottom: 2.2rem;
     flex-grow: 1;
-}
-
-    .pricing-features li {
+} .pricing-features li {
         margin-bottom: 0.9rem;
         display: flex;
         align-items: center;
         gap: 0.7rem;
         color: var(--dark);
         font-size: 0.98rem;
-    }
-
-        .pricing-features li i {
+    } .pricing-features li i {
             color: var(--success);
             font-size: 1.1rem;
-        }
-
-.btn-pricing {
+        } .btn-pricing {
     width: 100%;
     padding: 1rem;
     border-radius: 50px;
@@ -561,43 +439,31 @@ d-flex > div > .justify-start {
     transition: var(--transition);
     font-size: 1rem;
     letter-spacing: 0.5px;
-}
-
-    .btn-pricing:hover {
+} .btn-pricing:hover {
         transform: translateY(-3px);
         box-shadow: 0 8px 20px rgba(67, 97, 238, 0.35);
         background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary) 100%);
-    }
-
-.pricing-card.popular .btn-pricing {
+    } .pricing-card.popular .btn-pricing {
     background: linear-gradient(135deg, #f72585 0%, #b5179e 100%);
     box-shadow: 0 5px 15px rgba(247, 37, 133, 0.3);
-}
-
-    .pricing-card.popular .btn-pricing:hover {
+} .pricing-card.popular .btn-pricing:hover {
         box-shadow: 0 10px 25px rgba(247, 37, 133, 0.4);
         background: linear-gradient(135deg, #e02071 0%, #9c1487 100%);
     }
-
-/* CTA Section */
-.cta {
+    /* CTA Section */
+    .cta {
     background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
     border-radius: 20px;
     padding: 4.5rem 3.5rem;
     color: white;
 
-    gap: 3.5rem;
+
     position: relative;
     overflow: hidden;
-    border:2px solid orange;
-    display:flex;
-    flex-direction:row;
-    justify-content:center;
-    align-items:center;
-    flex-wrap:wrap;
-}
+    width:100vmax !important;
 
-    .cta::before {
+     
+} .cta::before {
         content: '';
         position: absolute;
         top: -50%;
@@ -606,30 +472,23 @@ d-flex > div > .justify-start {
         height: 200%;
         background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 70%);
         z-index: 0;
-    }
-
-.cta-content {
+    } .cta-content {
     flex: 1;
    
     position: relative;
     z-index: 1;
     background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%) !important;
-}
-
-.cta h2 {
+} .cta h2 {
     font-size: 2.3rem;
     margin-bottom: 1.2rem;
     line-height: 1.3;
-}
-
-.cta p {
+} .cta p {
     margin-bottom: 2.2rem;
     opacity: 0.9;
     font-size: 1.1rem;
-    max-width: 600px;
-}
 
-.btn-cta {
+
+} .btn-cta {
     background: white;
     color: var(--primary);
     padding: 1rem 2rem;
@@ -644,15 +503,11 @@ d-flex > div > .justify-start {
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     font-size: 1.05rem;
-}
-
-    .btn-cta:hover {
+} .btn-cta:hover {
         transform: translateY(-3px);
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         background: var(--lighter);
-    }
-
-.cta-stats {
+    } .cta-stats {
     flex: 1;
     display:flex;
     flex-direction:row;
@@ -663,9 +518,7 @@ d-flex > div > .justify-start {
     z-index: 1;
 
     flex-wrap:wrap;
-}
-
-.stat-item {
+} .stat-item {
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
@@ -678,76 +531,60 @@ d-flex > div > .justify-start {
     width:40vmax;
  
     
-}
-
-    .stat-item:hover {
+} .stat-item:hover {
         transform: translateY(-5px);
         background: rgba(255, 255, 255, 0.2);
-    }
-
-.stat-number {
+    } .stat-number {
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
     line-height: 1;
-}
-
-.stat-label {
+} .stat-label {
     font-size: 1rem;
     opacity: 0.9;
     font-weight: 500;
 }
-/* Modern Footer */
-.footer {
+    /* Modern Footer */
+    .footer {
     background: var(--darker);
     color: white;
-    padding-top: 4.5rem;
-    padding-bottom: 0;
-    margin-top: 3rem;
-    width: 90vmax;
-    position: absolute;
-    left: 15%;
-}
+    padding:0 !important;
+    margin:0 !important;
 
-.footer-container {
+  
+
+    position:relative;
+    bottom:0;
+
+} .footer-container {
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: space-around;
     align-items: center;
     flex-wrap: wrap;
     width: 8 0% !important;
-    margin-left: 5%;
-}
-
-.footer-brand {
+    margin-left:10%;
+ 
+    padding:5%;
+    width:80vmax;
+} .footer-brand {
     flex: 1;
     min-width: 250px;
-}
-
-    .footer-brand .logo-container {
-        margin-bottom: 1.8rem;
-    }
-
-    .footer-brand .logo-text {
-        color: white !important;
-    }
-
-
-.footer-about {
+} .footer-brand .logo-container {
+    margin-bottom: 1.8rem;
+} .footer-brand .logo-text {
+    color: white !important;
+} .footer-about {
     color: var(--gray);
     margin-bottom: 1.8rem;
     line-height: 1.7;
     font-size: 0.95rem;
     word-break: break-all;
     width: 20vmax;
-}
-
-.footer-social {
+} .footer-social {
     display: flex;
     gap: 1.2rem;
-}
-
-.social-link {
+} .social-link {
     width: 42px;
     height: 42px;
     background: rgba(255, 255, 255, 0.1);
@@ -758,27 +595,20 @@ d-flex > div > .justify-start {
     color: white;
     transition: var(--transition);
     font-size: 1.1rem;
-}
-
-    .social-link:hover {
+} .social-link:hover {
         background: var(--primary);
         transform: translateY(-3px);
-    }
-
-.footer-links-container {
+    } .footer-links-container {
     flex: 2;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 2.5rem;
-}
-
-.footer-title {
+ 
+} .footer-title {
     font-size: 1.2rem;
     margin-bottom: 1.8rem;
     position: relative;
-}
-
-    .footer-title::after {
+} .footer-title::after {
         content: '';
         position: absolute;
         bottom: -0.7rem;
@@ -786,37 +616,25 @@ d-flex > div > .justify-start {
         width: 45px;
         height: 3px;
         background: var(--primary);
-    }
-
-.footer-links {
+    } .footer-links {
     list-style: none;
     padding-left: 0;
     margin: 0;
-}
-
-    .footer-links li {
+} .footer-links li {
         margin-bottom: 0.9rem;
-    }
-
-    .footer-links a {
+    } .footer-links a {
         color: var(--gray);
         text-decoration: none;
         transition: var(--transition);
         font-size: 0.95rem;
-    }
-
-        .footer-links a:hover {
+    } .footer-links a:hover {
             color: white;
             padding-left: 5px;
-        }
-
-.footer-bottom {
+        } .footer-bottom {
     background: rgba(0, 0, 0, 0.25);
     margin-top: 4.5rem;
     padding: 1.8rem 0;
-}
-
-.footer-bottom-container {
+} .footer-bottom-container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 2rem;
@@ -825,31 +643,22 @@ d-flex > div > .justify-start {
     justify-content: space-between;
     align-items: center;
     gap: 1.5rem;
-}
-
-.copyright {
+} .copyright {
     color: var(--gray);
     font-size: 0.9rem;
-}
-
-.footer-legal {
+} .footer-legal {
     display: flex;
     gap: 1.8rem;
-}
-
-    .footer-legal a {
+} .footer-legal a {
         color: var(--gray);
         text-decoration: none;
         font-size: 0.9rem;
         transition: var(--transition);
-    }
-
-        .footer-legal a:hover {
+    } .footer-legal a:hover {
             color: white;
         }
-
-/* Hamburger Menu */
-.hamburger {
+    /* Hamburger Menu */
+    .hamburger {
     display: none;
     cursor: pointer;
     width: 30px;
@@ -858,9 +667,7 @@ d-flex > div > .justify-start {
     outline: none;
     background: transparent;
     position: relative;
-}
-
-.hamburger span {
+} .hamburger span {
 background: var(--dark);
 display: block;
 height: 3px;
@@ -868,31 +675,19 @@ width: 100%;
 border-radius: 2px;
 position: absolute;
 transition: var(--transition);
-}
-
-.hamburger span:nth-child(1) {
+} .hamburger span:nth-child(1) {
     top: 0;
-}
-
-.hamburger span:nth-child(2) {
+} .hamburger span:nth-child(2) {
     top: 50%;
     transform: translateY(-50%);
-}
-
-.hamburger span:nth-child(3) {
+} .hamburger span:nth-child(3) {
     bottom: 0;
-}
-
-.hamburger.active span:nth-child(1) {
+} .hamburger.active span:nth-child(1) {
 transform: rotate(45deg);
 top: 50%;
-}
-
-.hamburger.active span:nth-child(2) {
+} .hamburger.active span:nth-child(2) {
 opacity: 0;
-}
-
-.hamburger.active span:nth-child(3) {
+} .hamburger.active span:nth-child(3) {
 transform: rotate(-45deg);
 top: 50%;
 }
