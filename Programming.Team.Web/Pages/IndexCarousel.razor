@@ -8,47 +8,63 @@
 @* TODO: US-letter ratio *@
 @if (ViewModel != null)
 {
-    <MudCarousel @ref="carPostings" Style="height:650px;" ShowArrows="@arrows" ShowBullets="@bullets"
-    EnableSwipeGesture="@enableSwipeGesture" AutoCycle="@autocycle" TData="object">
+    <MudCarousel @ref="carPostings"
+                 Style="height:650px; background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);"
+                 ShowArrows="@arrows"
+                 ShowBullets="@bullets"
+                 BulletsClass="custom-bullets"
+                 EnableSwipeGesture="@enableSwipeGesture"
+                 AutoCycle="@autocycle"
+                 TData="object"
+                 Class="custom-carousel">
+
         @foreach (var posting in ViewModel.Postings)
         {
             var url = $"https://programming.team/api/resumes/{posting.Id}";
             var internal_url = $"{Navigator.BaseUri}api/resumes/{posting.Id}";
 
-            @* ~28 rem *@
-            <MudCarouselItem Transition="transition"  Class="d-flex">
-                <MudElement Class="flex-1 flex-column ma-1 ml-5" Style="height: 86%; width: 47%;">
-                    <MudElement Class="d-flex justify-center">
-                        <MudCard Class="pa-2">
-                            <MudText>Job Description</MudText>
+            <MudCarouselItem Transition="transition" Class="d-flex align-center justify-center pa-4">
+                <!-- Left Panel - Job Description -->
+                <MudElement Class="flex-1 flex-column ma-2" Style="height: 85%; max-width: 45%;">
+                    <MudElement Class="d-flex justify-center mb-2">
+                        <MudCard Class="pa-3" Style="background: linear-gradient(135deg, #4361ee 0%, #3a56d4 100%); color: white; border-radius: 8px 8px 0 0; width: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            <MudText Typo="Typo.h6" Class="text-center font-weight-bold" Style="letter-spacing: 1px;">JOB DESCRIPTION</MudText>
                         </MudCard>
                     </MudElement>
-                    <MudPaper Elevation="3" Class="pa-3 overflow-auto" Style="height: 100%; overflow: hidden;">
-                      @((MarkupString)posting.Details)
+                    <MudPaper Elevation="24" Class="pa-4 overflow-auto" Style="height: 100%; border-radius: 0 0 8px 8px; background-color: white; border-left: 4px solid #4361ee;">
+                        <div class="markdown-content" style="font-size: 0.9rem; line-height: 1.6; padding-right: 8px;">
+                            @((MarkupString)posting.Details)
+                        </div>
                     </MudPaper>
                 </MudElement>
 
-                <MudElement Class="d-flex">
-                    <MudIcon Class="align-self-center" Icon="@Icons.Material.Filled.DoubleArrow" />
+                <!-- Center Arrow -->
+                <MudElement Class="d-flex mx-4">
+                    <MudIcon Icon="@Icons.Material.Filled.DoubleArrow" Size="Size.Large"
+                             Color="Color.Primary" Class="align-self-center pulse-animation" />
                 </MudElement>
 
-                <MudElement Class="flex-1 flex-column ma-1 mr-5" Style="height: 86%; width: 47%;">
-                    <MudElement Class="d-flex justify-center">
-                        <MudCard Class="pa-2">
-                            <MudText>Result</MudText>
+                <!-- Right Panel - Resume Result -->
+                <MudElement Class="flex-1 flex-column ma-2" Style="height: 85%; max-width: 45%;">
+                    <MudElement Class="d-flex justify-center mb-2">
+                        <MudCard Class="pa-3" Style="background: linear-gradient(135deg, #4cc9f0 0%, #4895ef 100%); color: white; border-radius: 8px 8px 0 0; width: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            <MudText Typo="Typo.h6" Class="text-center font-weight-bold" Style="letter-spacing: 1px;">RESUME RESULT</MudText>
                         </MudCard>
                     </MudElement>
-                    <MudPaper Elevation="3" Class="home-pdfviewer-container" Style="height: 100%; overflow: scroll;">
+                    <MudPaper Elevation="24" Class="home-pdfviewer-container" Style="height: 100%; border-radius: 0 0 8px 8px; background-color: white; border-left: 4px solid #4cc9f0;">
                         <ProgTeamPdfViewer Url="@internal_url" />
                     </MudPaper>
-                    <MudElement Class="d-flex justify-end">
-                        <MudCard Class="pa-2">
-                            <MudLink Href="@url" Target="_bl">
-                                View
-                            </MudLink>
-                        </MudCard>
+                    <MudElement Class="d-flex justify-end mt-3">
+                        <MudButton Variant="Variant.Outlined"
+                                   Color="Color.Primary"
+                                   Href="@url"
+                                   Target="_blank"
+                                   EndIcon="@Icons.Material.Filled.OpenInNew"
+                                   Class="text-transform-none"
+                                   Style="text-decoration: none; border-radius: 20px; padding: 6px 16px; border: 2px solid; font-weight: 500;">
+                            View Full Resume
+                        </MudButton>
                     </MudElement>
-
                 </MudElement>
             </MudCarouselItem>
         }
@@ -75,5 +91,5 @@
         base.OnInitialized();
     }
 
-    
+
 }

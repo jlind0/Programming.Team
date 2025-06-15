@@ -49,40 +49,41 @@
         <!-- Pricing Section -->
         <MudContainer Class="pricing">
             <h2 class="section-title">Resume Generation Packages</h2>
-            <MudGrid Class="pricing-cards" Spacing="2">
-                @foreach(var package in ViewModel.Packages)
+            <div class="pricing-cards">
+                @foreach (var package in ViewModel.Packages)
                 {
-                    string packageClass = ViewModel.Packages.FirstOrDefault() == package ? "pricing-card popular" : "pricing-card";
-                    <MudItem xs="16" md="3">
-                        <MudCard Class="@packageClass">
-                            <MudCardHeader Class="pricing-header">
-                                <MudStack>
-                                    <h3>@package.Name</h3>
-                                    <div class="price">$@package.Price?.ToString("F2")</div>
-                                    <div class="frequency">for @package.ResumeGenerations resumes</div>
-                                </MudStack>
-                                
-                            </MudCardHeader>
-                            <MudCardContent>
-                                <ul class="pricing-features">
-                                    <li><MudIcon Icon="@Icons.Material.Filled.Check" /> @package.ResumeGenerations Resume Generations</li>
-                                    <li><MudIcon Icon="@Icons.Material.Filled.Check" /> LaTeX Source Files</li>
-                                    <li><MudIcon Icon="@Icons.Material.Filled.Check" /> Unlimited PDF Downloads</li>
-                                    <li><MudIcon Icon="@Icons.Material.Filled.Check" /> Priority Support</li>
-                                </ul>
-                            </MudCardContent>
-                            <MudCardActions>
-                                @if (isAuthenticated)
-                                {
-                                    <MudButton Class="btn-pricing" OnClick="package.Purchase.BindCommand<MouseEventArgs>()">Choose Plan</MudButton>
-                                }
-                            </MudCardActions>
-                        </MudCard>
-                    </MudItem>
-                }
+                    string packageClass = package == ViewModel.Packages.First() ?
+                    "pricing-card popular" : "pricing-card";
 
-                <!-- Repeat for other plans... -->
-            </MudGrid>
+                    <MudCard Class="@packageClass">
+                        <MudCardHeader Class="pricing-header">
+                            <MudStack>
+                                <h3>@package.Name</h3>
+                                <div class="price">$@package.Price?.ToString("F2")</div>
+                                <div class="frequency">for @package.ResumeGenerations resumes</div>
+                            </MudStack>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <ul class="pricing-features">
+                                <li><MudIcon Icon="@Icons.Material.Filled.Check" /> @package.ResumeGenerations Resume Generations</li>
+                                <li><MudIcon Icon="@Icons.Material.Filled.Check" /> LaTeX Source Files</li>
+                                <li><MudIcon Icon="@Icons.Material.Filled.Check" /> Unlimited PDF Downloads</li>
+                                <li><MudIcon Icon="@Icons.Material.Filled.Check" /> Priority Support</li>
+                            </ul>
+                        </MudCardContent>
+                        <MudCardActions>
+                            @if (isAuthenticated)
+                            {
+                                <MudButton Class="btn-pricing"
+                                           OnClick="() => package.Purchase.Execute()"
+                                           FullWidth="true">
+                                    Choose Plan
+                                </MudButton>
+                            }
+                        </MudCardActions>
+                    </MudCard>
+                }
+            </div>
         </MudContainer>
         <MudSpacer/>
         <!-- CTA Section -->
