@@ -221,7 +221,7 @@ box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
 /* Glassmorphism Sidebar */
 .sidebar {
     position: fixed;
-    top: 0;
+    top: 8%;
     width: 12vmax;
     height: calc(100% - var(--header-height));
     background: rgba(255, 255, 255, 0.85);
