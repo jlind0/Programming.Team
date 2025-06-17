@@ -2,42 +2,42 @@
 @using MudBlazor.Utilities
 @if(ViewModel != null)
 {
-    <MudStack>
-        <MudNumericField @bind-Value="ViewModel.MatchThreshold" Label="Match Threshold" Variant="Variant.Outlined"/>
-        <MudNumericField @bind-Value="ViewModel.TargetLengthPer10Percent" Label="Target Length Per 10%" Variant="Variant.Outlined"/>
-        <MudNumericField @bind-Value="ViewModel.BulletsPer20Percent" Label="Bullets Per 20%" Variant="Variant.Outlined"/>
-        <MudNumericField @bind-Value="ViewModel.SkillsPer20Percent" Label="Skills Per 20%" Variant="Variant.Outlined" />
-        <MudCheckBox @bind-Value="ViewModel.HideSkillsNotInJD" Label="Hide Skills not in JD"/>
-        <MudCheckBox @bind-Value="ViewModel.HidePositionsNotInJD" Label="Hide Positions not in JD" />
-        <MudSelect Label="Document Template" T="DocumentTemplate" @bind-Value="ViewModel.SelectedTemplate" ToStringFunc="e => e?.Name">
+    <MudStack Class="resume-config-container">
+        <MudNumericField Class="config-field" @bind-Value="ViewModel.MatchThreshold" Label="Match Threshold" Variant="Variant.Outlined"/>
+        <MudNumericField Class="config-field" @bind-Value="ViewModel.TargetLengthPer10Percent" Label="Target Length Per 10%" Variant="Variant.Outlined"/>
+        <MudNumericField Class="config-field" @bind-Value="ViewModel.BulletsPer20Percent" Label="Bullets Per 20%" Variant="Variant.Outlined"/>
+        <MudNumericField Class="config-field" @bind-Value="ViewModel.SkillsPer20Percent" Label="Skills Per 20%" Variant="Variant.Outlined" />
+        <MudCheckBox Class="config-checkbox" @bind-Value="ViewModel.HideSkillsNotInJD" Label="Hide Skills not in JD"/>
+        <MudCheckBox Class="config-checkbox" @bind-Value="ViewModel.HidePositionsNotInJD" Label="Hide Positions not in JD" />
+        <MudSelect Class="template-select" Label="Document Template" T="DocumentTemplate" @bind-Value="ViewModel.SelectedTemplate" ToStringFunc="e => e?.Name">
             @foreach (var template in ViewModel.DocumentTemplates)
             {
-                <MudSelectItem T="DocumentTemplate" Value="template">@template.Name</MudSelectItem>
+                <MudSelectItem Class="template-select-item" T="DocumentTemplate" Value="template">@template.Name</MudSelectItem>
             }
         </MudSelect>
-        <MudDropContainer T="ResumePartViewModel" Items="ViewModel.ResumeParts" @ref="_container" ItemsSelector="@((item,dropzone) => item.Selected.ToString() == dropzone)" ItemDropped="ItemUpdated" Class="d-flex flex-wrap flex-grow-1">
+        <MudDropContainer T="ResumePartViewModel" Items="ViewModel.ResumeParts" @ref="_container" ItemsSelector="@((item,dropzone) => item.Selected.ToString() == dropzone)" ItemDropped="ItemUpdated" Class="d-flex flex-wrap flex-grow-1 resume-parts-container">
             <ChildContent>
-                <MudPaper Class="ma-4 flex-grow-1">
-                    <MudList T="string" Class="d-flex flex-column mud-height-full">
-                        <MudListSubheader>Include in Resume Render</MudListSubheader>
-                        <MudDropZone T="ResumePartViewModel" Identifier="True" Class="flex-grow-1" AllowReorder="true" />
+                <MudPaper Class="drop-zone include-zone">
+                    <MudList T="ResumePartViewModel" Class="drop-zone-list">
+                        <MudListSubheader Class="drop-zone-header">Include in Resume Render</MudListSubheader>
+                        <MudDropZone Class="include-drop-zone" T="ResumePartViewModel" Identifier="True" AllowReorder="true" />
                     </MudList>
                 </MudPaper>
-                <MudPaper Class="ma-4 flex-grow-1">
-                    <MudList T="string" Class="d-flex flex-column mud-height-full">
-                        <MudListSubheader>Exclude</MudListSubheader>
-                        <MudDropZone T="ResumePartViewModel" Identifier="False" Class="flex-grow-1" AllowReorder="true" />
+                <MudPaper Class="drop-zone exclude-zone">
+                    <MudList T="ResumePartViewModel"  Class="drop-zone-list">
+                        <MudListSubheader Class="drop-zone-header">Exclude</MudListSubheader>
+                        <MudDropZone Class="exclude-drop-zone" T="ResumePartViewModel" Identifier="False" AllowReorder="true" />
                     </MudList>
                 </MudPaper>
             </ChildContent>
             <ItemRenderer>
-                <MudListItem T="string" Text="@($"{Enum.GetName(typeof(ResumePart), context.Part)}")">
-                    <MudStack Row="true">
-                        <h4>@Enum.GetName(typeof(ResumePart), context.Part)</h4>
-                        <MudSelect Label="Template" T="SectionTemplate" @bind-Value="context.SelectedTemplate" ToStringFunc="e => e?.Name">
+                <MudListItem Class="resume-part-item" T="string" Text="@($"{Enum.GetName(typeof(ResumePart), context.Part)}")">
+                    <MudStack Class="resume-part-content" Row="true">
+                        <h4 Class="resume-part-title">@Enum.GetName(typeof(ResumePart), context.Part)</h4>
+                        <MudSelect Class="part-template-select" Label="Template" T="SectionTemplate" @bind-Value="context.SelectedTemplate" ToStringFunc="e => e?.Name">
                             @foreach (var doctype in context.SectionTemplates)
                             {
-                                <MudSelectItem T="SectionTemplate" Value="doctype">@doctype.Name</MudSelectItem>
+                                <MudSelectItem Class="part-template-item" T="SectionTemplate" Value="doctype">@doctype.Name</MudSelectItem>
                             }
                         </MudSelect>
                     </MudStack>
