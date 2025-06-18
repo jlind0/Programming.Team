@@ -46,7 +46,7 @@ namespace Programming.Team.AI
                     string result = await response.Content.ReadAsStringAsync();
                     Logger.LogInformation(result);
                     JObject jsonResponse = JObject.Parse(result);
-                    var reply = jsonResponse["choices"][0]["message"]["content"].ToString();
+                    var reply = jsonResponse?["choices"]?[0]?["message"]?["content"]?.ToString();
                     Logger.LogInformation(reply);
                     return reply;
                 }
