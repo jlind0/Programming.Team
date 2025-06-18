@@ -162,6 +162,8 @@ public partial class User : Entity<Guid>, IUser
     public virtual ICollection<DocumentTemplatePurchase> DocumentTemplatePurchaseCreatedByUsers { get; set; } = new List<DocumentTemplatePurchase>();
     public virtual ICollection<DocumentTemplatePurchase> DocumentTemplatePurchaseUpdatedByUsers { get; set; } = new List<DocumentTemplatePurchase>();
     public virtual ICollection<DocumentTemplatePurchase> DocumentTemplatePurchases { get; set; } = new List<DocumentTemplatePurchase>();
+    public virtual ICollection<FAQ> FAQUpdatedByUsers { get; set; } = new List<FAQ>();
+    public virtual ICollection<FAQ> FAQCreatedByUsers { get; set; } = new List<FAQ>();
     public virtual ICollection<SectionTemplate> SectionTemplates { get; set; } = new List<SectionTemplate>();
     public string? StripeAccountId { get; set; }
     public string? StripeStatus { get; set; }

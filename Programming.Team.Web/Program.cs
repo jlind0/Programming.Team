@@ -206,6 +206,7 @@ builder.Services.AddScoped<IRepository<Recommendation, Guid>, Repository<Recomme
 builder.Services.AddScoped<IRepository<Position, Guid>, Repository<Position, Guid>>();
 builder.Services.AddScoped<IRepository<PositionSkill, Guid>, Repository<PositionSkill, Guid>>();
 builder.Services.AddScoped<IRepository<Skill, Guid>, SkillsRepository>();
+builder.Services.AddScoped<IRepository<FAQ, Guid>, Repository<FAQ, Guid>>();
 builder.Services.AddScoped<IRepository<DocumentType, DocumentTypes>, Repository<DocumentType, DocumentTypes>>();
 builder.Services.AddScoped<IRepository<Education, Guid>, Repository<Education, Guid>>();
 builder.Services.AddScoped<IRepository<DocumentTemplate, Guid>, DocumentTemplateRepository>();
@@ -227,6 +228,7 @@ builder.Services.AddScoped<IBusinessRepositoryFacade<Role, Guid>, BusinessReposi
 builder.Services.AddScoped<IBusinessRepositoryFacade<Company, Guid>, BusinessRepositoryFacade<Company, Guid, IRepository<Company, Guid>>>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<Position, Guid>, BusinessRepositoryFacade<Position, Guid, IRepository<Position, Guid>>>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<Recommendation, Guid>, BusinessRepositoryFacade<Recommendation, Guid, IRepository<Recommendation, Guid>>>();
+builder.Services.AddScoped<IBusinessRepositoryFacade<FAQ, Guid>, BusinessRepositoryFacade<FAQ, Guid, IRepository<FAQ, Guid>>>();
 builder.Services.AddScoped<IUserBusinessFacade, UserBusinessFacade>();
 builder.Services.AddScoped<IRoleBusinessFacade, RoleBusinessFacade>();
 builder.Services.AddScoped<IRepository<Posting, Guid>, Repository<Posting, Guid>>();
@@ -311,6 +313,8 @@ builder.Services.AddTransient<SelectSectionTemplatesViewModel>();
 builder.Services.AddTransient<UserStripeAccountViewModel>();
 builder.Services.AddTransient<AddEmailMessageTemplateViewModel>();
 builder.Services.AddTransient<EmailMessageTemplatesViewModel>();
+builder.Services.AddTransient<AddFAQViewModel>();
+builder.Services.AddTransient<FAQsViewModel>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession(options =>
 {

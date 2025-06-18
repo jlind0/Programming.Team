@@ -25,9 +25,11 @@ namespace Programming.Team.ViewModels
         protected ILogger Logger { get; }
         protected IBusinessRepositoryFacade<Posting, Guid> PostingFacade { get; }
         protected IBusinessRepositoryFacade<Package, Guid> PackageFacade { get; }
+        protected IBusinessRepositoryFacade<FAQ, Guid> FAQFacade { get; }
         public ReactiveCommand<Unit, Unit> Load { get; }
         public ObservableCollection<Posting> Postings { get; } = new ObservableCollection<Posting>();
         public ObservableCollection<PackageViewModel> Packages { get; } = new ObservableCollection<PackageViewModel>();
+        public ObservableCollection<FAQ> FAQs { get; } = new ObservableCollection<FAQ>();
         protected INLP NLP { get; }
         protected IMemoryCache Cache { get; }
         protected NavigationManager NavMan { get; }
@@ -38,7 +40,7 @@ namespace Programming.Team.ViewModels
             get => postingCount;
             set => this.RaiseAndSetIfChanged(ref postingCount, value);
         }
-        public IndexViewModel(ILogger<IndexViewModel> logger, IBusinessRepositoryFacade<Package, Guid> packageFacade,
+        public IndexViewModel(ILogger<IndexViewModel> logger, IBusinessRepositoryFacade<Package, Guid> packageFacade, IBusinessRepositoryFacade<FAQ, Guid> faqFacade,
             IBusinessRepositoryFacade<Posting, Guid> postingFacade, INLP nlp, IMemoryCache cache, NavigationManager navMan, IPurchaseManager<Package, Core.Purchase> purchaseManager)
         {
             Logger = logger;
@@ -49,6 +51,7 @@ namespace Programming.Team.ViewModels
             Cache = cache;
             NavMan = navMan;
             PurchaseManager = purchaseManager;
+            FAQFacade = faqFacade;
         }
         protected async Task DoLoad(CancellationToken token)
         {
@@ -79,6 +82,13 @@ namespace Programming.Team.ViewModels
                     else
                         p.Details = details ?? throw new InvalidDataException();
                     Postings.Add(p);
+                }
+                var faqs = await FAQFacade.Get(orderBy: e => e.OrderBy(x => x.SortOrder), token: token);
+                foreach (var faq in faqs.Entities)
+                {
+                    faq.Answer = string.Join(' ', (await NLP.IdentifyParagraphs(faq.Answer)).Select(x => $"<p>{x}</p>"));
+                    faq.Question = string.Join(' ', (await NLP.IdentifyParagraphs(faq.Answer)).Select(x => $"<p>{x}</p>"));
+                    FAQs.Add(faq);
                 }
             }
             catch (Exception ex)

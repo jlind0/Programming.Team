@@ -1,0 +1,35 @@
+﻿@page "/admin/faqs"
+@inherits ReactiveInjectableComponentBase<FAQsViewModel>
+@attribute [Authorize(Roles = "Admin")]
+@if (ViewModel != null)
+{
+    <AlertView Alert="ViewModel.Alert" />
+    <MudButton OnClick="ViewModel.StartAdd.BindCommand<MouseEventArgs>()">Add FAQ</MudButton>
+    <AddFAQView ViewModel="ViewModel.AddViewModel" />
+    @foreach (var position in ViewModel.Entities)
+    {
+        <FAQView ViewModel="position" />
+    }
+}
+
+@code {
+    protected override void OnInitialized()
+    {
+        if (ViewModel != null)
+            ViewModel.Entities.CollectionChanged += (s, e) =>
+            {
+                InvokeAsync(StateHasChanged);
+            };
+        base.OnInitialized();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (ViewModel != null && firstRender)
+        {
+            await ViewModel.Load.Execute().GetAwaiter();
+
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}
+

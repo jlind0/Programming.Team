@@ -1,0 +1,15 @@
+﻿@inherits ReactiveComponentBase<FAQViewModel>
+@if (ViewModel != null)
+{
+    <AlertView Alert="ViewModel.Alert"></AlertView>
+    <MudTextField Label="Question" @bind-Value="ViewModel.Question" Lines="10" Variant="Variant.Outlined" />
+    <MudTextField Label="Answer" @bind-Value="ViewModel.Answer" Lines="10" Variant="Variant.Outlined" />
+    <MudTextField Label="SortOrder" @bind-Value="ViewModel.SortOrder" Variant="Variant.Outlined" />
+    <MudStack Row="true">
+        <MudButton OnClick="ViewModel.Update.BindCommand<MouseEventArgs>()" Color="Color.Primary">Update</MudButton>
+        <MudButton OnClick="ViewModel.Delete.BindCommand<MouseEventArgs>()" Color="Color.Warning">Delete</MudButton>
+    </MudStack>
+}
+@code {
+
+}
