@@ -221,7 +221,7 @@ box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
 /* Glassmorphism Sidebar */
 .sidebar {
     position: fixed;
-    top: 8%;
+
     width: 12vmax;
     height: calc(100% - var(--header-height));
     background: rgba(255, 255, 255, 0.85);
@@ -237,8 +237,8 @@ box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
     border-right: 1px solid rgba(0, 0, 0, 0.05);
     -webkit-box-shadow: 5px 0 15px rgba(0, 0, 0, 0.03);
     box-shadow: 5px 0 15px rgba(0, 0, 0, 0.03);
-    height: 100vmax;
-    overflow-y: scroll !important;
+
+    overflow-y:scroll !important;
 }
 
 .overlay {
@@ -323,17 +323,17 @@ display: flex;
 -webkit-box-align: center;
 -ms-flex-align: center;
 align-items: center;
-gap: 3rem;
-background: var(--glass);
+
+background: white;
 border-radius: 20px;
-padding: 3rem;
+
 -webkit-box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 overflow: hidden;
 position: relative;
 -webkit-backdrop-filter: blur(8px);
 backdrop-filter: blur(8px);
-border: 1px solid rgba(255, 255, 255, 0.5);
+
 }
 
 .hero::before {
@@ -343,8 +343,7 @@ border: 1px solid rgba(255, 255, 255, 0.5);
     right: -50%;
     width: 100%;
     height: 200%;
-    background: -o-radial-gradient(circle, rgba(72, 149, 239, 0.1) 0%, rgba(72, 149, 239, 0) 70%);
-    background: radial-gradient(circle, rgba(72, 149, 239, 0.1) 0%, rgba(72, 149, 239, 0) 70%);
+
     z-index: 0;
 }
 
@@ -1188,8 +1187,7 @@ position: relative;
 
     position: absolute;
     right: 2% !important;
-    background: -o-linear-gradient(315deg, #f5f7fa 0%, #e4e8f0 100%);
-    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+    background-color:white;
 }
 
 /* Panel containers */
