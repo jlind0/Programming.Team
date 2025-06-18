@@ -650,6 +650,27 @@ public partial class ResumesContext : DbContext
                 .HasConstraintName("FK_DocumentTemplatePurchases_Users2");
             entity.HasQueryFilter(d => !d.IsDeleted);
         });
+        modelBuilder.Entity<EmailMessageTemplate>(entity =>
+        {
+            entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.CreateDate)
+                .HasDefaultValueSql("(getutcdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Name).HasMaxLength(500);
+            entity.Property(e => e.UpdateDate)
+                .HasDefaultValueSql("(getutcdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.CreatedByUser).WithMany(p => p.EmailMessageTemplateCreatedByUsers)
+                .HasForeignKey(d => d.CreatedByUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            entity.HasOne(d => d.UpdatedByUser).WithMany(p => p.EmailMessageTemplateUpdatedByUsers)
+                .HasForeignKey(d => d.UpdatedByUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+            entity.HasQueryFilter(d => !d.IsDeleted);
+            entity.ToTable("EmailMessageTemplates");
+        });
         OnModelCreatingPartial(modelBuilder);
     }
 

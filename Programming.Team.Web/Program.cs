@@ -221,6 +221,7 @@ builder.Services.AddScoped<IRepository<Purchase, Guid>, Repository<Purchase, Gui
 builder.Services.AddScoped<IRepository<SectionTemplate, Guid>, SectionTemplateRepository>();
 builder.Services.AddScoped<ISkillsRespository, SkillsRepository>();
 builder.Services.AddScoped<ISectionTemplateRepository, SectionTemplateRepository>();
+builder.Services.AddScoped<IRepository<EmailMessageTemplate, Guid>, Repository<EmailMessageTemplate, Guid>>();
 builder.Services.AddScoped<ISkillsBusinessFacade, SkillsBusinessFacade>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<Role, Guid>, BusinessRepositoryFacade<Role, Guid, IRepository<Role, Guid>>>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<Company, Guid>, BusinessRepositoryFacade<Company, Guid, IRepository<Company, Guid>>>();
@@ -246,6 +247,7 @@ builder.Services.AddScoped<IBusinessRepositoryFacade<SectionTemplate, Guid>, Sec
 builder.Services.AddScoped<IBusinessRepositoryFacade<DocumentSectionTemplate, Guid>, BusinessRepositoryFacade<DocumentSectionTemplate, Guid, IRepository<DocumentSectionTemplate, Guid>>>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<DocumentTemplatePurchase, Guid>, BusinessRepositoryFacade<DocumentTemplatePurchase, Guid, IRepository<DocumentTemplatePurchase, Guid>>>();
 builder.Services.AddScoped<ISectionTemplateBusinessFacade, SectionTemplateBusinessFacade>();
+builder.Services.AddScoped<IBusinessRepositoryFacade<EmailMessageTemplate, Guid>, BusinessRepositoryFacade<EmailMessageTemplate, Guid, IRepository<EmailMessageTemplate, Guid>>>();
 builder.Services.AddScoped<IPurchaseManager<Package, Purchase>, PackagePurchaseManager>();
 builder.Services.AddScoped<IPurchaseManager<DocumentTemplate, DocumentTemplatePurchase>, DocumentTemplatePurchaseManager>();
 builder.Services.AddScoped<IAccountManager, AccountManager>();
@@ -307,7 +309,8 @@ builder.Services.AddTransient<Programming.Team.ViewModels.Admin.TrueUserLoaderVi
 builder.Services.AddTransient<Programming.Team.ViewModels.Resume.TrueUserLoaderViewModel>();
 builder.Services.AddTransient<SelectSectionTemplatesViewModel>();
 builder.Services.AddTransient<UserStripeAccountViewModel>();
-builder.Services.AddTransient<MessagingViewModel>();
+builder.Services.AddTransient<AddEmailMessageTemplateViewModel>();
+builder.Services.AddTransient<EmailMessageTemplatesViewModel>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession(options =>
 {

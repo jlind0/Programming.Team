@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Programming.Team.Business.Core;
 using Programming.Team.Core;
 using Programming.Team.Messaging.Core;
@@ -16,26 +17,106 @@ using System.Threading.Tasks;
 
 namespace Programming.Team.ViewModels.Admin
 {
-    public class MessagingViewModel : ReactiveObject
+    public class AddEmailMessageTemplateViewModel : AddEntityViewModel<Guid, EmailMessageTemplate>, IEmailMessageTemplate
     {
-        public Interaction<string, bool> Alert { get; } = new Interaction<string, bool>();
+        public AddEmailMessageTemplateViewModel(IBusinessRepositoryFacade<EmailMessageTemplate, Guid> facade, ILogger<AddEntityViewModel<Guid, EmailMessageTemplate, IBusinessRepositoryFacade<EmailMessageTemplate, Guid>>> logger) : base(facade, logger)
+        {
+        }
+        private string messageTemplate = string.Empty;
+        private string subjectTemplate = string.Empty;
+        private bool isHtml = true;
+        private string name = string.Empty;
+
+        // Properties with Notification
+        public string MessageTemplate
+        {
+            get => messageTemplate;
+            set => this.RaiseAndSetIfChanged(ref messageTemplate, value);
+        }
+
+        public string SubjectTemplate
+        {
+            get => subjectTemplate;
+            set => this.RaiseAndSetIfChanged(ref subjectTemplate, value);
+        }
+
+        public bool IsHtml
+        {
+            get => isHtml;
+            set => this.RaiseAndSetIfChanged(ref isHtml, value);
+        }
+
+        public string Name
+        {
+            get => name;
+            set => this.RaiseAndSetIfChanged(ref name, value);
+        }
+
+        protected override Task Clear()
+        {
+            MessageTemplate = "";
+            SubjectTemplate = "";
+            IsHtml = true;
+            Name = "";
+            return Task.CompletedTask;
+        }
+
+        protected override Task<EmailMessageTemplate> ConstructEntity()
+        {
+            return Task.FromResult(new EmailMessageTemplate()
+            {
+                IsHtml = IsHtml,
+                Name = Name,
+                SubjectTemplate = SubjectTemplate,
+                MessageTemplate = messageTemplate
+            });
+        }
+    }
+    public class EmailMessageTemplatesViewModel : EntitiesDefaultViewModel<Guid, EmailMessageTemplate, EmailMessageTemplateViewModel, AddEmailMessageTemplateViewModel>
+    {
+        protected IServiceProvider ServiceProvider { get; }
+        public EmailMessageTemplatesViewModel(IServiceProvider serviceProvider, AddEmailMessageTemplateViewModel addViewModel, IBusinessRepositoryFacade<EmailMessageTemplate, Guid> facade, ILogger<EntitiesViewModel<Guid, EmailMessageTemplate, EmailMessageTemplateViewModel, IBusinessRepositoryFacade<EmailMessageTemplate, Guid>>> logger) : base(addViewModel, facade, logger)
+        {
+            ServiceProvider = serviceProvider;
+        }
+
+        protected override Task<EmailMessageTemplateViewModel> Construct(EmailMessageTemplate entity, CancellationToken token)
+        {
+            return Task.FromResult(new EmailMessageTemplateViewModel(Facade,
+                ServiceProvider.GetRequiredService<IUserBusinessFacade>(),
+                ServiceProvider.GetRequiredService<IEmailMessaging>(),
+                ServiceProvider.GetRequiredService<IDocumentTemplator>(),
+                ServiceProvider.GetRequiredService<SelectUsersViewModel>(),
+                Logger, entity));
+        }
+    }
+    public class EmailMessageTemplateViewModel : EntityViewModel<Guid, EmailMessageTemplate>, IEmailMessageTemplate
+    {
         public SelectUsersViewModel SelectUsersVM { get; }
         protected IUserBusinessFacade UserFacade { get; }
         protected IEmailMessaging EmailMessaging { get; }
         protected IDocumentTemplator DocumentTemplator { get; }
-        public ReactiveCommand<Unit, Unit> Load { get; }
         public ReactiveCommand<Unit, Unit> TestTemplate { get; }
         public ReactiveCommand<Unit, Unit> Send { get; }
-        protected ILogger Logger { get; }
-        public MessagingViewModel(IUserBusinessFacade userFacade, IEmailMessaging emailMessaging, 
-            IDocumentTemplator documentTemplator, SelectUsersViewModel selectUsersViewModel, ILogger<MessagingViewModel> logger)
+        public EmailMessageTemplateViewModel(IBusinessRepositoryFacade<EmailMessageTemplate, Guid> facade, IUserBusinessFacade userFacade, IEmailMessaging emailMessaging, 
+            IDocumentTemplator documentTemplator, SelectUsersViewModel selectUsersViewModel, ILogger logger, EmailMessageTemplate entity): 
+            base(logger,facade, entity)
         {
             UserFacade = userFacade;
             EmailMessaging = emailMessaging;
             DocumentTemplator = documentTemplator;
             SelectUsersVM = selectUsersViewModel;
-            Logger = logger;
-            Load = ReactiveCommand.CreateFromTask(DoLoad);
+            TestTemplate = ReactiveCommand.CreateFromTask(DoTestTemplate);
+            Send = ReactiveCommand.CreateFromTask(DoSend);
+        }
+        public EmailMessageTemplateViewModel(IBusinessRepositoryFacade<EmailMessageTemplate, Guid> facade, IUserBusinessFacade userFacade, IEmailMessaging emailMessaging,
+            IDocumentTemplator documentTemplator, SelectUsersViewModel selectUsersViewModel, ILogger logger, Guid id) :
+            base(logger, facade, id)
+        {
+            UserFacade = userFacade;
+            EmailMessaging = emailMessaging;
+            DocumentTemplator = documentTemplator;
+            SelectUsersVM = selectUsersViewModel;
             TestTemplate = ReactiveCommand.CreateFromTask(DoTestTemplate);
             Send = ReactiveCommand.CreateFromTask(DoSend);
         }
@@ -48,9 +129,11 @@ namespace Programming.Team.ViewModels.Admin
                 this.RaiseAndSetIfChanged(ref isReadyToSend, value);
             }
         }
-        protected Task DoLoad(CancellationToken token)
+        protected override async Task<EmailMessageTemplate?> DoLoad(CancellationToken token)
         {
-            return SelectUsersVM.SetSelected([], token);
+            var e = await base.DoLoad(token);
+            await SelectUsersVM.SetSelected([], token);
+            return e;
         }
         protected async Task DoTestTemplate(CancellationToken token)
         {
@@ -110,6 +193,29 @@ namespace Programming.Team.ViewModels.Admin
                 Progress = null;
             }
         }
+
+        internal override Task<EmailMessageTemplate> Populate()
+        {
+            return Task.FromResult(new EmailMessageTemplate()
+            {
+                Id = Id,
+                MessageTemplate = MessageTemplate,
+                SubjectTemplate = SubjectTemplate,
+                IsHtml = IsHtml,
+                Name = Name,
+            });
+        }
+
+        internal override Task Read(EmailMessageTemplate entity)
+        {
+            Id = entity.Id;
+            Name = entity.Name;
+            IsHtml = entity.IsHtml;
+            SubjectTemplate = entity.SubjectTemplate;
+            MessageTemplate = entity.MessageTemplate;
+            return Task.CompletedTask;
+        }
+
         private string? progress;
         public string? Progress
         {
@@ -125,8 +231,8 @@ namespace Programming.Team.ViewModels.Admin
             get => Progress != null;
             set { }
         }
-        private string? messageTemplate;
-        public string? MessageTemplate
+        private string messageTemplate = "";
+        public string MessageTemplate
         {
             get => messageTemplate;
             set
@@ -141,8 +247,8 @@ namespace Programming.Team.ViewModels.Admin
             get => exampleMessage;
             set => this.RaiseAndSetIfChanged(ref exampleMessage, value);
         }
-        private string? subjectTemplate;
-        public string? SubjectTemplate
+        private string subjectTemplate = "";
+        public string SubjectTemplate
         {
             get => subjectTemplate;
             set
@@ -166,6 +272,12 @@ namespace Programming.Team.ViewModels.Admin
                 IsReadyToSend = false;
                 this.RaiseAndSetIfChanged(ref isHtml, value);
             }
+        }
+        private string name = "";
+        public string Name 
+        {
+            get => name;
+            set => this.RaiseAndSetIfChanged(ref name, value);
         }
     }
 }
