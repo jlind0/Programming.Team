@@ -1,6 +1,7 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager NavMan
 
-<PageTitle>Programming Team - The Resume Tailorer</PageTitle>
+<PageTitle>Programming Team - The Resume Tailor</PageTitle>
 @* TODO: support theme and manage its state manually in localstorage *@
 <MudThemeProvider Theme="@_theme" />
 <MudPopoverProvider />
@@ -10,7 +11,7 @@
 
 <MudLayout>
     <!-- Mobile View (sm and down) -->
-    <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+    <MudHidden Breakpoint="@mobileBreakPoint" Invert="true">
         <MudAppBar Elevation="1">
             <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
                            OnClick="@((e) => DrawerToggle())" />
@@ -35,7 +36,7 @@
     </MudHidden>
 
     <!-- Desktop View (md and up) -->
-    <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+    <MudHidden Breakpoint="@mainBreakPoint" Invert="true">
         <MudAppBar Elevation="1">
             <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
                            OnClick="@((e) => DrawerToggle())" />
@@ -71,12 +72,19 @@
 @code {
     private bool _drawerOpen = true;
     private MudTheme? _theme = null;
-
+    private Breakpoint mobileBreakPoint = Breakpoint.SmAndDown;
+    private Breakpoint mainBreakPoint = Breakpoint.MdAndUp;
     protected override void OnInitialized()
     {
         base.OnInitialized();
 
         _theme = LightGlassTheme;
+        var relativePath = NavMan.ToBaseRelativePath(NavMan.Uri);
+        if(relativePath == "/" || relativePath == "")
+        {
+            mobileBreakPoint = Breakpoint.None;
+            mainBreakPoint = Breakpoint.Always;
+        }
     }
 
     private void DrawerToggle()
