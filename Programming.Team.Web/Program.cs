@@ -206,6 +206,7 @@ builder.Services.AddScoped<IRepository<Recommendation, Guid>, Repository<Recomme
 builder.Services.AddScoped<IRepository<Position, Guid>, Repository<Position, Guid>>();
 builder.Services.AddScoped<IRepository<PositionSkill, Guid>, Repository<PositionSkill, Guid>>();
 builder.Services.AddScoped<IRepository<Skill, Guid>, SkillsRepository>();
+builder.Services.AddScoped<IRepository<FAQ, Guid>, Repository<FAQ, Guid>>();
 builder.Services.AddScoped<IRepository<DocumentType, DocumentTypes>, Repository<DocumentType, DocumentTypes>>();
 builder.Services.AddScoped<IRepository<Education, Guid>, Repository<Education, Guid>>();
 builder.Services.AddScoped<IRepository<DocumentTemplate, Guid>, DocumentTemplateRepository>();
@@ -221,11 +222,13 @@ builder.Services.AddScoped<IRepository<Purchase, Guid>, Repository<Purchase, Gui
 builder.Services.AddScoped<IRepository<SectionTemplate, Guid>, SectionTemplateRepository>();
 builder.Services.AddScoped<ISkillsRespository, SkillsRepository>();
 builder.Services.AddScoped<ISectionTemplateRepository, SectionTemplateRepository>();
+builder.Services.AddScoped<IRepository<EmailMessageTemplate, Guid>, Repository<EmailMessageTemplate, Guid>>();
 builder.Services.AddScoped<ISkillsBusinessFacade, SkillsBusinessFacade>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<Role, Guid>, BusinessRepositoryFacade<Role, Guid, IRepository<Role, Guid>>>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<Company, Guid>, BusinessRepositoryFacade<Company, Guid, IRepository<Company, Guid>>>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<Position, Guid>, BusinessRepositoryFacade<Position, Guid, IRepository<Position, Guid>>>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<Recommendation, Guid>, BusinessRepositoryFacade<Recommendation, Guid, IRepository<Recommendation, Guid>>>();
+builder.Services.AddScoped<IBusinessRepositoryFacade<FAQ, Guid>, BusinessRepositoryFacade<FAQ, Guid, IRepository<FAQ, Guid>>>();
 builder.Services.AddScoped<IUserBusinessFacade, UserBusinessFacade>();
 builder.Services.AddScoped<IRoleBusinessFacade, RoleBusinessFacade>();
 builder.Services.AddScoped<IRepository<Posting, Guid>, Repository<Posting, Guid>>();
@@ -246,6 +249,7 @@ builder.Services.AddScoped<IBusinessRepositoryFacade<SectionTemplate, Guid>, Sec
 builder.Services.AddScoped<IBusinessRepositoryFacade<DocumentSectionTemplate, Guid>, BusinessRepositoryFacade<DocumentSectionTemplate, Guid, IRepository<DocumentSectionTemplate, Guid>>>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<DocumentTemplatePurchase, Guid>, BusinessRepositoryFacade<DocumentTemplatePurchase, Guid, IRepository<DocumentTemplatePurchase, Guid>>>();
 builder.Services.AddScoped<ISectionTemplateBusinessFacade, SectionTemplateBusinessFacade>();
+builder.Services.AddScoped<IBusinessRepositoryFacade<EmailMessageTemplate, Guid>, BusinessRepositoryFacade<EmailMessageTemplate, Guid, IRepository<EmailMessageTemplate, Guid>>>();
 builder.Services.AddScoped<IPurchaseManager<Package, Purchase>, PackagePurchaseManager>();
 builder.Services.AddScoped<IPurchaseManager<DocumentTemplate, DocumentTemplatePurchase>, DocumentTemplatePurchaseManager>();
 builder.Services.AddScoped<IAccountManager, AccountManager>();
@@ -307,7 +311,10 @@ builder.Services.AddTransient<Programming.Team.ViewModels.Admin.TrueUserLoaderVi
 builder.Services.AddTransient<Programming.Team.ViewModels.Resume.TrueUserLoaderViewModel>();
 builder.Services.AddTransient<SelectSectionTemplatesViewModel>();
 builder.Services.AddTransient<UserStripeAccountViewModel>();
-builder.Services.AddTransient<MessagingViewModel>();
+builder.Services.AddTransient<AddEmailMessageTemplateViewModel>();
+builder.Services.AddTransient<EmailMessageTemplatesViewModel>();
+builder.Services.AddTransient<AddFAQViewModel>();
+builder.Services.AddTransient<FAQsViewModel>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession(options =>
 {

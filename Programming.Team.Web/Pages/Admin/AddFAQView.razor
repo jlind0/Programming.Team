@@ -1,0 +1,29 @@
+﻿@inherits ReactiveComponentBase<AddFAQViewModel>
+@if (ViewModel != null)
+{
+    <AlertView Alert="ViewModel.Alert" />
+    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4">
+        <div class="d-flex flex-column">
+            <MudTextField Label="Question" @bind-Value="ViewModel.Question" Lines="10" Variant="Variant.Outlined" />
+            <MudTextField Label="Answer" @bind-Value="ViewModel.Answer" Lines="10" Variant="Variant.Outlined" />
+            <MudTextField Label="SortOrder" @bind-Value="ViewModel.SortOrder" Variant="Variant.Outlined" />
+            <MudStack Row="true">
+
+                <MudIconButton OnClick="ViewModel.Add.BindCommand<MouseEventArgs>()" Icon="@Icons.Material.Filled.AddBox"
+                               Color="Color.Primary" Size="Size.Large" />
+                <MudIconButton OnClick="ViewModel.Cancel.BindCommand<MouseEventArgs>()" Icon="@Icons.Material.Filled.Cancel"
+                               Color="Color.Secondary" Size="Size.Large" />
+            </MudStack>
+
+        </div>
+    </MudPopover>
+}
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && ViewModel != null)
+            await ViewModel.Init.Execute().GetAwaiter();
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

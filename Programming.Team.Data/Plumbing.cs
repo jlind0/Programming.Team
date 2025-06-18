@@ -70,14 +70,14 @@ namespace Programming.Team.Data
         /// Retrieves the impersonated user ID from the session.
         /// </summary>
         /// <returns>The impersonated user ID or null if not set.</returns>
-        public async Task<Guid?> GetImpersonatedUser()
+        public Task<Guid?> GetImpersonatedUser()
         {
             var httpContext = ServiceProvider.GetService<IHttpContextAccessor>();
             var strUserId = httpContext?.HttpContext.Session.GetString(ImpersonatedUserId);
 
             if (Guid.TryParse(strUserId, out Guid userId))
-                return userId;
-            return null;
+                return Task.FromResult(userId as Guid?);
+            return Task.FromResult(null as Guid?);
         }
         /// <summary>
         /// Sets the impersonated user ID in the session.

@@ -1,17 +1,18 @@
-﻿@page "/admin/messaging/email"
-@inherits ReactiveInjectableComponentBase<MessagingViewModel>
-@attribute [Authorize(Roles = "Admin")]
+﻿@inherits ReactiveComponentBase<EmailMessageTemplateViewModel>
 
 @if(ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert"/>
     <MudStack>
         <SelectUsersView ViewModel="ViewModel.SelectUsersVM" />
+        <MudTextField @bind-Value="ViewModel.Name" Label="Template Name" Variant="Variant.Outlined"/>
         <MudTextField @bind-Value="ViewModel.SubjectTemplate" Label="Subject Template" Variant="Variant.Outlined"/>
         <MudTextField @bind-Value="ViewModel.MessageTemplate" Lines="10" Label="Message Template" Variant="Variant.Outlined" />
         <MudStack Row="true">
             <MudCheckBox @bind-Value="ViewModel.IsHtml" Label="Is Html Message" />
             <MudButton Color="Color.Secondary" OnClick="ViewModel.TestTemplate.BindCommand<MouseEventArgs>()">Test</MudButton>
+            <MudButton Color="Color.Primary" OnClick="ViewModel.Update.BindCommand<MouseEventArgs>()">Update</MudButton>
+            <MudButton Color="Color.Warning" OnClick="ViewModel.Delete.BindCommand<MouseEventArgs>()">Delete</MudButton>
         </MudStack>
         
         @if (ViewModel.IsReadyToSend)

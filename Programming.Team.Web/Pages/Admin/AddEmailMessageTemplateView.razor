@@ -1,0 +1,35 @@
+﻿@inherits ReactiveComponentBase<AddEmailMessageTemplateViewModel>
+@if (ViewModel != null)
+{
+    <AlertView Alert="ViewModel.Alert" />
+
+    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4">
+        <div class="d-flex flex-column">
+            <MudStack>
+                <MudTextField @bind-Value="ViewModel.Name" Label="Template Name" Variant="Variant.Outlined"/>
+                <MudTextField @bind-Value="ViewModel.SubjectTemplate" Label="Subject Template" Variant="Variant.Outlined"/>
+                <MudTextField @bind-Value="ViewModel.MessageTemplate" Lines="10" Label="Message Template" Variant="Variant.Outlined" />
+                <MudStack Row="true">
+                    <MudCheckBox @bind-Value="ViewModel.IsHtml" Label="Is Html Message" />
+                </MudStack>
+                <MudStack Row="true">
+                    <MudButton OnClick="ViewModel.Add.BindCommand<MouseEventArgs>()">Add Document Template</MudButton>
+                    <MudButton OnClick="ViewModel.Cancel.BindCommand<MouseEventArgs>()">Cancel</MudButton>
+                </MudStack>
+            </MudStack>
+
+        </div>
+    </MudPopover>
+
+}
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && ViewModel != null)
+        {
+            await ViewModel.Init.Execute().GetAwaiter();
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

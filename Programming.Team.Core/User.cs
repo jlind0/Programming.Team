@@ -157,9 +157,13 @@ public partial class User : Entity<Guid>, IUser
     public string? DefaultResumeConfiguration { get; set; }
     public virtual ICollection<DocumentSectionTemplate> DocumentSectionTemplateCreatedByUsers { get; set; } = new List<DocumentSectionTemplate>();
     public virtual ICollection<DocumentSectionTemplate> DocumentSectionTemplateUpdatedByUsers { get; set; } = new List<DocumentSectionTemplate>();
+    public virtual ICollection<EmailMessageTemplate> EmailMessageTemplateCreatedByUsers { get; set; } = new List<EmailMessageTemplate>();
+    public virtual ICollection<EmailMessageTemplate> EmailMessageTemplateUpdatedByUsers { get; set; } = new List<EmailMessageTemplate>();
     public virtual ICollection<DocumentTemplatePurchase> DocumentTemplatePurchaseCreatedByUsers { get; set; } = new List<DocumentTemplatePurchase>();
     public virtual ICollection<DocumentTemplatePurchase> DocumentTemplatePurchaseUpdatedByUsers { get; set; } = new List<DocumentTemplatePurchase>();
     public virtual ICollection<DocumentTemplatePurchase> DocumentTemplatePurchases { get; set; } = new List<DocumentTemplatePurchase>();
+    public virtual ICollection<FAQ> FAQUpdatedByUsers { get; set; } = new List<FAQ>();
+    public virtual ICollection<FAQ> FAQCreatedByUsers { get; set; } = new List<FAQ>();
     public virtual ICollection<SectionTemplate> SectionTemplates { get; set; } = new List<SectionTemplate>();
     public string? StripeAccountId { get; set; }
     public string? StripeStatus { get; set; }

@@ -48,6 +48,8 @@ public partial class ResumesContext : DbContext
     public virtual DbSet<SectionTemplate> SectionTemplates { get; set; }
     public virtual DbSet<DocumentSectionTemplate> DocumentSectionTemplates { get; set; }
     public virtual DbSet<DocumentTemplatePurchase> DocumentTemplatePurchases { get; set; }
+    public virtual DbSet<EmailMessageTemplate> EmailMessageTemplates { get; set; }
+    public virtual DbSet<FAQ> FAQs { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Name=Resumes");
 
@@ -649,6 +651,47 @@ public partial class ResumesContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_DocumentTemplatePurchases_Users2");
             entity.HasQueryFilter(d => !d.IsDeleted);
+        });
+        modelBuilder.Entity<EmailMessageTemplate>(entity =>
+        {
+            entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.CreateDate)
+                .HasDefaultValueSql("(getutcdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Name).HasMaxLength(500);
+            entity.Property(e => e.UpdateDate)
+                .HasDefaultValueSql("(getutcdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.CreatedByUser).WithMany(p => p.EmailMessageTemplateCreatedByUsers)
+                .HasForeignKey(d => d.CreatedByUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            entity.HasOne(d => d.UpdatedByUser).WithMany(p => p.EmailMessageTemplateUpdatedByUsers)
+                .HasForeignKey(d => d.UpdatedByUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+            entity.HasQueryFilter(d => !d.IsDeleted);
+            entity.ToTable("EmailMessageTemplates");
+        });
+        modelBuilder.Entity<FAQ>(entity =>
+        {
+            entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.CreateDate)
+                .HasDefaultValueSql("(getutcdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.UpdateDate)
+                .HasDefaultValueSql("(getutcdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.CreatedByUser).WithMany(p => p.FAQCreatedByUsers)
+                .HasForeignKey(d => d.CreatedByUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            entity.HasOne(d => d.UpdatedByUser).WithMany(p => p.FAQUpdatedByUsers)
+                .HasForeignKey(d => d.UpdatedByUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+            entity.HasQueryFilter(d => !d.IsDeleted);
+            entity.ToTable("FAQs");
         });
         OnModelCreatingPartial(modelBuilder);
     }
