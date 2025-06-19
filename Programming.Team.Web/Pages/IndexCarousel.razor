@@ -75,6 +75,8 @@
     private Transition transition = Transition.Slide;
     private MudCarousel<object> carPostings = null!;
 
+
+
     protected override void OnInitialized()
     {
         if (ViewModel != null)
@@ -84,6 +86,10 @@
                 InvokeAsync(StateHasChanged);
             };
         base.OnInitialized();
+    }
+    private bool ValidateEmail(string email)
+    {
+        return !string.IsNullOrWhiteSpace(email) && email.Contains("@");
     }
 
 

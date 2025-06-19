@@ -121,6 +121,100 @@
 
         </MudGrid>
         <MudSpacer />
+
+        <!-- FAQ Section -->
+        <MudContainer Class="mt-10">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+
+            <MudGrid>
+                <MudItem xs="12" md="6">
+                    <MudExpansionPanels>
+                        <MudExpansionPanel Text="How does the resume tailoring work?">
+                            <MudText>Our AI analyzes job descriptions and your existing resume to identify the most relevant skills and experiences. It then reformats and rewrites your resume to match the specific requirements of each job application.</MudText>
+                        </MudExpansionPanel>
+                        <MudExpansionPanel Text="Is my data secure?">
+                            <MudText>Yes, we use enterprise-grade security measures including encryption at rest and in transit. Your resumes and personal information are never shared with third parties.</MudText>
+                        </MudExpansionPanel>
+                        <MudExpansionPanel Text="Can I edit the generated resume?">
+                            <MudText>Absolutely! You can download the LaTeX source code and make any modifications you need in any LaTeX editor. Re-render the PDF at no additional cost.</MudText>
+                        </MudExpansionPanel>
+                    </MudExpansionPanels>
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudExpansionPanels>
+                        <MudExpansionPanel Text="How long does processing take?">
+                            <MudText>Typically less than 2 minutes for most resumes. Complex documents with extensive experience might take up to 5 minutes.</MudText>
+                        </MudExpansionPanel>
+                        <MudExpansionPanel Text="What file formats do you support?">
+                            <MudText>We accept PDF, DOCX, and plain text for input. Outputs are provided as PDF with optional LaTeX source code.</MudText>
+                        </MudExpansionPanel>
+                        <MudExpansionPanel Text="Can I cancel my subscription?">
+                            <MudText>Yes, you can cancel anytime. Your unused resume generations will remain available until their expiration date.</MudText>
+                        </MudExpansionPanel>
+                    </MudExpansionPanels>
+                </MudItem>
+            </MudGrid>
+        </MudContainer>
+
+        <!-- Contact Form Section -->
+        <div class="contact-container">
+            <!-- Decorative elements -->
+            <div class="contact-decoration decoration-1"></div>
+            <div class="contact-decoration decoration-2"></div>
+
+            <!-- Header -->
+            <div class="contact-header">
+              
+                <h2 class="section-title">Have Questions? Contact Us!</h2>
+            </div>
+
+            <!-- Form -->
+            <div class="contact-body">
+                <div class="contact-form">
+                    <MudGrid Justify="Justify.Center">
+                        <MudItem xs="12">
+                            <MudCard>
+                                <MudCardContent>
+                                    <MudForm @ref="contactForm" Model="@contactModel">
+                                        <MudGrid>
+                                            <MudItem xs="12">
+                                                <label class="mud-input-label">Email Address</label>
+                                                <MudTextField @bind-Value="contactModel.Email"
+                                                              Required="true"
+                                                              RequiredError="Email is required"
+                                                              Validation="@(new Func<string, bool>(ValidateEmail))"
+                                                              For="@(() => contactModel.Email)"
+                                                              Variant="Variant.Outlined"
+                                                              Margin="Margin.Dense" />
+                                            </MudItem>
+                                            <MudItem xs="12" Class="mt-4">
+                                                <label class="mud-input-label">Your Question</label>
+                                                <MudTextField @bind-Value="contactModel.Question"
+                                                              Lines="5"
+                                                              Required="true"
+                                                              RequiredError="Please enter your question"
+                                                              Variant="Variant.Outlined"
+                                                              Multiline="true"
+                                                              Margin="Margin.Dense" />
+                                            </MudItem>
+                                        </MudGrid>
+                                    </MudForm>
+                                </MudCardContent>
+                                <MudCardActions Class="justify-end">
+                                    <MudButton Class="fw-bold" Href="MicrosoftIdentity/Account/SignOut" Variant="Variant.Filled" onclick="SubmitQuestion()"
+                                               Color="Color.Primary">
+                                        Send Question
+                                    </MudButton>
+                                
+                                </MudCardActions>
+                            </MudCard>
+                        </MudItem>
+                    </MudGrid>
+                </div>
+            </div>
+        </div>
+
         
         <MudText Typo="Typo.body1">
             <MudAlert Severity="Severity.Normal">
@@ -135,6 +229,16 @@
 }
 
 @code{
+
+    private class ContactModel
+    {
+        public string Email { get; set; }
+        public string Question { get; set; }
+    }
+
+    private ContactModel contactModel = new ContactModel();
+    private MudForm contactForm;
+
     private bool isAuthenticated = false;
     protected override async Task OnInitializedAsync()
     {
@@ -160,4 +264,16 @@
         }
         await base.OnAfterRenderAsync(firstRender);
     }
+
+    private bool ValidateEmail(string email)
+    {
+        return !string.IsNullOrWhiteSpace(email) && email.Contains("@");
+    }
+
+
+    private void SubmitQuestion()
+    {
+
+    }
+
 }
