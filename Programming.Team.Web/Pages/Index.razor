@@ -121,6 +121,88 @@
 
         </MudGrid>
         <MudSpacer />
+
+        <!-- FAQ Section -->
+        @if(ViewModel.FAQs.Count > 0)
+        {
+        <MudContainer Class="mt-10">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+
+            <MudGrid>
+                @foreach (var faqGroup in ViewModel.FAQs.ToList().Chunk(FAQGroupSize))
+                {
+                    <MudItem xs="12" md="6">
+                        <MudExpansionPanels>
+                                @foreach (var faq in faqGroup)
+                                {
+                                    <MudExpansionPanel Text="@faq.Question">
+                                        @faq.Answer
+                                    </MudExpansionPanel>
+                                }
+                        </MudExpansionPanels>
+                    </MudItem>
+                }
+            </MudGrid>
+        </MudContainer>
+        }
+        <!-- Contact Form Section -->
+       @* <div class="contact-container">
+            <!-- Decorative elements -->
+            <div class="contact-decoration decoration-1"></div>
+            <div class="contact-decoration decoration-2"></div>
+
+            <!-- Header -->
+            <div class="contact-header">
+              
+                <h2 class="section-title">Have Questions? Contact Us!</h2>
+            </div>
+
+            <!-- Form -->
+            <div class="contact-body">
+                <div class="contact-form">
+                    <MudGrid Justify="Justify.Center">
+                        <MudItem xs="12">
+                            <MudCard>
+                                <MudCardContent>
+                                    <MudForm @ref="contactForm" Model="@contactModel">
+                                        <MudGrid>
+                                            <MudItem xs="12">
+                                                <label class="mud-input-label">Email Address</label>
+                                                <MudTextField @bind-Value="contactModel.Email"
+                                                              Required="true"
+                                                              RequiredError="Email is required"
+                                                              Validation="@(new Func<string, bool>(ValidateEmail))"
+                                                              For="@(() => contactModel.Email)"
+                                                              Variant="Variant.Outlined"
+                                                              Margin="Margin.Dense" />
+                                            </MudItem>
+                                            <MudItem xs="12" Class="mt-4">
+                                                <label class="mud-input-label">Your Question</label>
+                                                <MudTextField @bind-Value="contactModel.Question"
+                                                              Lines="5"
+                                                              Required="true"
+                                                              RequiredError="Please enter your question"
+                                                              Variant="Variant.Outlined"
+                                                              Multiline="true"
+                                                              Margin="Margin.Dense" />
+                                            </MudItem>
+                                        </MudGrid>
+                                    </MudForm>
+                                </MudCardContent>
+                                <MudCardActions Class="justify-end">
+                                    <MudButton Class="fw-bold" Href="MicrosoftIdentity/Account/SignOut" Variant="Variant.Filled" onclick="SubmitQuestion()"
+                                               Color="Color.Primary">
+                                        Send Question
+                                    </MudButton>
+                                
+                                </MudCardActions>
+                            </MudCard>
+                        </MudItem>
+                    </MudGrid>
+                </div>
+            </div>
+        </div>*@
+
         
         <MudText Typo="Typo.body1">
             <MudAlert Severity="Severity.Normal">
@@ -135,21 +217,36 @@
 }
 
 @code{
+        /*private class ContactModel
+        {
+            public string Email { get; set; }
+    public string Question { get; set; }
+        }
+
+        private ContactModel contactModel = new ContactModel();
+    private MudForm contactForm;*/
+    private int FAQGroupSize = 3;
     private bool isAuthenticated = false;
     protected override async Task OnInitializedAsync()
     {
-        var state = await authenticationProvider.GetAuthenticationStateAsync();
-        isAuthenticated = state?.User?.Identity?.IsAuthenticated ?? false;
-        await base.OnInitializedAsync();
+    var state = await authenticationProvider.GetAuthenticationStateAsync();
+    isAuthenticated = state?.User?.Identity?.IsAuthenticated ?? false;
+    await base.OnInitializedAsync();
     }
     protected override void OnInitialized()
     {
-       
+
         if (ViewModel != null)
+        {
             ViewModel.Packages.CollectionChanged += (s, e) =>
             {
                 InvokeAsync(StateHasChanged);
             };
+            ViewModel.FAQs.CollectionChanged += (s, e) =>
+            {
+                InvokeAsync(StateHasChanged);
+            };
+        }
         base.OnInitialized();
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -160,4 +257,16 @@
         }
         await base.OnAfterRenderAsync(firstRender);
     }
+    /*
+    private bool ValidateEmail(string email)
+    {
+        return !string.IsNullOrWhiteSpace(email) && email.Contains("@");
+    }
+
+
+    private void SubmitQuestion()
+    {
+
+    }*/
+
 }

@@ -60,6 +60,7 @@ namespace Programming.Team.ViewModels
                 PostingCount = await PostingFacade.Count(filter: f => !string.IsNullOrWhiteSpace(f.RenderedLaTex), token: token);
                 Postings.Clear();
                 Packages.Clear();
+                FAQs.Clear();
                 var packages = await PackageFacade.Get(orderBy: e => e.OrderByDescending(p => p.Price));
                 foreach(var p in packages.Entities)
                 {
@@ -86,8 +87,8 @@ namespace Programming.Team.ViewModels
                 var faqs = await FAQFacade.Get(orderBy: e => e.OrderBy(x => x.SortOrder), token: token);
                 foreach (var faq in faqs.Entities)
                 {
-                    faq.Answer = string.Join(' ', (await NLP.IdentifyParagraphs(faq.Answer)).Select(x => $"<p>{x}</p>"));
-                    faq.Question = string.Join(' ', (await NLP.IdentifyParagraphs(faq.Answer)).Select(x => $"<p>{x}</p>"));
+                    //faq.Answer = string.Join(' ', (await NLP.IdentifyParagraphs(faq.Answer)).Select(x => $"<p>{x}</p>"));
+                    //faq.Question = string.Join(' ', (await NLP.IdentifyParagraphs(faq.Answer)).Select(x => $"<p>{x}</p>"));
                     FAQs.Add(faq);
                 }
             }
