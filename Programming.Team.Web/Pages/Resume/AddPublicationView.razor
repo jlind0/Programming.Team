@@ -2,7 +2,8 @@
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
-    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4">
+       
+        <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4" >
         <div class="d-flex flex-column">
             <MudStack>
                 <MudTextField @bind-Value="ViewModel.Title" Label="Title" Variant="Variant.Outlined" />
@@ -22,6 +23,8 @@
             </MudStack>
         </div>
     </MudPopover>
+    <MudOverlay Visible="ViewModel.IsOpen" DarkBackground="true" AutoClose="false">
+    </MudOverlay>
 }
 
 @code {
