@@ -9,7 +9,7 @@
 {
     <AlertView Alert="ViewModel.Alert" />
     <MudStack>
-        <MudAutocomplete T="TEntity" CoerceText="true" Label="@typeof(TEntity).Name" ToStringFunc="c => c?.Name"
+        <MudAutocomplete T="TEntity" CoerceText="false" Label="@typeof(TEntity).Name" ToStringFunc="c => c?.Name"
                          @bind-Value="ViewModel.Selected" DebounceInterval="250" SearchFunc="ViewModel.Search.BindCommand()" />
         @if (ViewModel.CanAdd)
         {
