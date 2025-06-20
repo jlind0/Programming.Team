@@ -771,7 +771,7 @@ namespace Programming.Team.ViewModels
             Logger = logger;
             Facade = facade;
             AddViewModel = addViewModel;
-            Search = ReactiveCommand.CreateFromTask<string?, IEnumerable<TEntity>>(DoSearch);
+            Search = ReactiveCommand.CreateFromTask<string?, IEnumerable<TEntity>>(StartSearch);
             StartAdd = ReactiveCommand.Create(() =>
             {
                 AddViewModel.SetText(SearchString ?? "");
@@ -786,7 +786,21 @@ namespace Programming.Team.ViewModels
             Selected = e;
             AddViewModel.IsOpen = false;
         }
-
+        protected virtual async Task<IEnumerable<TEntity>> StartSearch(string? text, CancellationToken token = default)
+        {
+            try
+            {
+                SearchString = text;
+                Selected = null;
+                return await DoSearch(text, token);
+            }
+            catch(Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
+                await Alert.Handle(ex.Message).GetAwaiter();
+            }
+            return [];
+        }
         protected abstract Task<IEnumerable<TEntity>> DoSearch(string? text, CancellationToken token = default);
         private TEntity? selected;
         public TEntity? Selected
