@@ -4,7 +4,7 @@
     <MudStack Row="true">
         <MudText>@ViewModel.Name</MudText>
         <MudText>
-            @ViewModel.ResumeGenerations resume generations for $@ViewModel.Price
+            @ViewModel.ResumeGenerations resume generations for $@ViewModel.Price?.ToString("F2")
         </MudText>
         <MudButton OnClick="ViewModel.Purchase.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
             Color="Color.Primary">Purchase</MudButton>

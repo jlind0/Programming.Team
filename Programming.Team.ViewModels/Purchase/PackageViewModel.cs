@@ -46,7 +46,10 @@ namespace Programming.Team.ViewModels.Purchase
             PurchaseManager = purchaseManager;
             NavMan = navMan;
         }
-
+        protected override Func<IQueryable<Package>, IOrderedQueryable<Package>>? OrderBy()
+        {
+            return x => x.OrderByDescending(e => e.Price);
+        }
         protected IPurchaseManager<Package, P> PurchaseManager { get; }
         protected NavigationManager NavMan { get; }
         protected override Task<PackageViewModel> Construct(Package entity, CancellationToken token)
