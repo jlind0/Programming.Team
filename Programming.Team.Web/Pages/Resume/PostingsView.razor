@@ -29,6 +29,12 @@
                 </CellTemplate>
             </TemplateColumn>
         </Columns>
+        <NoRecordsContent>
+            <MudPaper Class="pa-4 text-center">
+                <MudText Typo="Typo.h6">No postings found</MudText>
+                <MudText Typo="Typo.body2">Try adjusting your filters or come back later.</MudText>
+            </MudPaper>
+        </NoRecordsContent>
         <PagerContent>
             <MudDataGridPager T="Posting" />
         </PagerContent>
