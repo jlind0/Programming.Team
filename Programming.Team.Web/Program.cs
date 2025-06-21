@@ -202,11 +202,11 @@ builder.Services.AddServerSideBlazor().AddCircuitOptions(options =>
 builder.Services.AddMudServices();
 builder.Services.AddBlazorBootstrap();
 builder.Services.AddKeyedSingleton("sselogging", LoggerFactory.Create(builder => builder.AddOpenTelemetry(opt => opt.AddOtlpExporter())));
-builder.Services.AddSingleton<OpenAIClient>(provider => new OpenAIClient(new ApiKeyCredential(builder.Configuration["ChatGPT:ApiKey"] ?? throw new InvalidDataException()), new OpenAIClientOptions()
+builder.Services.AddScoped<OpenAIClient>(provider => new OpenAIClient(new ApiKeyCredential(builder.Configuration["ChatGPT:ApiKey"] ?? throw new InvalidDataException()), new OpenAIClientOptions()
 {
     Endpoint = new Uri(builder.Configuration["ChatGPT:EndPoint"] ?? throw new InvalidDataException())
 }));
-builder.Services.AddSingleton(provider =>
+builder.Services.AddScoped(provider =>
 {
     return provider.GetRequiredService<OpenAIClient>().GetChatClient("gpt-4.1-mini").AsIChatClient()
         .AsBuilder()
@@ -214,7 +214,7 @@ builder.Services.AddSingleton(provider =>
         
         .Build() as IChatClient;
 });
-builder.Services.AddSingleton(provider =>
+builder.Services.AddScoped(provider =>
 {
     var client = provider.GetRequiredService<IChatClient>();
     var task = McpClientFactory.CreateAsync(
