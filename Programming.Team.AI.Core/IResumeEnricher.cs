@@ -33,20 +33,13 @@ namespace Programming.Team.AI.Core
         Task EnrichResume(Resume resume, Posting posting, IProgress<string>? progress = null, CancellationToken token = default);
         Task<CoverLetter?> GenerateCoverLetter(Posting posting, IProgress<string>? progress = null, CancellationToken token = default);
     }
-    /// <summary>
-    /// Interact with the AI model to generate responses.
-    /// </summary>
-    public interface IChatGPT
+    public interface IChatService
     {
-        /// <summary>
-        /// Gets a response from the AI model based on the provided system and user prompts.
-        /// </summary>
-        /// <param name="systemPrompt">The system prompt that sets the context for the AI model.</param>
-        /// <param name="userPrompt">The user prompt that specifies the request or question.</param>
-        /// <param name="maxTokens">The maximum number of tokens to generate in the response. Defaults to 2048.</param>
-        /// <param name="token">Used to cancel the operation.</param>
-        /// <returns>A task of the asynchronous operation. The task result contains the generated response, or <c>null</c> if no response is generated.</returns>
-        Task<string?> GetRepsonse(string systemPrompt, string userPrompt, int maxTokens = 2048, CancellationToken token = default);
+        Task<string?> ExtractSkills(string prompt, int maxTokens = 2048, CancellationToken token = default);
+        Task<string?> TailorBio(string jd, string bio, int maxTokens = 2048, CancellationToken token = default);
+        Task<double> PercentMatch(string jd, string position, int maxTokens = 2048, CancellationToken token = default);
+        Task<string?> TailorPosition(string jd, string position, double bullets, int length, int maxTokens = 2048, CancellationToken token = default);
+        Task<string?> GenerateCoverLetter(string jd, string resume, int targetLength, int numberOfBullets, int maxTokens = 2048, CancellationToken token = default);
     }
     /// <summary>
     /// Provides natural language processing (NLP) functionality for identifying paragraphs in a given text.

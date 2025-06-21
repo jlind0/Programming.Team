@@ -1,3 +1,6 @@
+using Azure.Communication.Email;
+using Azure.Storage.Blobs;
+using Invio.Extensions.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -5,41 +8,63 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.AI;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
-using Invio.Extensions.Authentication.JwtBearer;
-using Microsoft.Extensions.DependencyInjection;
-using Programming.Team.Data.Core;
-using Programming.Team.Data;
-using Programming.Team.Core;
-using Programming.Team.Business.Core;
-using Programming.Team.Business;
-using Microsoft.EntityFrameworkCore;
-using Programming.Team.Web.Authorization;
+using ModelContextProtocol.Client;
 using MudBlazor.Services;
-using Programming.Team.Web.Shared;
-using Programming.Team.ViewModels.Admin;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Programming.Team.ViewModels.Resume;
-using Azure.Storage.Blobs;
-using Programming.Team.AI.Core;
+using OpenAI;
+using OpenTelemetry;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
 using Programming.Team.AI;
-using Programming.Team.Templating.Core;
+using Programming.Team.AI.Core;
+using Programming.Team.Business;
+using Programming.Team.Business.Core;
+using Programming.Team.Core;
+using Programming.Team.Data;
+using Programming.Team.Data.Core;
+using Programming.Team.Messaging;
+using Programming.Team.Messaging.Core;
+using Programming.Team.PurchaseManager;
+using Programming.Team.PurchaseManager.Core;
 using Programming.Team.Templating;
+using Programming.Team.Templating.Core;
+using Programming.Team.ViewModels;
+using Programming.Team.ViewModels.Admin;
+using Programming.Team.ViewModels.Purchase;
 using Programming.Team.ViewModels.Recruiter;
+using Programming.Team.ViewModels.Resume;
+using Programming.Team.Web.Authorization;
+using Programming.Team.Web.Shared;
 using Stripe;
 using Stripe.Checkout;
-using Programming.Team.ViewModels.Purchase;
-using Programming.Team.PurchaseManager.Core;
-using Programming.Team.PurchaseManager;
-using Programming.Team.ViewModels;
-using Yarp.ReverseProxy.Configuration;
+using System.ClientModel;
 using System.Collections.ObjectModel;
-using Azure.Communication.Email;
-using Programming.Team.Messaging.Core;
-using Programming.Team.Messaging;
+using Yarp.ReverseProxy.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
+using var tracerProvider = Sdk.CreateTracerProviderBuilder()
+    .AddHttpClientInstrumentation()
+    .AddSource("*")
+    .AddOtlpExporter(config =>
+    {
+        config.Endpoint = new Uri(builder.Configuration["MCP:Host"] ?? throw new InvalidDataException());
+    })
+    .Build();
+using var metricsProvider = Sdk.CreateMeterProviderBuilder()
+    .AddHttpClientInstrumentation()
+    .AddMeter("*")
+    .AddOtlpExporter(config =>
+    {
+        config.Endpoint = new Uri(builder.Configuration["MCP:Host"] ?? throw new InvalidDataException());
+    })
+    .Build();
+
 
 // Add services to the container.
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearerQueryStringAuthentication()
@@ -176,6 +201,44 @@ builder.Services.AddServerSideBlazor().AddCircuitOptions(options =>
     .AddMicrosoftIdentityConsentHandler();
 builder.Services.AddMudServices();
 builder.Services.AddBlazorBootstrap();
+builder.Services.AddKeyedSingleton("sselogging", LoggerFactory.Create(builder => builder.AddOpenTelemetry(opt => opt.AddOtlpExporter())));
+builder.Services.AddSingleton<OpenAIClient>(provider => new OpenAIClient(new ApiKeyCredential(builder.Configuration["ChatGPT:ApiKey"] ?? throw new InvalidDataException()), new OpenAIClientOptions()
+{
+    Endpoint = new Uri(builder.Configuration["ChatGPT:EndPoint"] ?? throw new InvalidDataException())
+}));
+builder.Services.AddSingleton(provider =>
+{
+    return provider.GetRequiredService<OpenAIClient>().GetChatClient("gpt-4.1-mini").AsIChatClient()
+        .AsBuilder()
+        .UseOpenTelemetry(loggerFactory: provider.GetRequiredKeyedService<ILoggerFactory>("sselogging"), configure: o => o.EnableSensitiveData = true)
+        
+        .Build() as IChatClient;
+});
+builder.Services.AddSingleton(provider =>
+{
+    var client = provider.GetRequiredService<IChatClient>();
+    var task = McpClientFactory.CreateAsync(
+        new SseClientTransport(new SseClientTransportOptions
+        {
+            Name = builder.Configuration["MCP:Name"] ?? throw new InvalidDataException(),
+            Endpoint = new Uri(builder.Configuration["MCP:Host"] ?? throw new InvalidDataException())
+        }),
+    clientOptions: new()
+    {
+        Capabilities = new()
+        {
+            Sampling = new()
+            {
+                SamplingHandler =
+            client.CreateSamplingHandler()
+            }
+        },
+    }, provider.GetRequiredKeyedService<ILoggerFactory>("sselogging"), cancellationToken: CancellationToken.None);
+    task.Wait();
+   var s = task.Result;
+   Task.Factory.StartNew(async () => await s.ListToolsAsync(cancellationToken: CancellationToken.None)).Wait();
+   return s;
+});
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:APIKey"];
 builder.Services.AddTransient<PriceService>();
 builder.Services.AddTransient<ProductService>();
@@ -253,7 +316,7 @@ builder.Services.AddScoped<IBusinessRepositoryFacade<EmailMessageTemplate, Guid>
 builder.Services.AddScoped<IPurchaseManager<Package, Purchase>, PackagePurchaseManager>();
 builder.Services.AddScoped<IPurchaseManager<DocumentTemplate, DocumentTemplatePurchase>, DocumentTemplatePurchaseManager>();
 builder.Services.AddScoped<IAccountManager, AccountManager>();
-builder.Services.AddScoped<IChatGPT, ChatGPT>();
+builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IResumeEnricher, ResumeEnricher>();
 builder.Services.AddScoped<IDocumentTemplator, DocumentTemplator>();
 builder.Services.AddScoped<IResumeBuilder, ResumeBuilder>();
