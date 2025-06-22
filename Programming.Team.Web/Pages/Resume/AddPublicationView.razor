@@ -2,12 +2,8 @@
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
-
-    <MudOverlay ZIndex="5" Visible="@ViewModel.IsOpen"
-                Style="background-color: rgba(255,255,255,.3); padding: 20px"
-                AutoClose="false" />
-
-    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4" ZIndex="10">
+       
+        <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4" >
         <div class="d-flex flex-column">
             <div class="d-flex justify-end">
                 <MudIconButton Icon="@Icons.Material.Filled.Close"
@@ -35,6 +31,8 @@
             </MudStack>
         </div>
     </MudPopover>
+    <MudOverlay Visible="ViewModel.IsOpen" DarkBackground="true" AutoClose="false">
+    </MudOverlay>
 }
 
 @code {
