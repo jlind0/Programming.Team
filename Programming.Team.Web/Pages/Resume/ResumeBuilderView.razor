@@ -16,8 +16,8 @@
         </h1>
     </MudOverlay>
     *@
-    <MudContainer MaxWidth="MaxWidth.Medium" Class="py-8">
-        <MudCard Elevation="5" Class="rounded-xl">
+    <MudContainer MaxWidth="MaxWidth.Medium">
+        <MudCard>
             <MudCardHeader>
                 <MudText Typo="Typo.h5" Class="text-primary">AI Resume Builder</MudText>
                 <MudText >Create a tailored resume in minutes</MudText>
@@ -31,7 +31,7 @@
 
                 <!-- Form Section -->
                 <div class="space-y-6">
-                    <MudGrid Spacing="3">
+                    <MudGrid Spacing="3" >
                         <MudItem xs="12">
                             <MudTextField @bind-Value="ViewModel.Name"
                                           Label="Your Full Name"

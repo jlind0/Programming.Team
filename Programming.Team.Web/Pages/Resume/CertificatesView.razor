@@ -30,6 +30,7 @@
     }
 }
 <style>
+
     /* Add Certificate Button */
     .add-certificate-btn {
         font-weight: 600;
@@ -42,10 +43,10 @@
         transition: all 0.2s ease;
     }
 
-        .add-certificate-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(var(--mud-palette-primary-rgb), 0.25);
-        }
+    .add-certificate-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(var(--mud-palette-primary-rgb), 0.25);
+    }
 
     /* Certificates Container */
     .certificates-container {
@@ -84,6 +85,19 @@
         max-width: 400px;
         margin: 0 auto 1.5rem;
         line-height: 1.6;
+    }
+
+    .mud-popover {
+        width: 30vmax;
+        padding: 1%;
+        position: absolute;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+    }
+
+    .overlay {
+        background-color: black;
     }
 
     @@media (min-width: 600px) {

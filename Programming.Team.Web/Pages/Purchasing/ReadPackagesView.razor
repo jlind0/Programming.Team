@@ -17,12 +17,10 @@
                 {
                     <div class="package-horizontal-card">
                         <div class="package-horizontal-header">
-                            <MudAvatar Size="Size.Large" Color="Color.Primary" Class="mx-auto">
-                                <MudIcon Icon="@Icons.Material.Filled.Work" />
-                            </MudAvatar>
+                            <MudText Typo="Typo.h6" Class="font-weight-bold mb-2">@pack.Name</MudText>
                         </div>
                         <div class="package-horizontal-content">
-                            <MudText Typo="Typo.h6" Class="font-weight-bold mb-2">@pack.Name</MudText>
+                         
                             <MudText Class="mb-4">
                                 @pack.ResumeGenerations resume generations
                             </MudText>
@@ -125,6 +123,9 @@
   opacity: 0.9;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+h6{
+    color:white;
 }
 
 /* Responsive adjustments */

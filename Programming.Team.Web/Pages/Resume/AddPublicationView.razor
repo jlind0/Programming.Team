@@ -2,22 +2,35 @@
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
-    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4">
+
+    <MudOverlay ZIndex="5" Visible="@ViewModel.IsOpen"
+                Style="background-color: rgba(255,255,255,.3); padding: 20px"
+                AutoClose="false" />
+
+    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4" ZIndex="10">
         <div class="d-flex flex-column">
+            <div class="d-flex justify-end">
+                <MudIconButton Icon="@Icons.Material.Filled.Close"
+                                OnClick="() => ViewModel.IsOpen = false"
+                                Color="Color.Default"
+                                Class="ml-auto" />
+            </div>
             <MudStack>
                 <MudTextField @bind-Value="ViewModel.Title" Label="Title" Variant="Variant.Outlined" />
                 <MudTextField @bind-Value="ViewModel.Description" Label="Description" Variant="Variant.Outlined"
-                    Lines="10" />
+                                Lines="10" />
                 <MudTextField @bind-Value="ViewModel.Url" Label="URL" Variant="Variant.Outlined" />
                 <MudDatePicker @bind-Date="ViewModel.PublishDateTime" Label="Publish Date"
-                    MinDate="new DateTime(1950, 1, 1)" />
+                                MinDate="new DateTime(1950, 1, 1)" />
                 <MudStack Row="true">
                     <MudButton OnClick="ViewModel.Add.BindCommand<MouseEventArgs>()" Class="fw-bold"
-                        Variant="Variant.Filled" Color="Color.Primary">
-                        Add Publication</MudButton>
+                                Variant="Variant.Filled" Color="Color.Primary">
+                        Add Publication
+                    </MudButton>
                     <MudButton OnClick="ViewModel.Cancel.BindCommand<MouseEventArgs>()" Class="fw-bold"
-                        Variant="Variant.Filled" Color="Color.Primary">
-                        Cancel</MudButton>
+                                Variant="Variant.Filled" Color="Color.Primary">
+                        Cancel
+                    </MudButton>
                 </MudStack>
             </MudStack>
         </div>
