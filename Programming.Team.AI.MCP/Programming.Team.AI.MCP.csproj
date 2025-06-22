@@ -7,15 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.5" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.5" />
     <PackageReference Include="ModelContextProtocol.Core" Version="0.2.0-preview.3" />
-    <PackageReference Include="NewtonSoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Programming.Team.AI.Core\Programming.Team.AI.Core.csproj" />
-    <ProjectReference Include="..\Programming.Team.AI.MCP\Programming.Team.AI.MCP.csproj" />
     <ProjectReference Include="..\Programming.Team.Core\Programming.Team.Core.csproj" />
   </ItemGroup>
 

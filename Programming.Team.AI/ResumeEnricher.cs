@@ -15,11 +15,11 @@ namespace Programming.Team.AI
     public class ResumeEnricher : IResumeEnricher
     {
         protected ILogger Logger { get; }
-        protected IChatGPT ChatGPT { get; }
-        public ResumeEnricher(ILogger<ResumeEnricher> logger, IChatGPT chatGPT)
+        protected IChatService ChatService { get; }
+        public ResumeEnricher(ILogger<ResumeEnricher> logger, IChatService chatService)
         {
             Logger = logger;
-            ChatGPT = chatGPT;
+            ChatService = chatService;
         }
         public async Task EnrichResume(Resume resume, Posting posting, IProgress<string>? progress = null, CancellationToken token = default)
         {
@@ -55,7 +55,7 @@ namespace Programming.Team.AI
                 if (!string.IsNullOrWhiteSpace(resume.User.Bio))
                 {
                     progress?.Report("Tailoring Bio");
-                    resume.User.Bio = await ChatGPT.GetRepsonse($"Output a LaTex snippet that will be added to an existing latex document - do not generate opening or closing article, document, sections, textbf or pargraph tags. Do not use LaTeX special charachter escaping. The user message is a biography: tailor/summarize it highlighting how it pertains the following job description, write three paragraphs and 6 bullet points (written with itemize, no dashes) - stick to what you know, don't make things up:  {JsonSerializer.Serialize(posting.Details)}", JsonSerializer.Serialize(resume.User.Bio), token: token);
+                    resume.User.Bio = await ChatService.TailorBio(posting.Details, resume.User.Bio, token: token);
                     resume.User.Bio = resume.User.Bio?.Replace("#", "\\#").Replace("$", "\\$").Replace("&", "\\&").Replace("%", "\\%");
                 }
                 foreach (var skill in resume.Skills.Select(p => p.Skill).Union(resume.Positions.SelectMany(p => p.PositionSkills.Select(p => p.Skill))))
@@ -83,28 +83,25 @@ namespace Programming.Team.AI
                 {
                     if (!string.IsNullOrWhiteSpace(position.Description))
                     {
-                        var match = await ChatGPT.GetRepsonse($"Indicate a percent match, only responding with a single value in \\\"%\\\", for the user message to the following job description: {JsonSerializer.Serialize(posting.Details)}", JsonSerializer.Serialize(position.Description), token: t);
-                        if (match != null)
+                        var mtch = await ChatService.PercentMatch(posting.Details, position.Description, token: token);
+                        
+                        if (mtch >= (config.MatchThreshold ?? 0.4))
                         {
-                            double mtch = double.Parse(match.Replace("%", "")) / 100;
-                            if (mtch >= (config.MatchThreshold ?? 0.4))
-                            {
-                                double length = mtch * 10 * (config.TargetLengthPer10Percent ?? 75);
-                                double bullets = (Math.Ceiling((mtch / 0.2) * (config.BulletsPer20Percent ?? 0.75)));
-                                if (bullets < 2)
-                                    bullets = 2;
-                                position.Description = await ChatGPT.GetRepsonse($"Output a LaTex snippet, without special charachter escaping and the bullets properly itemized, that will be added to an existing latex document - do not generate opening or closing article, document sections or headers. Tailor user message - which is a description of a job experience, resulting in a total text length of no more than {length} characters, to the following job requirement sticking to the facts included in the user message, do not be creative IF A TECHNOLOGY IS NOT MENTIONED IN THE USER MESSAGE DO NOT INCLUDE IT IN THE SUMMARY!!!! include a short paragraph and {Math.Round(bullets)} bullet points which are LaTeX formated (written with itemize, no dashes - use itemize for bullets), do not bold anything or include any type of header - just the paragraph and bullets: {JsonSerializer.Serialize(posting.Details)}", JsonSerializer.Serialize(position.Description), token: t);
-                                position.Description = position.Description?.Replace("#", "\\#").Replace("$", "\\$").Replace("&", "\\&").Replace("%", "\\%");
+                            double length = mtch * 10 * (config.TargetLengthPer10Percent ?? 75);
+                            double bullets = (Math.Ceiling((mtch / 0.2) * (config.BulletsPer20Percent ?? 0.75)));
+                            if (bullets < 2)
+                                bullets = 2;
+                            position.Description = await ChatService.TailorPosition(posting.Details, position.Description, bullets, Convert.ToInt32(length), token: token);
+                            position.Description = position.Description?.Replace("#", "\\#").Replace("$", "\\$").Replace("&", "\\&").Replace("%", "\\%");
 
-                            }
-                            else if (!config.HidePositionsNotInJD)
-                                position.Description = "";
-                            else
-                                toRemove.Add(position);
-                            if (config.SkillsPer20Percent != null)
-                            {
-                                position.PositionSkills = position.PositionSkills.Take(Math.Max(Convert.ToInt32((mtch / 0.2) * config.SkillsPer20Percent.Value), 10)).ToList();
-                            }
+                        }
+                        else if (!config.HidePositionsNotInJD)
+                            position.Description = "";
+                        else
+                            toRemove.Add(position);
+                        if (config.SkillsPer20Percent != null)
+                        {
+                            position.PositionSkills = position.PositionSkills.Take(Math.Max(Convert.ToInt32((mtch / 0.2) * config.SkillsPer20Percent.Value), 10)).ToList();
                         }
                     }
                     int currentCount = Interlocked.Increment(ref numberProcessed);
@@ -126,8 +123,7 @@ namespace Programming.Team.AI
         {
             try
             {
-                string? postingSkills = await ChatGPT.GetRepsonse("extract as many skill keywords as possible from user message in json dictionary format [{\"skill\":\"name\"}]",
-                        text, token: token);
+                string? postingSkills = await ChatService.ExtractSkills(text, token: token);
                 if (postingSkills != null)
                 {
                     postingSkills = postingSkills.Replace("```json", "").Replace("```", "").Trim().ReplaceLineEndings();
@@ -154,7 +150,7 @@ namespace Programming.Team.AI
                     JsonSerializer.Deserialize<CoverLetterConfiguration>(posting.CoverLetterConfiguration) ?? new CoverLetterConfiguration() : new CoverLetterConfiguration();
                 posting.CoverLetterConfiguration = JsonSerializer.Serialize(config);
                 progress?.Report("Generating Cover Letter");
-                var coverLetter = await ChatGPT.GetRepsonse($"Output a LaTex snippet that will be added to an existing latex document - do not generate opening or closing article, document sections or headers. The user message is a latex resume: tailor/summarize it, to generate a cover letter, highlighting how it pertains the following job description, write up to {config.TargetLength ?? 2000} characters and {config.NumberOfBullets ?? 10} bullet points (written with itemize, no dashes) - stick to what you know, don't make things up: {JsonSerializer.Serialize(posting.Details)}", posting.RenderedLaTex, token: token);
+                var coverLetter = await ChatService.GenerateCoverLetter(posting.Details, posting.RenderedLaTex, config.TargetLength ?? 2000, config.NumberOfBullets ?? 10, token: token);
                 coverLetter = coverLetter?.Replace("#", "\\#").Replace("$", "\\$").Replace("&", "\\&").Replace("%", "\\%").Replace("```latex", "").Replace("```", "");
                 progress?.Report("Cover Letter Generated Successfully");
                 return new CoverLetter() { Body = coverLetter ?? throw new InvalidOperationException() };
