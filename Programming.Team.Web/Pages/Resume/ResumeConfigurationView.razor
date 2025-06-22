@@ -2,13 +2,15 @@
 @using MudBlazor.Utilities
 @if(ViewModel != null)
 {
-    <MudStack Class="resume-config-container">
+    <MudStack Class="resumeBuilder">
+        <div class="firstPart">
         <MudNumericField Class="config-field" @bind-Value="ViewModel.MatchThreshold" Label="Match Threshold" Variant="Variant.Outlined"/>
         <MudNumericField Class="config-field" @bind-Value="ViewModel.TargetLengthPer10Percent" Label="Target Length Per 10%" Variant="Variant.Outlined"/>
         <MudNumericField Class="config-field" @bind-Value="ViewModel.BulletsPer20Percent" Label="Bullets Per 20%" Variant="Variant.Outlined"/>
         <MudNumericField Class="config-field" @bind-Value="ViewModel.SkillsPer20Percent" Label="Skills Per 20%" Variant="Variant.Outlined" />
         <MudCheckBox Class="config-checkbox" @bind-Value="ViewModel.HideSkillsNotInJD" Label="Hide Skills not in JD"/>
         <MudCheckBox Class="config-checkbox" @bind-Value="ViewModel.HidePositionsNotInJD" Label="Hide Positions not in JD" />
+        </div>
         <MudSelect Class="template-select" Label="Document Template" T="DocumentTemplate" @bind-Value="ViewModel.SelectedTemplate" ToStringFunc="e => e?.Name">
             @foreach (var template in ViewModel.DocumentTemplates)
             {

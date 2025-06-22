@@ -2,7 +2,7 @@
 @inherits ReactiveInjectableComponentBase<ResumeBuilderViewModel>
 @attribute [Authorize]
 @if (ViewModel != null)
-{
+{   @*
     <AlertView Alert="ViewModel.Alert" />
     <MudTextField @bind-Value="ViewModel.Name" Label="Name" Variant="Variant.Outlined" />
     <MudTextField Lines="10" @bind-Value="ViewModel.PostingText" Label="Posting Text" Variant="Variant.Outlined" />
@@ -15,6 +15,80 @@
             <MudText Color="Color.Secondary">@ViewModel.Progress</MudText>
         </h1>
     </MudOverlay>
+    *@
+    <MudContainer MaxWidth="MaxWidth.Medium">
+        <MudCard>
+            <MudCardHeader>
+                <MudText Typo="Typo.h5" Class="text-primary">AI Resume Builder</MudText>
+                <MudText >Create a tailored resume in minutes</MudText>
+            </MudCardHeader>
+
+            <MudCardContent>
+                <!-- Alert View -->
+                <div class="mb-6">
+                    <AlertView Alert="ViewModel.Alert" />
+                </div>
+
+                <!-- Form Section -->
+                <div class="space-y-6">
+                    <MudGrid Spacing="3" >
+                        <MudItem xs="12">
+                            <MudTextField @bind-Value="ViewModel.Name"
+                                          Label="Your Full Name"
+                                          Variant="Variant.Outlined"
+                                          AdornmentIcon="@Icons.Material.Filled.Person"
+                                          Class="rounded-lg" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudTextField Lines="8"
+                                          @bind-Value="ViewModel.PostingText"
+                                          Label="Job Description or Requirements"
+                                          Variant="Variant.Outlined"
+                                          AdornmentIcon="@Icons.Material.Filled.Description"
+                                          Class="rounded-lg" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <ResumeConfigurationView ViewModel="ViewModel.Configuration" />
+                        </MudItem>
+                    </MudGrid>
+                </div>
+            </MudCardContent>
+
+            <MudCardActions Class="justify-center py-4">
+                <MudButton OnClick="ViewModel.Build.BindCommand<MouseEventArgs>()"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Size="Size.Large"
+                           EndIcon="@Icons.Material.Filled.Build"
+                           Class="px-10 py-4 rounded-full text-lg font-bold shadow-lg hover:shadow-xl transition-all">
+                    BUILD RESUME
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+
+        <!-- Loading Overlay -->
+        <MudOverlay @bind-Visible="ViewModel.IsOverlayOpen"
+                    DarkBackground="true"
+                    AutoClose="false"
+                    Class="d-flex flex-column align-center justify-center">
+            <div class="text-center">
+                <MudProgressCircular Color="Color.Secondary"
+                                     Size="Size.Large"
+                                     Indeterminate="true"
+                                     Class="mb-4" />
+                <MudText Typo="Typo.h5" Color="Color.Secondary" Class="animate-pulse">
+                    @ViewModel.Progress
+                </MudText>
+                <MudText  Class="mt-2">
+                    This usually takes 20-40 seconds
+                </MudText>
+            </div>
+        </MudOverlay>
+    </MudContainer>
+
+  
 }
 @code {
     protected override async Task OnAfterRenderAsync(bool firstRender)

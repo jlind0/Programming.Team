@@ -2,14 +2,147 @@
 @inherits ReactiveInjectableComponentBase<PackagesViewModel>
 @if(ViewModel != null)
 {
-    <AlertView Alert="ViewModel.Alert"/>
-    <MudStack>
-        @foreach(var pack in ViewModel.Entities)
+    <MudContainer MaxWidth="MaxWidth.Large" Class="my-8">
+        @if (ViewModel != null)
         {
-            <ReadPackageView ViewModel="pack"/>
+            <AlertView Alert="ViewModel.Alert" />
+
+            <div class="text-center mb-8">
+                <MudText Typo="Typo.h4" Class="text-primary mb-2">Resume Builder Packages</MudText>
+                <MudText Class="mb-6">Choose the perfect package for your career needs</MudText>
+            </div>
+
+            <div class="package-horizontal-container">
+                @foreach (var pack in ViewModel.Entities)
+                {
+                    <div class="package-horizontal-card">
+                        <div class="package-horizontal-header">
+                            <MudText Typo="Typo.h6" Class="font-weight-bold mb-2">@pack.Name</MudText>
+                        </div>
+                        <div class="package-horizontal-content">
+                         
+                            <MudText Class="mb-4">
+                                @pack.ResumeGenerations resume generations
+                            </MudText>
+                            <MudText Class="package-horizontal-price">
+                                $@pack.Price
+                            </MudText>
+                            <button class="package-horizontal-button"
+                                    @onclick="pack.Purchase.BindCommand<MouseEventArgs>()">
+                                <MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Class="mr-2" />
+                                Purchase
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
         }
-    </MudStack>
+    </MudContainer>
 }
+<style>
+    /* Horizontal package container */
+.package-horizontal-container {
+
+  display: flex;
+  justify-content:center;
+  align-items:center;
+  height:20vmax;
+  gap: 24px;
+  padding: 16px 8px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Hide scrollbar for cleaner look */
+.package-horizontal-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Package card styling */
+.package-horizontal-card {
+  flex: 0 0 300px;
+  scroll-snap-align: start;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  overflow: hidden;
+}
+
+/* Card hover effect */
+.package-horizontal-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(79, 70, 229, 0.15);
+  border-color: #c7d2fe;
+}
+
+/* Card header with gradient */
+.package-horizontal-header {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  padding: 24px;
+  text-align: center;
+}
+
+/* Card content area */
+.package-horizontal-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 72px); /* Adjust based on header height */
+}
+
+/* Price styling */
+.package-horizontal-price {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #4f46e5;
+  margin: 12px 0;
+}
+
+/* Purchase button */
+.package-horizontal-button {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: auto;
+}
+
+.package-horizontal-button:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+h6{
+    color:white;
+}
+
+/* Responsive adjustments */
+@@media (max-width: 600px) {
+  .package-horizontal-card {
+    flex: 0 0 85vw;
+  }
+  
+  .package-horizontal-header {
+    padding: 16px;
+  }
+  
+  .package-horizontal-content {
+    padding: 16px;
+  }
+}
+</style>
 @code {
     protected override void OnInitialized()
     {

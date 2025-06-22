@@ -1,18 +1,118 @@
 ﻿@page "/resume/publications"
 @attribute [Authorize]
 @inherits ReactiveInjectableComponentBase<PublicationsViewModel>
+@inject IJSRuntime JSRuntime
 
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
-    <MudButton OnClick="ViewModel.StartAdd.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
+    <MudButton OnClick="ViewModel.StartAdd.BindCommand<MouseEventArgs>()" Class="fw-bold overlayButton" Variant="Variant.Filled"
         Color="Color.Primary">Add Publication</MudButton>
+
     <AddPublicationView ViewModel="ViewModel.AddViewModel" />
-    @foreach (var position in ViewModel.Entities)
+
+    @if (ViewModel.Entities.Any()){
+     
+            @foreach (var position in ViewModel.Entities)
+            {
+                <PublicationView ViewModel="position" />
+            }
+
+    }
+    else
     {
-        <PublicationView ViewModel="position" />
+        <MudPaper Class="empty-state" Elevation="0">
+            <div class="empty-state-icon">
+                <MudIcon Icon="@Icons.Material.Filled.Inbox"
+                         Size="Size.Large"
+                         Color="Color.Primary" />
+            </div>
+            <MudText Typo="Typo.h6" Class="empty-state-title">No publications found</MudText>
+            <MudText Class="empty-state-message">You haven't added any publications yet. Click the button above to add your first one.</MudText>
+        </MudPaper>
     }
 }
+
+}
+
+<style>
+    /* Add Certificate Button */
+    .add-certificate-btn {
+        font-weight: 600;
+        letter-spacing: 0.25px;
+        padding: 0.5rem 1.5rem;
+        margin-bottom: 2rem;
+        border-radius: 8px;
+        text-transform: uppercase;
+        box-shadow: 0 2px 4px rgba(var(--mud-palette-primary-rgb), 0.2);
+        transition: all 0.2s ease;
+    }
+
+        .add-certificate-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(var(--mud-palette-primary-rgb), 0.25);
+        }
+
+    /* Certificates Container */
+    .certificates-container {
+        display: grid;
+        gap: 1.5rem;
+        margin-top: 1rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+        padding: 3rem 2rem;
+        text-align: center;
+        margin: 2rem 0;
+        border-radius: 12px;
+        background-color: var(--mud-palette-background-grey);
+        border: 1px dashed var(--mud-palette-primary);
+    }
+
+    .empty-state-icon {
+        margin-bottom: 1.5rem;
+        opacity: 0.8;
+    }
+
+        .empty-state-icon .mud-icon {
+            font-size: 3.5rem;
+        }
+
+    .empty-state-title {
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--mud-palette-primary);
+    }
+
+    .empty-state-message {
+        color: var(--mud-palette-text-secondary);
+        max-width: 400px;
+        margin: 0 auto 1.5rem;
+        line-height: 1.6;
+    }
+
+    .mud-popover{
+        width:30vmax;
+        padding:1%;
+        position: absolute;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;        
+    }
+    .overlay{
+        background-color:black;
+    }
+    @@media (min-width: 600px) {
+        .certificates-container {
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+
+        .empty-state {
+            padding: 4rem;
+        }
+    }
+</style>
 
 @code {
     protected override void OnInitialized()
@@ -29,6 +129,7 @@
         if (ViewModel != null && firstRender)
         {
             await ViewModel.Load.Execute().GetAwaiter();
+        
 
         }
         await base.OnAfterRenderAsync(firstRender);

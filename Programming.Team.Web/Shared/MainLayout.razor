@@ -11,7 +11,7 @@
 
 <MudLayout>
     <!-- Mobile View (sm and down) -->
-    <MudHidden Breakpoint="@mobileBreakPoint" Invert="true">
+    <MudHidden HiddenChanged="hdn => _drawerOpen = !hdn" Breakpoint="@mobileBreakPoint" Invert="true">
         <MudAppBar Elevation="1">
             <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
                            OnClick="@((e) => DrawerToggle())" />
@@ -50,7 +50,7 @@
         </MudAppBar>
 
         <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
-            <NavMenu />
+            <NavMenu/>
         </MudDrawer>
 
         <MudMainContent Class="main-content">
