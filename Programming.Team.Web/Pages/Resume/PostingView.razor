@@ -25,6 +25,25 @@
             <MudTextField Lines="10" @bind-Value="ViewModel.CoverLetterLaTeX" Label="Cover Letter LaTeX" Variant="Variant.Outlined" />
             <MudLink Href="@strCover" Target="_blank">Download Cover Letter</MudLink>
         }
+        @if (ViewModel.CanRenderMarkdown)
+        {
+            <MudStack Row="true">
+                <MudSelect Label="Document Template" T="DocumentTemplate" @bind-Value="ViewModel.SelectedMarkdownTemplate" ToStringFunc="e => e?.Name">
+                    @foreach (var doctype in ViewModel.MarkdownTemplates)
+                    {
+                        <MudSelectItem T="DocumentTemplate" Value="doctype">@doctype.Name</MudSelectItem>
+                    }
+                </MudSelect>
+                <MudButton OnClick="ViewModel.RenderMarkdown.BindCommand<MouseEventArgs>()">Render Markdown</MudButton>
+            </MudStack>
+        }
+        @if (!string.IsNullOrWhiteSpace(ViewModel.ResumeMarkdown))
+        {
+            var strMarkdown = $"api/resumes/{ViewModel.Id}/markdown.txt";
+            <MudTextField Lines="10" @bind-Value="ViewModel.ResumeMarkdown" Label="Resume Markdown" Variant="Variant.Outlined"/>
+            <MudLink Href="@strMarkdown" Target="_blank">Download Markdown Version</MudLink>
+        }
+
         <MudStack Row="true">
             <MudButton OnClick="ViewModel.Update.BindCommand<MouseEventArgs>()">Update</MudButton>
             <MudStack Row="true">

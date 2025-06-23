@@ -14,6 +14,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Programming.Team.Business
 {
@@ -171,7 +172,7 @@ namespace Programming.Team.Business
                     await UserFacade.GetCurrentUserId(fetchTrueUserId: true, token: token) ?? throw new InvalidOperationException(), token: token))
                     await Enricher.EnrichResume(resume, posting, progress, token);
                 progress?.Report("Preparing Resume Style");
-                foreach(var part in (ResumePart[])Enum.GetValues(typeof(ResumePart)))
+                foreach (var part in (ResumePart[])Enum.GetValues(typeof(ResumePart)))
                 {
                     config.SectionTemplates.TryGetValue(part, out var sectionTemplateId);
                     var section = sectionTemplateId != null ? await SectionFacade.GetByID(sectionTemplateId.Value, token: token) : await SectionFacade.GetDefaultSection(part, posting.DocumentTemplateId, token: token);
@@ -179,6 +180,10 @@ namespace Programming.Team.Business
                     docTemplate.Template = docTemplate.Template.Replace($"%==={Enum.GetName(typeof(ResumePart), part)}===", section.Template);
                 }
                 posting.RenderedLaTex = await Templator.ApplyTemplate(docTemplate.Template, resume, token);
+                posting.ResumeJson = JsonSerializer.Serialize(resume, new JsonSerializerOptions()
+                {
+                    ReferenceHandler = ReferenceHandler.IgnoreCycles
+                });
                 posting = await PostingFacade.Update(posting, token: token);
                 if (posting.RenderedLaTex != null && renderPDF)
                     await RenderResume(posting, token);
@@ -238,6 +243,29 @@ namespace Programming.Team.Business
                 if (posting.CoverLetterLaTeX != null)
                 {
                     await ResumeBlob.UploadCoverLetter(posting.Id, await Templator.RenderLatex(posting.CoverLetterLaTeX, token), token);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
+                throw;
+            }
+        }
+
+        public async Task RenderMarkdown(Posting posting, Guid templateId, CancellationToken token = default)
+        {
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(posting.ResumeJson))
+                {
+                    Resume? res = JsonSerializer.Deserialize<Resume>(posting.ResumeJson);
+                    if (res == null)
+                        throw new InvalidDataException();
+                    var template = await DocumentTemplateFacade.GetByID(templateId, token: token);
+                    if(template == null)
+                        throw new InvalidDataException();
+                    posting.ResumeMarkdown = await Templator.ApplyTemplate(template.Template, res, token);
+                    await PostingFacade.Update(posting, token: token);
                 }
             }
             catch (Exception ex)

@@ -53,6 +53,5 @@ namespace Programming.Team.Core
         public Dictionary<ResumePart, Guid?> SectionTemplates { get; set; } = [];
         public Guid? DefaultDocumentTemplateId { get; set; }
         public double? SkillsPer20Percent { get; set; }
-
     }
 }

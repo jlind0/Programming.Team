@@ -55,6 +55,7 @@ namespace Programming.Team.Business.Core
 
         Task BuildCoverLetter(Posting posting, Guid documentTemplateId, IProgress<string>? progress = null, bool renderPDF = true, CancellationToken token = default);
         Task RenderCoverLetter(Posting posting, CancellationToken token = default);
+        Task RenderMarkdown(Posting posting, Guid templateId, CancellationToken token = default);
     }
     /// <summary>
     /// Facade to working with storage for Resumes
