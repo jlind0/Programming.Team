@@ -32,6 +32,7 @@ namespace Programming.Team.Web.Controllers
                 var posting = await Facade.GetByID(postingId, token: token);
                 if (posting?.ResumeMarkdown == null)
                     return BadRequest();
+                posting.ResumeMarkdown = posting.ResumeMarkdown.Replace("\\item", "--").Replace("\\begin{itemize}", "").Replace("\\end{itemize}", "").Replace("<", "").Replace(">", "").Replace("{", "").Replace("}", "").Replace("\\", "").Replace("[", "").Replace("]", "").Replace("\"", "'").Replace("&", "and");
                 return Content(posting.ResumeMarkdown, "text/plain; charset=utf-8", System.Text.Encoding.UTF8);
             }
             catch (Exception ex)

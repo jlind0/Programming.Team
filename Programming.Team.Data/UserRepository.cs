@@ -216,6 +216,7 @@ namespace Programming.Team.Data
                     UpdatedByUserId = x.UpdatedByUserId,
                     IsDeleted = x.IsDeleted,
                     UserId = x.UserId,
+                    User = x.User,
                     Details = x.Details
                 });
                 var data = await query.ToArrayAsync(t);
