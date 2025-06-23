@@ -4,7 +4,7 @@
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
-    <MudStack>
+    <MudStack Class="profile-content">
         <MudStack Row="true">
             <MudTextField @bind-Value="ViewModel.FirstName" Label="First Name" Variant="Variant.Outlined" />
             <MudTextField @bind-Value="ViewModel.LastName" Label="Last Name" Variant="Variant.Outlined" />
@@ -26,7 +26,7 @@
         <ResumeConfigurationView ViewModel="ViewModel.DefaultResumeConfigurationViewModel" />
         <CoverLetterConfigurationView ViewModel="ViewModel.DefaultCoverLetterConfigurationViewModel"/>
         <MudStack Row="true">
-            <MudButton OnClick="ViewModel.Update.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
+            <MudButton OnClick="ViewModel.Update.BindCommand<MouseEventArgs>()" Class="fw-bold middle" Variant="Variant.Filled"
                 Color="Color.Primary">Update</MudButton>
         </MudStack>
     </MudStack>
