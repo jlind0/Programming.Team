@@ -236,7 +236,6 @@ builder.Services.AddTransient(provider =>
     }, provider.GetRequiredKeyedService<ILoggerFactory>("sselogging"), cancellationToken: CancellationToken.None);
     task.Wait();
    var s = task.Result;
-   Task.Factory.StartNew(async () => await s.ListToolsAsync(cancellationToken: CancellationToken.None)).Wait();
    return s;
 });
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:APIKey"];

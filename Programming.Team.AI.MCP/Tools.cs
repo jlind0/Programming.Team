@@ -182,7 +182,7 @@ namespace Programming.Team.AI.MCP
         {
             ChatMessage[] messages =
             [
-                new(ChatRole.User,$"Output a LaTex snippet that will be added to an existing latex document - do not generate opening or closing article, document sections or headers. The user message is a latex resume: tailor/summarize it, to generate a cover letter, highlighting how it pertains the following job description, write up to {targetLength} characters and {numberOfBullets} bullet points (written with itemize, no dashes) - stick to what you know, don't make things up for the following job description: {jd};;; and the following resume (in LaTeX): {resume}"),
+                new(ChatRole.User,$"Output a LaTex snippet that will be added to an existing latex document - do not generate opening or closing article, document sections or headers. Do not escape special characters. The user message is a latex resume: tailor/summarize it, to generate a cover letter, highlighting how it pertains the following job description, write up to {targetLength} characters and {numberOfBullets} bullet points (written with itemize, no dashes) - stick to what you know, don't make things up for the following job description: {jd};;; and the following resume (in LaTeX): {resume}"),
             ];
 
             ChatOptions options = new()
