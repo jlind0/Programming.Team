@@ -226,6 +226,9 @@ namespace Programming.Team.ViewModels.Resume
             {
                 if (p.Sender.SelectedMarkdownTemplate != null)
                     p.Sender.MarkdownTemplateId = p.Sender.SelectedMarkdownTemplate.Id;
+                else
+                    p.Sender.MarkdownTemplateId = null;
+                this.RaisePropertyChanged(nameof(CanRenderMarkdown));
             }).DisposeWith(disposables);
         }
         private bool enrich = true;
@@ -303,7 +306,7 @@ namespace Programming.Team.ViewModels.Resume
         }
         public bool CanRenderMarkdown
         {
-            get => !string.IsNullOrWhiteSpace(ResumeJson);
+            get => !string.IsNullOrWhiteSpace(ResumeJson) && this.SelectedMarkdownTemplate != null;
         }
         public bool IsOverlayOpen
         {

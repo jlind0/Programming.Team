@@ -147,7 +147,7 @@ namespace Programming.Team.Data
             {
                 var userId = await GetCurrentUserId(w, token: t);
                 DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
-                var query = w.ResumesContext.Skills.Where(s => 
+                var query = w.ResumesContext.Skills.Where(s =>
                     s.PositionSkills.Any(ps => ps.Position.UserId == userId && ps.PositionId != positionId)).Except(
                         w.ResumesContext.Skills.Where(s => s.PositionSkills.Any(ps => ps.PositionId == positionId))).Distinct();
                 query = query.OrderByDescending(s => s.PositionSkills.Sum(
@@ -177,6 +177,53 @@ namespace Programming.Team.Data
                  .ToArrayAsync(token);
             }, work, token);
             return templates;
+        }
+    }
+    public class PostingRepository : Repository<Posting, Guid>
+    {
+        public PostingRepository(IContextFactory contextFactory, IMemoryCache cache) : base(contextFactory, cache)
+        {
+        }
+        public override async Task<RepositoryResultSet<Guid, Posting>> Get(IUnitOfWork? work = null, Pager? page = null, Expression<Func<Posting, bool>>? filter = null, Func<IQueryable<Posting>, IOrderedQueryable<Posting>>? orderBy = null, Func<IQueryable<Posting>, IQueryable<Posting>>? properites = null, CancellationToken token = default)
+        {
+            RepositoryResultSet<Guid, Posting> res = new RepositoryResultSet<Guid, Posting>();
+            await Use(async (w, t) =>
+            {
+                var query = w.ResumesContext.Postings.AsQueryable();
+                if (filter != null)
+                    query = query.Where(filter);
+                if (properites != null)
+                    query = properites(query);
+                if (orderBy != null)
+                    query = orderBy(query);
+                if (page != null)
+                {
+                    res.Count = await query.CountAsync(t);
+                    int skip = page.Value.Size * (page.Value.Page - 1);
+                    int take = page.Value.Size;
+                    query = query.Skip(skip).Take(take);
+                }
+                
+                query = query.Select(x => new Posting
+                {
+                    Id = x.Id,
+                    CreateDate = x.CreateDate,
+                    UpdateDate = x.UpdateDate,
+                    Name = x.Name,
+                    DocumentTemplateId = x.DocumentTemplateId,
+                    DocumentTemplate = x.DocumentTemplate,
+                    CreatedByUserId = x.CreatedByUserId,
+                    UpdatedByUserId = x.UpdatedByUserId,
+                    IsDeleted = x.IsDeleted,
+                    UserId = x.UserId,
+                    Details = x.Details
+                });
+                var data = await query.ToArrayAsync(t);
+                res.Entities = data;
+                if (page == null)
+                    res.Count = data.Length;
+            });
+            return res;
         }
     }
 }

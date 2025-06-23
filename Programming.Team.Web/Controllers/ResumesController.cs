@@ -24,7 +24,7 @@ namespace Programming.Team.Web.Controllers
         {
             return RS.Bytes(await ResumeBlob.GetResume(postingId, token) ?? throw new InvalidDataException(), "application/pdf");
         }
-        [HttpGet("{postingId}/markdown.txt")]
+        [HttpGet("{postingId}.txt")]
         public async Task<IActionResult> GetMarkdown(Guid postingId , CancellationToken token = default)
         {
             try

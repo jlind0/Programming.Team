@@ -293,7 +293,7 @@ builder.Services.AddScoped<IBusinessRepositoryFacade<Recommendation, Guid>, Busi
 builder.Services.AddScoped<IBusinessRepositoryFacade<FAQ, Guid>, BusinessRepositoryFacade<FAQ, Guid, IRepository<FAQ, Guid>>>();
 builder.Services.AddScoped<IUserBusinessFacade, UserBusinessFacade>();
 builder.Services.AddScoped<IRoleBusinessFacade, RoleBusinessFacade>();
-builder.Services.AddScoped<IRepository<Posting, Guid>, Repository<Posting, Guid>>();
+builder.Services.AddScoped<IRepository<Posting, Guid>, PostingRepository>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<PositionSkill, Guid>, BusinessRepositoryFacade<PositionSkill, Guid, IRepository<PositionSkill, Guid>>>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<Skill, Guid>, SkillsBusinessFacade>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<Education, Guid>, BusinessRepositoryFacade<Education, Guid, IRepository<Education, Guid>>>();
