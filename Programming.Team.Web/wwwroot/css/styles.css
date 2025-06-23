@@ -834,6 +834,21 @@ include-drop-zone {
 .main-content {
     /* Styles */
 }
+.profile-content {
+  
+    background-color: white !important;
+    width: 100% !important;
+ display grid;
+ grid-template-rows: 1fr 1fr !important;
+ justify-items:center;
+ garip:2%;
+  
+    padding:1%;
+}
+.middle{
+
+    margin-left:50% !important;
+}
 .mud-main-content{
     padding:0 !important;
 }
@@ -842,8 +857,9 @@ include-drop-zone {
     padding-left:0 !important;
     padding-top:0 !important;
 }
-    /* Hero Section */
-    .hero {
+
+/* Hero Section */
+.hero {
     display: flex;
     align-items: center;
     background: white;
@@ -852,8 +868,6 @@ include-drop-zone {
     overflow: hidden;
     position: relative;
     backdrop-filter: blur(8px);
-
- 
     top: 0;
 }
 
@@ -2405,5 +2419,22 @@ include-drop-zone {
     .text-lg-center {
         text-align: center;
     }
+}
+
+
+/**No content ****/
+.noContent {
+     
+    height: 30vmax !important;
+    
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+}
+
+.buttonPosition{
+    margin-left:2% !important;
+   
 }
 

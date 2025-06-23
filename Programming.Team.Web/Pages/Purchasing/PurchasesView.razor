@@ -2,18 +2,44 @@
 @inherits ReactiveInjectableComponentBase<PurchaseHistoryViewModel>
 @if(ViewModel != null)
 {
-    <AlertView Alert="ViewModel.Alert"/>
-    <MudDataGrid T="Purchase" ServerData="ViewModel.Fetch.BindServerDataCommand()" 
-        Filterable="true" FilterMode="DataGridFilterMode.ColumnFilterMenu"
-        SortMode="SortMode.Multiple">
+    <AlertView Alert="ViewModel.Alert" />
+
+    <MudDataGrid T="Purchase"
+                 ServerData="ViewModel.Fetch.BindServerDataCommand()"
+                 Filterable="true"
+                 FilterMode="DataGridFilterMode.ColumnFilterMenu"
+                 SortMode="SortMode.Multiple"
+                 Class="main-content"
+                 Hover="true"
+                 Striped="true"
+                 Dense="true"
+                 Elevation="2">
+
+        <!-- Columns -->
         <Columns>
-            <PropertyColumn Property="x => x.ResumeGenerations" Title="Resume Generations"/>
+            <PropertyColumn Property="x => x.ResumeGenerations" Title="Resume Generations" />
             <PropertyColumn Property="x => x.PricePaid" Title="Price" />
-            <PropertyColumn Property="x => x.IsPaid" Title="Is Paid?"/>
+            <PropertyColumn Property="x => x.IsPaid" Title="Is Paid?" />
             <PropertyColumn Property="x => x.IsRefunded" Title="Refunded?" />
             <PropertyColumn Property="x => x.RefundDate" Title="Refund Date" />
-            <PropertyColumn Property="x => x.UpdateDate" Title="Last Update Date"/>
+            <PropertyColumn Property="x => x.UpdateDate" Title="Last Update Date" />
         </Columns>
+
+        <!-- No Records Found Message (Styled) -->
+        <NoRecordsContent>
+            <MudPaper Class="pa-8 text-center noContent" Elevation="0" Style="background-color: transparent;">
+                <MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Size="Size.Large" Color="Color.Primary" Class="mb-3" />
+                <MudText Typo="Typo.h5" Class="mb-2" Color="Color.Primary">No Purchases Found</MudText>
+                <MudText Typo="Typo.body1" Class="mb-4" Color="Color.Info">
+                    Your purchase history is empty. Try adjusting filters or check back later.
+                </MudText>
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">
+                    Refresh Data
+                </MudButton>
+            </MudPaper>
+        </NoRecordsContent>
+
+        <!-- Pager -->
         <PagerContent>
             <MudDataGridPager T="Purchase" />
         </PagerContent>

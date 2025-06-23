@@ -5,7 +5,7 @@
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
-    <MudButton OnClick="ViewModel.StartAdd.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
+    <MudButton OnClick="ViewModel.StartAdd.BindCommand<MouseEventArgs>()" Class="fw-bold buttonPosition " Variant="Variant.Filled"
         Color="Color.Primary">Add Education</MudButton>
     <AddEducationView ViewModel="ViewModel.AddViewModel" />
     @if (ViewModel.Entities.Any())
@@ -58,12 +58,17 @@
 
     /* Empty State */
     .empty-state {
-        padding: 3rem 2rem;
+        
         text-align: center;
-        margin: 2rem 0;
+        height: 20vmax;
+        margin:2%;
         border-radius: 12px;
         background-color: var(--mud-palette-background-grey);
         border: 1px dashed var(--mud-palette-primary);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
     }
 
     .empty-state-icon {
