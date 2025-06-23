@@ -282,6 +282,8 @@ builder.Services.AddScoped<IRepository<Publication, Guid>, Repository<Publicatio
 builder.Services.AddScoped<IRepository<Package, Guid>, Repository<Package, Guid>>();
 builder.Services.AddScoped<IRepository<Purchase, Guid>, Repository<Purchase, Guid>>();
 builder.Services.AddScoped<IRepository<SectionTemplate, Guid>, SectionTemplateRepository>();
+builder.Services.AddScoped<IRepository<Project, Guid>, Repository<Project, Guid>>();
+builder.Services.AddScoped<IRepository<ProjectSkill, Guid>, Repository<ProjectSkill, Guid>>();
 builder.Services.AddScoped<ISkillsRespository, SkillsRepository>();
 builder.Services.AddScoped<ISectionTemplateRepository, SectionTemplateRepository>();
 builder.Services.AddScoped<IRepository<EmailMessageTemplate, Guid>, Repository<EmailMessageTemplate, Guid>>();
@@ -310,6 +312,8 @@ builder.Services.AddScoped<IBusinessRepositoryFacade<Package, Guid>, PackageBusi
 builder.Services.AddScoped<IBusinessRepositoryFacade<SectionTemplate, Guid>, SectionTemplateBusinessFacade>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<DocumentSectionTemplate, Guid>, BusinessRepositoryFacade<DocumentSectionTemplate, Guid, IRepository<DocumentSectionTemplate, Guid>>>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<DocumentTemplatePurchase, Guid>, BusinessRepositoryFacade<DocumentTemplatePurchase, Guid, IRepository<DocumentTemplatePurchase, Guid>>>();
+builder.Services.AddScoped<IBusinessRepositoryFacade<Project, Guid>, BusinessRepositoryFacade<Project, Guid, IRepository<Project, Guid>>>();
+builder.Services.AddScoped<IBusinessRepositoryFacade<ProjectSkill, Guid>, BusinessRepositoryFacade<ProjectSkill, Guid, IRepository<ProjectSkill, Guid>>>();
 builder.Services.AddScoped<ISectionTemplateBusinessFacade, SectionTemplateBusinessFacade>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<EmailMessageTemplate, Guid>, BusinessRepositoryFacade<EmailMessageTemplate, Guid, IRepository<EmailMessageTemplate, Guid>>>();
 builder.Services.AddScoped<IPurchaseManager<Package, Purchase>, PackagePurchaseManager>();
@@ -377,6 +381,11 @@ builder.Services.AddTransient<AddEmailMessageTemplateViewModel>();
 builder.Services.AddTransient<EmailMessageTemplatesViewModel>();
 builder.Services.AddTransient<AddFAQViewModel>();
 builder.Services.AddTransient<FAQsViewModel>();
+builder.Services.AddTransient<AddProjectViewModel>();
+builder.Services.AddTransient<ProjectsViewModel>();
+builder.Services.AddTransient<AddProjectSkillViewModel>();
+builder.Services.AddTransient<SuggestAddSkillsForProjectViewModel>();
+builder.Services.AddTransient<ProjectSkillsViewModel>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession(options =>
 {

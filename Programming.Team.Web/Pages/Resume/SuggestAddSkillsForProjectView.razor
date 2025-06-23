@@ -1,0 +1,35 @@
+﻿@inherits ReactiveComponentBase<SuggestAddSkillsForProjectViewModel>
+@if (ViewModel != null)
+{
+    <AlertView Alert="ViewModel.Alert" />
+    <MudStack>
+        <MudButton OnClick="ViewModel.SuggestSkills.BindCommand<MouseEventArgs>()">Suggest Skills</MudButton>
+        @if (ViewModel.Skills.Count > 0)
+        {
+            <MudPaper Height="300px" Class="overflow-auto">
+                <MudStack Row="true" Wrap="Wrap.Wrap">
+
+                    @foreach (var skill in ViewModel.Skills)
+                    {
+                        @skill.Name
+                        <MudCheckBox @bind-Value="skill.IsSelected" />
+                    }
+                </MudStack>
+            </MudPaper>
+            <MudButton OnClick="ViewModel.AddSelectedSkills.BindCommand<MouseEventArgs>()">Add Skills</MudButton>
+        }
+    </MudStack>
+}
+@code {
+    protected override void OnInitialized()
+    {
+        if (ViewModel != null)
+        {
+            ViewModel.Skills.CollectionChanged += (s, e) =>
+            {
+                InvokeAsync(StateHasChanged);
+            };
+        }
+        base.OnInitialized();
+    }
+}

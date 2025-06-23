@@ -169,4 +169,10 @@ public partial class User : Entity<Guid>, IUser
     public string? StripeStatus { get; set; }
     public DateTime? StripeUpdateDate { get; set; }
     public string? DefaultCoverLetterConfiguration { get; set; }
+    public virtual ICollection<Project> Projects { get; set; } = [];
+    public virtual ICollection<Project> ProjectCreatedByUsers { get; set; } = [];
+    public virtual ICollection<Project> ProjectUpdatedByUsers { get; set; } = [];
+    public virtual ICollection<ProjectSkill> ProjectSkillCreatedByUsers { get; set; } = [];
+
+    public virtual ICollection<ProjectSkill> ProjectSkillUpdatedByUsers { get; set; } = [];
 }

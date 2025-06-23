@@ -96,6 +96,7 @@ namespace Programming.Team.Business.Core
         /// <returns>Array of Skills not assigned to the given position but exist for that user</returns>
         Task<Skill[]> GetSkillsExcludingPosition(Guid positionId, IUnitOfWork? work = null,
             CancellationToken token = default);
+        Task<Skill[]> GetSkillsExcludingProject(Guid projectId, IUnitOfWork? work = null, CancellationToken token = default);
     }
 
     public interface IDocumentTemplateBusinessFacade : IBusinessRepositoryFacade<DocumentTemplate, Guid>

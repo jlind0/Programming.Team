@@ -348,11 +348,17 @@ namespace Programming.Team.ViewModels.Resume
         {
             try
             {
+                var userId = await Facade.GetCurrentUserId(fetchTrueUserId: true, token: token);
+                if (userId == null)
+                    throw new InvalidOperationException();
                 DocumentTemplates.Clear();
-                var dts = await DocumentTemplateFacade.Get(filter: f => f.DocumentTypeId == DocumentTypes.Resume, orderBy: o => o.OrderBy(e => e.Name), token: token);
-                DocumentTemplates.AddRange(dts.Entities);
-                var mds = await DocumentTemplateFacade.Get(filter: f => f.DocumentTypeId == DocumentTypes.MarkdownResume, orderBy: o => o.OrderBy(e => e.Name), token: token);
-                MarkdownTemplates.AddRange(mds.Entities);
+                var dts = await DocumentTemplateFacade.GetForUser(userId.Value, DocumentTypes.Resume, token: token);
+                DocumentTemplates.AddRange(dts);
+                SelectedTemplate = dts.FirstOrDefault();
+                MarkdownTemplates.Clear();
+                var mds = await DocumentTemplateFacade.GetForUser(userId.Value, DocumentTypes.MarkdownResume, token: token);
+                MarkdownTemplates.AddRange(mds);
+                SelectedMarkdownTemplate = mds.FirstOrDefault();
 
             }
             catch (Exception ex)

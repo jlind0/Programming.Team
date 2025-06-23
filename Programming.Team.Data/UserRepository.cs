@@ -157,6 +157,20 @@ namespace Programming.Team.Data
             }, work, token);
             return skills;
         }
+
+        public async Task<Skill[]> GetSkillsExcludingProject(Guid projectId, IUnitOfWork? work = null, CancellationToken token = default)
+        {
+            Skill[] skills = [];
+            await Use(async (w, t) =>
+            {
+                var userId = await GetCurrentUserId(w, token: t);
+                DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
+                var query = w.ResumesContext.Positions.Where(p => p.Projects.Any(x => x.Id == projectId)).SelectMany(p => p.PositionSkills).Select(p => p.Skill).Except(
+                    w.ResumesContext.ProjectSkills.Where(p => p.ProjectId == projectId).Select(p => p.Skill)).Distinct();
+                skills = await query.ToArrayAsync(token);
+            }, work, token);
+            return skills;
+        }
     }
     public class DocumentTemplateRepository : Repository<DocumentTemplate, Guid>, IDocumentTemplateRepository
     {

@@ -1,0 +1,65 @@
+﻿@inherits ReactiveComponentBase<AddProjectViewModel>
+
+@if (ViewModel != null)
+{
+    <AlertView Alert="ViewModel.Alert" />
+
+
+    <MudOverlay ZIndex="5" Visible="@ViewModel.IsOpen"
+                Style="background-color: rgba(255,255,255,.3); padding: 20px"
+                AutoClose="false" />
+
+    <div class="d-flex justify-end">
+        <MudIconButton Icon="@Icons.Material.Filled.Close"
+                       OnClick="() => ViewModel.IsOpen = false"
+                       Color="Color.Default"
+                       Class="ml-auto" />
+    </div>
+
+    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4">
+        <div class="d-flex flex-column">
+            <div class="d-flex justify-end">
+                <MudIconButton Icon="@Icons.Material.Filled.Close"
+                               OnClick="() => ViewModel.IsOpen = false"
+                               Color="Color.Default"
+                               Class="ml-auto" />
+            </div>
+            <MudStack>
+                <SearchSelectEntityView TAddView="AddPositionView"
+                                        TEntity="Programming.Team.Core.Position" TKey="Guid" TAddViewModel="AddPositionViewModel"
+                                        TSearchSelectViewModel="SearchSelectPositionViewModel"
+                                        ViewModel="ViewModel.PositionSelector" />
+                <MudTextField @bind-Value="ViewModel.Name" Label="Name" Variant="Variant.Outlined" />
+                <MudTextField @bind-Value="ViewModel.ProjectUrl" Label="Project Url" Variant="Variant.Outlined"/>
+                <MudTextField @bind-Value="ViewModel.SourceUrl" Label="Source Url" Variant="Variant.Outlined"/>
+                <MudTextField @bind-Value="ViewModel.License" Label="License" Variant="Variant.Outlined"/>
+                <MudTextField Lines="10" @bind-Value="ViewModel.Description" Label="Description"
+                              Variant="Variant.Outlined" />
+                <MudTextField @bind-Value="ViewModel.SortOrder" Label="Sort Order" Variant="Variant.Outlined" />
+                <MudStack Row="true">
+                    <MudButton OnClick="ViewModel.Add.BindCommand<MouseEventArgs>()" Class="fw-bold"
+                               Variant="Variant.Filled" Color="Color.Primary">
+                        Add Position
+                    </MudButton>
+                    <MudButton OnClick="ViewModel.Cancel.BindCommand<MouseEventArgs>()" Class="fw-bold"
+                               Variant="Variant.Filled" Color="Color.Primary">
+                        Cancel
+                    </MudButton>
+                </MudStack>
+            </MudStack>
+
+        </div>
+    </MudPopover>
+
+}
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && ViewModel != null)
+        {
+            await ViewModel.Init.Execute().GetAwaiter();
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

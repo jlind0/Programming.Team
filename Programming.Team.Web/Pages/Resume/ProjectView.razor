@@ -1,0 +1,26 @@
+﻿@inherits ReactiveComponentBase<ProjectViewModel>
+
+@if (ViewModel != null)
+{
+    <AlertView Alert="ViewModel.Alert" />
+    <MudStack>
+        <MudText>Position: @ViewModel.Position?.Name</MudText>
+        <MudTextField @bind-Value="ViewModel.Name" Label="Name" Variant="Variant.Outlined" />
+        <MudTextField @bind-Value="ViewModel.ProjectUrl" Label="Project Url" Variant="Variant.Outlined" />
+        <MudTextField @bind-Value="ViewModel.SourceUrl" Label="Source Url" Variant="Variant.Outlined" />
+        <MudTextField @bind-Value="ViewModel.License" Label="License" Variant="Variant.Outlined" />
+        <MudTextField Lines="10" @bind-Value="ViewModel.Description" Label="Description"
+                      Variant="Variant.Outlined" />
+        <MudTextField @bind-Value="ViewModel.SortOrder" Label="Sort Order" Variant="Variant.Outlined" />
+        <MudStack Row="true">
+            <MudButton OnClick="ViewModel.Update.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
+                       Color="Color.Primary">Update</MudButton>
+            <MudButton OnClick="ViewModel.Delete.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
+                       Color="Color.Primary">Delete</MudButton>
+        </MudStack>
+        <ProjectSkillsView ViewModel="ViewModel.SkillsViewModel" />
+    </MudStack>
+}
+
+@code {
+}

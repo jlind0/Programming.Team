@@ -334,9 +334,9 @@ namespace Programming.Team.ViewModels.Resume
         {
             try
             {
-                foreach(var raw in RawSkills.Where(r => r.IsSelected).ToArray())
+                foreach (var raw in RawSkills.Where(r => r.IsSelected).ToArray())
                 {
-                    var skillRes = await SkillFacade.Get(page: new Pager() { Page = 1, Size = 1 }, filter: q => q.Name == raw.Name, token: token);
+                    var skillRes = await SkillFacade.Get( page: new Pager() { Page = 1, Size = 1 }, filter: q => q.Name == raw.Name, token: token);
                     var skill = skillRes.Entities.FirstOrDefault();
                     if (skill == null)
                     {
@@ -439,5 +439,4 @@ namespace Programming.Team.ViewModels.Resume
             return [];
         }
     }
-    
 }
