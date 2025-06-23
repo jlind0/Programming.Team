@@ -9,14 +9,9 @@
                 Style="background-color: rgba(255,255,255,.3); padding: 20px"
                 AutoClose="false" />
 
-    <div class="d-flex justify-end">
-        <MudIconButton Icon="@Icons.Material.Filled.Close"
-                       OnClick="() => ViewModel.IsOpen = false"
-                       Color="Color.Default"
-                       Class="ml-auto" />
-    </div>
 
-    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4">
+
+    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="main-content">
         <div class="d-flex flex-column">
             <div class="d-flex justify-end">
                 <MudIconButton Icon="@Icons.Material.Filled.Close"
