@@ -29,6 +29,7 @@ namespace Programming.Team.Data.Core
     {
         Task<Skill[]> GetSkillsExcludingPosition(Guid positionId, IUnitOfWork? work = null,
             CancellationToken token = default);
+        Task<Skill[]> GetSkillsExcludingProject(Guid projectId, IUnitOfWork? work = null, CancellationToken token = default);
     }
     public interface IDocumentTemplateRepository : IRepository<DocumentTemplate, Guid>
     {

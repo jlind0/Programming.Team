@@ -4,6 +4,7 @@ using Programming.Team.Core;
 using Programming.Team.Data.Core;
 using System;
 using System.Collections.Generic;
+using System.IO.Compression;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -147,11 +148,25 @@ namespace Programming.Team.Data
             {
                 var userId = await GetCurrentUserId(w, token: t);
                 DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
-                var query = w.ResumesContext.Skills.Where(s => 
+                var query = w.ResumesContext.Skills.Where(s =>
                     s.PositionSkills.Any(ps => ps.Position.UserId == userId && ps.PositionId != positionId)).Except(
                         w.ResumesContext.Skills.Where(s => s.PositionSkills.Any(ps => ps.PositionId == positionId))).Distinct();
                 query = query.OrderByDescending(s => s.PositionSkills.Sum(
                     ps => EF.Functions.DateDiffDay(ps.Position.StartDate, ps.Position.EndDate ?? today)));
+                skills = await query.ToArrayAsync(token);
+            }, work, token);
+            return skills;
+        }
+
+        public async Task<Skill[]> GetSkillsExcludingProject(Guid projectId, IUnitOfWork? work = null, CancellationToken token = default)
+        {
+            Skill[] skills = [];
+            await Use(async (w, t) =>
+            {
+                var userId = await GetCurrentUserId(w, token: t);
+                DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
+                var query = w.ResumesContext.Positions.Where(p => p.Projects.Any(x => x.Id == projectId)).SelectMany(p => p.PositionSkills).Select(p => p.Skill).Except(
+                    w.ResumesContext.ProjectSkills.Where(p => p.ProjectId == projectId).Select(p => p.Skill)).Distinct();
                 skills = await query.ToArrayAsync(token);
             }, work, token);
             return skills;
@@ -177,6 +192,96 @@ namespace Programming.Team.Data
                  .ToArrayAsync(token);
             }, work, token);
             return templates;
+        }
+    }
+    public class PostingRepository : Repository<Posting, Guid>
+    {
+        public PostingRepository(IContextFactory contextFactory, IMemoryCache cache) : base(contextFactory, cache)
+        {
+        }
+        public override async Task<RepositoryResultSet<Guid, Posting>> Get(IUnitOfWork? work = null, Pager? page = null, Expression<Func<Posting, bool>>? filter = null, Func<IQueryable<Posting>, IOrderedQueryable<Posting>>? orderBy = null, Func<IQueryable<Posting>, IQueryable<Posting>>? properites = null, CancellationToken token = default)
+        {
+            RepositoryResultSet<Guid, Posting> res = new RepositoryResultSet<Guid, Posting>();
+            await Use(async (w, t) =>
+            {
+                var query = w.ResumesContext.Postings.AsQueryable();
+                if (filter != null)
+                    query = query.Where(filter);
+                if (properites != null)
+                    query = properites(query);
+                if (orderBy != null)
+                    query = orderBy(query);
+                if (page != null)
+                {
+                    res.Count = await query.CountAsync(t);
+                    int skip = page.Value.Size * (page.Value.Page - 1);
+                    int take = page.Value.Size;
+                    query = query.Skip(skip).Take(take);
+                }
+                
+                query = query.Select(x => new Posting
+                {
+                    Id = x.Id,
+                    CreateDate = x.CreateDate,
+                    UpdateDate = x.UpdateDate,
+                    Name = x.Name,
+                    DocumentTemplateId = x.DocumentTemplateId,
+                    DocumentTemplate = x.DocumentTemplate,
+                    CreatedByUserId = x.CreatedByUserId,
+                    UpdatedByUserId = x.UpdatedByUserId,
+                    IsDeleted = x.IsDeleted,
+                    UserId = x.UserId,
+                    User = x.User,
+                    Details = x.Details
+                });
+                var data = await query.ToArrayAsync(t);
+                res.Entities = data;
+                if (page == null)
+                    res.Count = data.Length;
+            });
+            return res;
+        }
+        public override async Task<Posting> Update(Posting entity, IUnitOfWork? work = null, Func<IQueryable<Posting>, IQueryable<Posting>>? properites = null, CancellationToken token = default)
+        {
+            if (!string.IsNullOrWhiteSpace(entity.ResumeJson))
+                entity.ResumeJson = await ComnpressString(entity.ResumeJson);
+            return await base.Update(entity, work, properites, token);
+        }
+        public override async Task Add(Posting entity, IUnitOfWork? work = null, CancellationToken token = default)
+        {
+            if (!string.IsNullOrWhiteSpace(entity.ResumeJson))
+                entity.ResumeJson = await ComnpressString(entity.ResumeJson);
+            await base.Add(entity, work, token);
+        }
+        public override async Task<Posting?> GetByID(Guid key, IUnitOfWork? work = null, Func<IQueryable<Posting>, IQueryable<Posting>>? properites = null, CancellationToken token = default)
+        {
+            var posting = await base.GetByID(key, work, properites, token);
+            if(!string.IsNullOrWhiteSpace(posting?.ResumeJson))
+                posting.ResumeJson = await DecompressString(posting.ResumeJson);
+            return posting;
+        }
+        protected async Task<string> ComnpressString(string text)
+        {
+            var bytes = Encoding.UTF8.GetBytes(text);
+
+            using var output = new MemoryStream();
+            using (var gzip = new GZipStream(output, CompressionLevel.Optimal, leaveOpen: true))
+            {
+                await gzip.WriteAsync(bytes, 0, bytes.Length);
+            }
+
+            return Convert.ToBase64String(output.ToArray());
+        }
+        protected async Task<string> DecompressString(string text)
+        {
+            var bytes = Convert.FromBase64String(text);
+
+            using var input = new MemoryStream(bytes);
+            using var gzip = new GZipStream(input, CompressionMode.Decompress);
+            using var output = new MemoryStream();
+            await gzip.CopyToAsync(output);
+
+            return Encoding.UTF8.GetString(output.ToArray());
         }
     }
 }

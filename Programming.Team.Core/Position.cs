@@ -47,4 +47,5 @@ public partial class Position : Entity<Guid>, IPosition, INamedEntity
 
     public virtual User User { get; set; } = null!;
     public virtual ICollection<Recommendation> Recommendations { get; set; } = new List<Recommendation>();
+    public virtual ICollection<Project> Projects { get; set; } = [];
 }

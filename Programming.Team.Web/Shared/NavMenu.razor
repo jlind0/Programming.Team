@@ -103,6 +103,11 @@
         Icon="@Icons.Material.Filled.WorkHistory">Positions
     </MudNavLink>
 
+    <MudNavLink Disabled="!isAuthenticated" Href="resume/projects" Match="NavLinkMatch.Prefix"
+                Icon="@Icons.Material.Filled.Source">
+        Projects
+    </MudNavLink>
+
     <MudNavLink Disabled="!isAuthenticated" Href="resume/education" Match="NavLinkMatch.Prefix"
         Icon="@Icons.Material.Filled.School">Education
     </MudNavLink>

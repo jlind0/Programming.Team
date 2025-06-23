@@ -128,6 +128,11 @@ namespace Programming.Team.Business
         {
             return Repository.GetSkillsExcludingPosition(positionId, work, token);
         }
+
+        public Task<Skill[]> GetSkillsExcludingProject(Guid projectId, IUnitOfWork? work = null, CancellationToken token = default)
+        {
+            return Repository.GetSkillsExcludingProject(projectId, work, token);
+        }
     }
     public class DocumentTemplateBusinessFacade : BusinessRepositoryFacade<DocumentTemplate, Guid, IDocumentTemplateRepository>, IDocumentTemplateBusinessFacade
     {

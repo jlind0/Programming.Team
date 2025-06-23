@@ -688,7 +688,7 @@ namespace Programming.Team.ViewModels
                     try
                     {
                         Entities.Clear();
-                        var rs = InitialEntities ?? InitialEntities ?? (await Facade.Get(filter: await FilterCondition(), orderBy: OrderBy(), properites: PropertiesToLoad(), token: token)).Entities;
+                        var rs = InitialEntities ?? (await Facade.Get(filter: await FilterCondition(), orderBy: OrderBy(), properites: PropertiesToLoad(), token: token)).Entities;
                         InitialEntities = null;
                         foreach (var e in rs)
                         {

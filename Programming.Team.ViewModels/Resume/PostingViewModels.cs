@@ -70,17 +70,20 @@ namespace Programming.Team.ViewModels.Resume
         public ResumeConfigurationViewModel ConfigurationViewModel { get; }
         public CoverLetterConfigurationViewModel CoverLetterConfigurationViewModel { get; }
         public ObservableCollection<DocumentTemplate> DocumentTemplates { get; } = new ObservableCollection<DocumentTemplate>();
-        protected IBusinessRepositoryFacade<DocumentTemplate, Guid> DocumentTemplateFacade { get; }
+        protected IDocumentTemplateBusinessFacade DocumentTemplateFacade { get; }
         protected IResumeBuilder Builder { get; }
         public ReactiveCommand<Unit, Unit> Rebuild { get; }
         public ReactiveCommand<Unit, Unit> Render { get; }
         public ReactiveCommand<Unit, Unit> GenerateCoverLetter { get; }
         public ReactiveCommand<Unit, Unit> RenderCoverLetter { get; }
+        public ReactiveCommand<Unit, Unit> RenderMarkdown { get; }
         ~PostingViewModel()
         {
             disposables.Dispose();
         }
-        public PostingViewModel(IResumeBuilder builder, ResumeConfigurationViewModel config, CoverLetterConfigurationViewModel coverConfig, IBusinessRepositoryFacade<DocumentTemplate, Guid>  documentTemplateFacade, ILogger logger, IBusinessRepositoryFacade<Posting, Guid> facade, Guid id) : base(logger, facade, id)
+        public PostingViewModel(IResumeBuilder builder, ResumeConfigurationViewModel config, 
+            CoverLetterConfigurationViewModel coverConfig, IDocumentTemplateBusinessFacade documentTemplateFacade, 
+            ILogger logger, IBusinessRepositoryFacade<Posting, Guid> facade, Guid id) : base(logger, facade, id)
         {
             ConfigurationViewModel = config;
             DocumentTemplateFacade = documentTemplateFacade;
@@ -89,11 +92,12 @@ namespace Programming.Team.ViewModels.Resume
             Render = ReactiveCommand.CreateFromTask(DoRender);
             GenerateCoverLetter = ReactiveCommand.CreateFromTask(DoGenerateCoverLetter);
             RenderCoverLetter = ReactiveCommand.CreateFromTask(DoRenderCoverLetter);
+            RenderMarkdown = ReactiveCommand.CreateFromTask(DoRenderMarkdown);
             CoverLetterConfigurationViewModel = coverConfig;
             WireUpEvents();
         }
 
-        public PostingViewModel(IResumeBuilder builder, ResumeConfigurationViewModel config, CoverLetterConfigurationViewModel coverConfig, IBusinessRepositoryFacade<DocumentTemplate, Guid> documentTemplateFacade, ILogger logger, IBusinessRepositoryFacade<Posting, Guid> facade, Posting entity) : base(logger, facade, entity)
+        public PostingViewModel(IResumeBuilder builder, ResumeConfigurationViewModel config, CoverLetterConfigurationViewModel coverConfig, IDocumentTemplateBusinessFacade documentTemplateFacade, ILogger logger, IBusinessRepositoryFacade<Posting, Guid> facade, Posting entity) : base(logger, facade, entity)
         {
             ConfigurationViewModel = config;
             DocumentTemplateFacade = documentTemplateFacade;
@@ -103,7 +107,24 @@ namespace Programming.Team.ViewModels.Resume
             GenerateCoverLetter = ReactiveCommand.CreateFromTask(DoGenerateCoverLetter);
             RenderCoverLetter = ReactiveCommand.CreateFromTask(DoRenderCoverLetter);
             CoverLetterConfigurationViewModel = coverConfig;
+            RenderMarkdown = ReactiveCommand.CreateFromTask(DoRenderMarkdown);
             WireUpEvents();
+        }
+        protected async Task DoRenderMarkdown(CancellationToken token)
+        {
+            try
+            {
+                if (CanRenderMarkdown)
+                {
+                    await Builder.RenderMarkdown(await Populate(), MarkdownTemplateId!.Value, token);
+                    await Load.Execute().GetAwaiter();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
+                await Alert.Handle(ex.Message).GetAwaiter();
+            }
         }
         protected async Task DoRenderCoverLetter(CancellationToken token)
         {
@@ -201,6 +222,14 @@ namespace Programming.Team.ViewModels.Resume
                 if (p.Sender.SelectedTemplate != null)
                     p.Sender.DocumentTemplateId = p.Sender.SelectedTemplate.Id;
             }).DisposeWith(disposables);
+            this.WhenPropertyChanged(p => p.SelectedMarkdownTemplate).Subscribe(p =>
+            {
+                if (p.Sender.SelectedMarkdownTemplate != null)
+                    p.Sender.MarkdownTemplateId = p.Sender.SelectedMarkdownTemplate.Id;
+                else
+                    p.Sender.MarkdownTemplateId = null;
+                this.RaisePropertyChanged(nameof(CanRenderMarkdown));
+            }).DisposeWith(disposables);
         }
         private bool enrich = true;
         public bool Enrich
@@ -226,7 +255,18 @@ namespace Programming.Team.ViewModels.Resume
             get => documentTemplateId;
             set => this.RaiseAndSetIfChanged(ref documentTemplateId, value);
         }
-
+        private Guid? markdownTemplateId;
+        public Guid? MarkdownTemplateId
+        {
+            get => markdownTemplateId;
+            set => this.RaiseAndSetIfChanged(ref markdownTemplateId, value);
+        }
+        private DocumentTemplate? selectedMarkdownTemplate;
+        public DocumentTemplate? SelectedMarkdownTemplate
+        {
+            get => selectedMarkdownTemplate;
+            set => this.RaiseAndSetIfChanged(ref selectedMarkdownTemplate, value);
+        }
         private string name = string.Empty;
         public string Name
         {
@@ -264,6 +304,10 @@ namespace Programming.Team.ViewModels.Resume
                 this.RaisePropertyChanged(nameof(IsOverlayOpen));
             }
         }
+        public bool CanRenderMarkdown
+        {
+            get => !string.IsNullOrWhiteSpace(ResumeJson) && this.SelectedMarkdownTemplate != null;
+        }
         public bool IsOverlayOpen
         {
             get => Progress != null;
@@ -282,17 +326,42 @@ namespace Programming.Team.ViewModels.Resume
             get => coverLetterConfiguration;
             set => this.RaiseAndSetIfChanged(ref coverLetterConfiguration, value);
         }
+        private string? resumeJson;
+        public string? ResumeJson
+        {
+            get => resumeJson;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref resumeJson, value);
+                this.RaisePropertyChanged(nameof(CanRenderMarkdown));
+            }
+        }
+        private string? resumeMarkdown;
+        public string? ResumeMarkdown
+        {
+            get => resumeMarkdown;
+            set => this.RaiseAndSetIfChanged(ref resumeMarkdown, value);
+        }
+        public ObservableCollection<DocumentTemplate> MarkdownTemplates { get; } = new ObservableCollection<DocumentTemplate>();
 
         protected override async Task<Posting?> DoLoad(CancellationToken token)
         {
             try
             {
+                var userId = await Facade.GetCurrentUserId(fetchTrueUserId: true, token: token);
+                if (userId == null)
+                    throw new InvalidOperationException();
                 DocumentTemplates.Clear();
-                var dts = await DocumentTemplateFacade.Get(orderBy: o => o.OrderBy(e => e.Name), token: token);
-                DocumentTemplates.AddRange(dts.Entities);
-                
+                var dts = await DocumentTemplateFacade.GetForUser(userId.Value, DocumentTypes.Resume, token: token);
+                DocumentTemplates.AddRange(dts);
+                SelectedTemplate = dts.FirstOrDefault();
+                MarkdownTemplates.Clear();
+                var mds = await DocumentTemplateFacade.GetForUser(userId.Value, DocumentTypes.MarkdownResume, token: token);
+                MarkdownTemplates.AddRange(mds);
+                SelectedMarkdownTemplate = mds.FirstOrDefault();
+
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Logger.LogError(ex, ex.Message);
                 await Alert.Handle(ex.Message).GetAwaiter();
@@ -311,6 +380,8 @@ namespace Programming.Team.ViewModels.Resume
                 Configuration = ConfigurationViewModel.GetSerializedConfiguration(),
                 CoverLetterConfiguration = CoverLetterConfigurationViewModel.GetSerializedConfiguration(),
                 CoverLetterLaTeX = CoverLetterLaTeX,
+                ResumeJson = ResumeJson,
+                ResumeMarkdown = ResumeMarkdown,
                 UserId = UserId
             });
         }
@@ -325,6 +396,8 @@ namespace Programming.Team.ViewModels.Resume
             CoverLetterLaTeX = entity.CoverLetterLaTeX;
             SelectedTemplate = DocumentTemplates.SingleOrDefault(d => d.Id == entity.DocumentTemplateId);
             UserId = entity.UserId;
+            ResumeJson = entity.ResumeJson;
+            ResumeMarkdown = entity.ResumeMarkdown;
             await ConfigurationViewModel.Load(entity.Configuration);
             await CoverLetterConfigurationViewModel.Load(entity.CoverLetterConfiguration);
         }
@@ -577,5 +650,6 @@ namespace Programming.Team.ViewModels.Resume
             get => selectedTemplate;
             set => this.RaiseAndSetIfChanged(ref selectedTemplate, value);
         }
+        public Guid? DefaultMarkdownTemplateId { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     }
 }

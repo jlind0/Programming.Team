@@ -6,7 +6,8 @@ namespace Programming.Team.Core;
 public enum DocumentTypes
 {
     Resume = 1,
-    CoverLetter = 2
+    CoverLetter = 2,
+    MarkdownResume = 5
 }
 public interface IDocumentType : IEntity<DocumentTypes>, INamedEntity
 {
