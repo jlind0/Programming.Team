@@ -4,6 +4,7 @@ using Programming.Team.Core;
 using Programming.Team.Data.Core;
 using System;
 using System.Collections.Generic;
+using System.IO.Compression;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -225,6 +226,48 @@ namespace Programming.Team.Data
                     res.Count = data.Length;
             });
             return res;
+        }
+        public override async Task<Posting> Update(Posting entity, IUnitOfWork? work = null, Func<IQueryable<Posting>, IQueryable<Posting>>? properites = null, CancellationToken token = default)
+        {
+            if (!string.IsNullOrWhiteSpace(entity.ResumeJson))
+                entity.ResumeJson = await ComnpressString(entity.ResumeJson);
+            return await base.Update(entity, work, properites, token);
+        }
+        public override async Task Add(Posting entity, IUnitOfWork? work = null, CancellationToken token = default)
+        {
+            if (!string.IsNullOrWhiteSpace(entity.ResumeJson))
+                entity.ResumeJson = await ComnpressString(entity.ResumeJson);
+            await base.Add(entity, work, token);
+        }
+        public override async Task<Posting?> GetByID(Guid key, IUnitOfWork? work = null, Func<IQueryable<Posting>, IQueryable<Posting>>? properites = null, CancellationToken token = default)
+        {
+            var posting = await base.GetByID(key, work, properites, token);
+            if(!string.IsNullOrWhiteSpace(posting?.ResumeJson))
+                posting.ResumeJson = await DecompressString(posting.ResumeJson);
+            return posting;
+        }
+        protected async Task<string> ComnpressString(string text)
+        {
+            var bytes = Encoding.UTF8.GetBytes(text);
+
+            using var output = new MemoryStream();
+            using (var gzip = new GZipStream(output, CompressionLevel.Optimal, leaveOpen: true))
+            {
+                await gzip.WriteAsync(bytes, 0, bytes.Length);
+            }
+
+            return Convert.ToBase64String(output.ToArray());
+        }
+        protected async Task<string> DecompressString(string text)
+        {
+            var bytes = Convert.FromBase64String(text);
+
+            using var input = new MemoryStream(bytes);
+            using var gzip = new GZipStream(input, CompressionMode.Decompress);
+            using var output = new MemoryStream();
+            await gzip.CopyToAsync(output);
+
+            return Encoding.UTF8.GetString(output.ToArray());
         }
     }
 }
