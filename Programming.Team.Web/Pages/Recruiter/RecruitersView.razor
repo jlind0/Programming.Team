@@ -20,6 +20,18 @@
                 </CellTemplate>
             </TemplateColumn>
         </Columns>
+        <NoRecordsContent>
+            <MudPaper Class="pa-8 text-center my-4 noContent" Elevation="0" Style="background-color: transparent;">
+                <MudIcon Icon="@Icons.Material.Filled.PostAdd" Size="Size.Large" Color="Color.Primary" Class="mb-3" />
+                <MudText Typo="Typo.h5" Class="mb-2" Color="Color.Primary">No Purchases Found</MudText>
+                <MudText Typo="Typo.body1" Class="mb-4" Color="Color.Info">
+                    Your postiong history is empty. Try adjusting filters or check back later.
+                </MudText>
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">
+                    Refresh Data
+                </MudButton>
+            </MudPaper>
+        </NoRecordsContent>
         <PagerContent>
             <MudDataGridPager T="User" />
         </PagerContent>

@@ -5,8 +5,7 @@
 @if (ViewModel != null)
 {
     <MudStack>
-
-        <!-- Hero Section -->
+         <!-- Hero Section -->
         <MudGrid Class="hero">
             <MudItem xs="12" md="12">
                 <MudPaper Class="hero-content" Elevation="0">
@@ -125,13 +124,13 @@
         <!-- FAQ Section -->
         @if(ViewModel.FAQs.Count > 0)
         {
-        <MudContainer Class="mt-10">
+        <MudContainer>
             <h2 class="section-title">Frequently Asked Questions</h2>
 
             <MudGrid>
                 @foreach (var faqGroup in ViewModel.FAQs.ToList().Chunk(FAQGroupSize))
                 {
-                    <MudItem xs="12" md="6">
+                    <MudItem>
                         <MudExpansionPanels>
                                 @foreach (var faq in faqGroup)
                                 {
@@ -225,6 +224,7 @@
 
         private ContactModel contactModel = new ContactModel();
     private MudForm contactForm;*/
+
     private int FAQGroupSize = 3;
     private bool isAuthenticated = false;
     protected override async Task OnInitializedAsync()

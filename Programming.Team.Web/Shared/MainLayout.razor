@@ -2,13 +2,17 @@
 @inject NavigationManager NavMan
 
 <PageTitle>Programming Team - The Resume Tailor</PageTitle>
-@* TODO: support theme and manage its state manually in localstorage *@
-<MudThemeProvider Theme="@_theme" />
+
+<MudThemeProvider Theme="_theme" />
+
 <MudPopoverProvider />
 <MudDialogProvider />
-<MudSnackbarProvider />
+<MudSnackbarProvider /> 
 <MudBreakpointProvider />
-
+@*<MudToggleIconButton @bind-Toggled="@_isDarkMode"  
+                     Icon="@Icons.Material.Filled.DarkMode" Color="@Color.Default"
+                     ToggleIcon="@Icons.Material.Filled.WbSunny" ToggledColor="@Color.Default"
+                     Class ="toggleButtonPosition"></MudToggleIconButton>*@
 <MudLayout>
     <!-- Mobile View (sm and down) -->
     <MudHidden HiddenChanged="hdn => _drawerOpen = !hdn" Breakpoint="@mobileBreakPoint" Invert="true">
@@ -52,13 +56,14 @@
         <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
             <NavMenu/>
         </MudDrawer>
-
+  
         <MudMainContent Class="main-content">
 
             @Body
             <Footer />
 
         </MudMainContent>
+       
     </MudHidden>
  
 </MudLayout>
@@ -74,6 +79,47 @@
     private MudTheme? _theme = null;
     private Breakpoint mobileBreakPoint = Breakpoint.SmAndDown;
     private Breakpoint mainBreakPoint = Breakpoint.MdAndUp;
+    private bool _isDarkMode = false;
+
+/*    MudTheme CustomTheme = new MudTheme
+        {
+            PaletteLight = new PaletteLight()
+            {
+                Primary = Colors.Blue.Default,       // Primary brand color
+                Secondary = Colors.Teal.Default,     // Secondary accent color
+                Tertiary = Colors.Orange.Default,    // Additional accent color
+                Background = Colors.Gray.Lighten5,   // Page background
+                AppbarBackground = Colors.Blue.Darken1, // App bar background
+                DrawerBackground = Colors.Lime.Lighten1,     // Drawer background
+              //  Surface = Colors.Lime.Lighten1,              // Cards, sheets, menus
+                TextPrimary = Colors.Gray.Darken4,   // Primary text
+                TextSecondary = Colors.Gray.Darken2, // Secondary text
+                Success = Colors.Green.Default,      // Success states
+                Warning = Colors.Orange.Default,    // Warning states
+                Error = Colors.Red.Default,          // Error states
+                Info = Colors.Blue.Default,          // Info states
+            },
+            PaletteDark = new PaletteDark()
+            {
+                Primary = Colors.Blue.Darken2,            // Strong but not too bright blue
+                Secondary = Colors.Cyan.Darken2,           // Cool secondary color
+                Tertiary = Colors.Amber.Darken2,           // Warm tertiary accent
+                Background = "#121212",                     // Very dark background for body
+                AppbarBackground = "#1E1E1E",               // Slightly lighter appbar
+                DrawerBackground = "#1B1B1B",               // Dark drawer background
+                Surface = "#242424",                        // Dark surface for cards and divs
+                TextPrimary = Colors.Gray.Lighten4,        // Light text for readability
+                TextSecondary = Colors.Gray.Lighten2,      // Softer secondary text
+                Success = Colors.Green.Accent3,             // Bright success color
+                Warning = Colors.Orange.Accent2,            // Clear warning color
+                Error = Colors.Red.Accent2,                  // Vibrant error color
+                Info = Colors.LightBlue.Accent2,             // Informational color
+            }
+        };
+
+  */
+
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -96,22 +142,22 @@
         {
             PaletteLight = new PaletteLight()
             {
-                Primary = "#4361ee",             // var(--primary)
-                PrimaryDarken = "#3a56d4",       // var(--primary-dark)
-                Secondary = "#3f37c9",           // var(--secondary)
-                Tertiary = "#4895ef",            // var(--accent)
-                Dark = "#2b2d42",                // var(--dark)
-                TextPrimary = "#2b2d42",
-                Background = "#f8f9fa",          // var(--light)
-                Surface = "rgba(255,255,255,1)", // var(--glass)
-                AppbarBackground = "rgba(255,255,255,0.8)",
-                DrawerBackground = "rgba(255,255,255    ,0.15)",
-                AppbarText = "#2b2d42",
-                DrawerText = "#2b2d42",
-                Success = "#4cc9f0",             // var(--success)
-                Warning = "#f72585",             // var(--warning)
-                Error = "#ef233c",               // var(--danger)
-                Info = "#4895ef"                 // using accent for info
+                Primary = "#3a56d4",             // Deep Blue
+                PrimaryDarken = "#2f4ac0",       // Darker Blue
+                Secondary = "#6c757d",           // Neutral Gray
+                Tertiary = "#4cc9f0",            // Bright Cyan (Accent)
+                Dark = "#212529",                // Almost Black
+                TextPrimary = "#212529",         // Dark Text
+                Background = "#f8f9fa",          // Light Gray Background
+                Surface = "rgba(255,255,255,0.9)", // Slightly transparent white
+                AppbarBackground = "rgba(255,255,255,0.85)",
+                DrawerBackground = "rgba(245,245,245,0.8)",
+                AppbarText = "#212529",
+                DrawerText = "#212529",
+                Success = "#4bbf73",             // Green
+                Warning = "#f0ad4e",             // Yellow-Orange
+                Error = "#d9534f",               // Red
+                Info = "#5bc0de"                 // Light Blue
             },
             LayoutProperties = new LayoutProperties()
             {
