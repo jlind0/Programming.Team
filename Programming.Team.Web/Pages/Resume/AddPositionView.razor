@@ -24,28 +24,58 @@
                                         TEntity="Company" TKey="Guid" TAddViewModel="AddCompanyViewModel"
                                         TSearchSelectViewModel="SearchSelectCompanyViewModel"
                                         ViewModel="ViewModel.CompanyViewModel" />
+
                 <MudTextField @bind-Value="ViewModel.Title" Label="Title" Variant="Variant.Outlined" />
-                <MudDatePicker @bind-Date="ViewModel.StartDateTime" Label="Start Date" MinDate="new DateTime(1950, 1, 1)" />
-                <MudDatePicker @bind-Date="ViewModel.EndDateTime" Label="End Date" MinDate="new DateTime(1950, 1, 1)" />
-                <MudTextField Lines="10" @bind-Value="ViewModel.Description" Label="Description"
-                    Variant="Variant.Outlined" />
-                <MudTextField @bind-Value="ViewModel.SortOrder" Label="Sort Order" Variant="Variant.Outlined" />
+
+              
+             
+
+                <div class="d-flex gap-3">
+                    <MudDatePicker @bind-Date="ViewModel.StartDateTime"
+                                   Label="Start Date"
+                                   MinDate="new DateTime(1950, 1, 1)"
+                                   Class="flex-grow-1" />
+                    <MudDatePicker @bind-Date="ViewModel.EndDateTime"
+                                   Label="End Date"
+                                   MinDate="new DateTime(1950, 1, 1)"
+                                   Class="flex-grow-1" />
+                </div>
+
+                <MudTextField Lines="10"
+                              @bind-Value="ViewModel.Description"
+                              Label="Description"
+                              Variant="Variant.Outlined" />
+
+                <MudTextField @bind-Value="ViewModel.SortOrder"
+                              Label="Sort Order"
+                              Variant="Variant.Outlined" />
+
+
+          
                 <MudStack Row="true">
-                    <MudButton OnClick="ViewModel.Add.BindCommand<MouseEventArgs>()" Class="fw-bold"
-                        Variant="Variant.Filled" Color="Color.Primary">
-                        Add Position</MudButton>
-                    <MudButton OnClick="ViewModel.Cancel.BindCommand<MouseEventArgs>()" Class="fw-bold"
-                        Variant="Variant.Filled" Color="Color.Primary">
-                        Cancel</MudButton>
+                    <MudButton OnClick="ViewModel.Cancel.BindCommand<MouseEventArgs>()"
+                               Class="fw-bold"
+                               Variant="Variant.Filled"
+                               Color="Color.Primary">
+                        Cancel
+                    </MudButton>
+                    <MudButton OnClick="ViewModel.Add.BindCommand<MouseEventArgs>()"
+                               Class="fw-bold"
+                               Variant="Variant.Filled"
+                               Color="Color.Primary">
+                        Add Position
+                    </MudButton>
                 </MudStack>
             </MudStack>
-
         </div>
     </MudPopover>
 
 }
 
 @code {
+    public string ProjectName { get; set; }
+    public List<string> Technologies { get; set; } = new();
+    public string ProjectDescription { get; set; }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && ViewModel != null)

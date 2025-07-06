@@ -2,8 +2,17 @@
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
+    <MudOverlay ZIndex="5" Visible="@ViewModel.IsOpen"
+                Style="background-color: rgba(255,255,255,.3); padding: 20px"
+                AutoClose="false" />
     <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4">
         <div class="d-flex flex-column">
+            <div class="d-flex justify-end">
+                <MudIconButton Icon="@Icons.Material.Filled.Close"
+                               OnClick="() => ViewModel.IsOpen = false"
+                               Color="Color.Default"
+                               Class="ml-auto" />
+            </div>
             <MudTextField Label="Question" @bind-Value="ViewModel.Question" Lines="10" Variant="Variant.Outlined" />
             <MudTextField Label="Answer" @bind-Value="ViewModel.Answer" Lines="10" Variant="Variant.Outlined" />
             <MudTextField Label="SortOrder" @bind-Value="ViewModel.SortOrder" Variant="Variant.Outlined" />
@@ -18,6 +27,16 @@
         </div>
     </MudPopover>
 }
+<style>
+    .mud-popover {
+        width: 30vmax;
+        padding: 1%;
+        position: absolute;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+    }
+</style>
 
 @code {
     protected override async Task OnAfterRenderAsync(bool firstRender)
