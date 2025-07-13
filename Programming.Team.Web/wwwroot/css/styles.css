@@ -2590,19 +2590,7 @@ include-drop-zone {
     margin:1%;
 }
 
+.mud-paper {
 
-
-
-    /**** Themes *****/
-
-    /*
-.mud-theme-dark .pricing-features li{
-    background-color: #242424;
-    color: white;;
+    margin:1% !important;
 }
-
-.mud-theme-light .my-card {
-    background-color: #fff;
-    color: #222;
-}
-    */

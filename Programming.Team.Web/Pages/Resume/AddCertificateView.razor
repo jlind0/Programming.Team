@@ -1,4 +1,4 @@
-﻿@inherits ReactiveComponentBase<AddCertificateViewModel>
+﻿@*@inherits ReactiveComponentBase<AddCertificateViewModel>
 
 @if (ViewModel != null)
 {
@@ -54,4 +54,111 @@
         }
         await base.OnAfterRenderAsync(firstRender);
     }
+}
+*@
+
+@inherits ReactiveComponentBase<AddCertificateViewModel>
+
+@if (ViewModel != null)
+{
+    <AlertView Alert="ViewModel.Alert" />
+
+    <MudOverlay ZIndex="5" Visible="@ViewModel.IsOpen"
+                Style="background-color: rgba(0,0,0,.4); padding: 20px"
+                AutoClose="false" />
+
+    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4">
+        <div class="d-flex flex-column">
+            <div class="d-flex justify-end">
+                <MudIconButton Icon="@Icons.Material.Filled.Close"
+                               OnClick="() => ViewModel.IsOpen = false"
+                               Color="Color.Default"
+                               Class="ml-auto" />
+            </div>
+
+            <MudStepper @bind-ActiveStep="ActiveStepIndex">
+                <!-- Step 1: Certificate Issuer Details -->
+                <MudStep Title="Issuer Details">
+                    <MudStack>
+                        <MudTextField @bind-Value="searchText"
+                                      @bind-Value:event="oninput"
+                                      Label="Search"
+                                      Immediate="true" />
+                        <MudTextField @bind-Value="ViewModel.Name" Label="Name" Variant="Variant.Outlined" />
+                        <MudTextField @bind-Value="ViewModel.Description" Label="Description" Variant="Variant.Outlined" />
+                        <MudTextField @bind-Value="ViewModel.Url" Label="URL" Variant="Variant.Outlined" />
+
+                    
+                    </MudStack>
+                </MudStep>
+
+                <!-- Step 2: Certificate Details -->
+                <MudStep Title="Certificate Details">
+                    <MudStack>
+                        <MudTextField @bind-Value="ViewModel.Name" Label="Name" Variant="Variant.Outlined" />
+                        <MudTextField @bind-Value="ViewModel.Url" Label="URL" Variant="Variant.Outlined" />
+                        <MudDatePicker @bind-Date="ViewModel.ValidFromDateTime" Label="Valid From Date"
+                                       MinDate="new DateTime(1950, 1, 1)" />
+                        <MudDatePicker @bind-Date="ViewModel.ValidToDateTime" Label="Valid To Date"
+                                       MinDate="new DateTime(1950, 1, 1)" />
+                        <MudTextField Lines="10" @bind-Value="ViewModel.Description" Label="Description"
+                                      Variant="Variant.Outlined" />
+
+                  
+                
+                    </MudStack>
+                </MudStep>
+            </MudStepper>
+        </div>
+    </MudPopover>
+}
+
+@code {
+
+    private string searchText = "";
+    private CancellationTokenSource cts = new();
+    public int ActiveStepIndex { get; set; } = 0;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && ViewModel != null)
+        {
+            await ViewModel.Init.Execute().GetAwaiter();
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private void OnStepperCompleted()
+    {
+        // Close the popup when the Complete button is clicked. Not working totally yet.
+        ViewModel.IsOpen = false;
+        StateHasChanged();
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+        await LoadDataDebounced();
+    }
+
+    private async Task LoadDataDebounced()
+    {
+        cts.Cancel();
+        cts = new CancellationTokenSource();
+
+        try
+        {
+            await Task.Delay(300, cts.Token); 
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+              /*  var results = await Http.GetFromJsonAsync<List<CertificateIssuer>>(
+                    $"api/certificateissuers?search={searchText}");*/
+             
+            }
+        }
+        catch (TaskCanceledException) { /* Search was canceled */ }
+    }
+
+
+    
+
 }

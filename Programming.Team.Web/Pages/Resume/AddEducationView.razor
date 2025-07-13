@@ -1,4 +1,4 @@
-﻿@inherits ReactiveComponentBase<AddEducationViewModel>
+﻿@*@inherits ReactiveComponentBase<AddEducationViewModel>
 
 @if (ViewModel != null)
 {
@@ -44,6 +44,133 @@
 }
 
 @code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && ViewModel != null)
+        {
+            await ViewModel.Init.Execute().GetAwaiter();
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}*@
+
+@inherits ReactiveComponentBase<AddEducationViewModel>
+
+@if (ViewModel != null)
+{
+    <AlertView Alert="ViewModel.Alert" />
+
+    <MudOverlay ZIndex="5" Visible="@ViewModel.IsOpen"
+                Style="background-color: rgba(0,0,0,.4); padding: 20px"
+                AutoClose="false" />
+
+    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4">
+        <div class="d-flex flex-column">
+            <div class="d-flex justify-end">
+                <MudIconButton Icon="@Icons.Material.Filled.Close"
+                               OnClick="() => ViewModel.IsOpen = false"
+                               Color="Color.Default"
+                               Class="ml-auto" />
+            </div>
+
+            <MudStepper @bind-ActiveStep="activeStepIndex">
+                <!-- Step 1: Institution Details -->
+                <MudStep Title="Institution">
+                    <MudStack Spacing="3">
+                        <MudTextField T="string"
+                                      Label="Name"
+                                      @bind-Value="institutionName"
+                                      Variant="Variant.Outlined" />
+
+                        <MudTextField T="string"
+                                      Label="Description"
+                                      @bind-Value="institutionDescription"
+                                      Variant="Variant.Outlined" />
+
+                        <MudTextField T="string"
+                                      Label="City"
+                                      @bind-Value="institutionCity"
+                                      Variant="Variant.Outlined" />
+
+                        <MudTextField T="string"
+                                      Label="State/Province"
+                                      @bind-Value="institutionState"
+                                      Variant="Variant.Outlined" />
+
+                        <MudTextField T="string"
+                                      Label="Country"
+                                      @bind-Value="institutionCountry"
+                                      Variant="Variant.Outlined" />
+
+                        <MudTextField T="string"
+                                      Label="Website URL"
+                                      @bind-Value="institutionUrl"
+                                      Variant="Variant.Outlined" />
+                    </MudStack>
+                </MudStep>
+
+                <!-- Step 2: Education Details -->
+                <MudStep Title="Education">
+                    <MudStack Spacing="3">
+                        <MudTextField T="string"
+                                      Label="Major"
+                                      @bind-Value="ViewModel.Major"
+                                      Variant="Variant.Outlined" />
+
+                        <MudCheckBox T="bool"
+                                     Label="Graduated?"
+                                     @bind-Value="ViewModel.Graduated" />
+
+                        <MudDatePicker T="DateTime?"
+                                       Label="Start Date"
+                                       @bind-Date="ViewModel.StartDateTime"
+                                       MinDate="new DateTime(1950, 1, 1)"
+                                       Variant="Variant.Outlined" />
+
+                        <MudDatePicker T="DateTime?"
+                                       Label="End Date"
+                                       @bind-Date="ViewModel.EndDateTime"
+                                       MinDate="new DateTime(1950, 1, 1)"
+                                       Variant="Variant.Outlined" />
+
+                        <MudTextField T="string"
+                                      Lines="5"
+                                      Label="Description"
+                                      @bind-Value="ViewModel.Description"
+                                      Variant="Variant.Outlined" />
+                    </MudStack>
+                </MudStep>
+            </MudStepper>
+
+   
+        </div>
+    </MudPopover>
+}
+
+@code {
+    private int activeStepIndex = 0;
+
+    // Institution fields
+    private string institutionName = "";
+    private string institutionDescription = "";
+    private string institutionCity = "";
+    private string institutionState = "";
+    private string institutionCountry = "";
+    private string institutionUrl = "";
+
+    private async Task SaveEducation()
+    {
+        // First save institution if needed
+        if (!string.IsNullOrWhiteSpace(institutionName))
+        {
+            // Create institution object and save
+            // await ViewModel.SaveInstitution(...);
+        }
+
+        // Then save education
+        await ViewModel.Add.Execute().GetAwaiter();
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && ViewModel != null)

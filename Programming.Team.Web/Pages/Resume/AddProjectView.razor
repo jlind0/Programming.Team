@@ -1,4 +1,4 @@
-﻿@inherits ReactiveComponentBase<AddProjectViewModel>
+﻿@*@inherits ReactiveComponentBase<AddProjectViewModel>
 
 @if (ViewModel != null)
 {
@@ -62,4 +62,197 @@
         }
         await base.OnAfterRenderAsync(firstRender);
     }
+}*@
+@inherits ReactiveComponentBase<AddProjectViewModel>
+
+@if (ViewModel != null)
+{
+    <AlertView Alert="ViewModel.Alert" />
+
+    <MudOverlay ZIndex="5" Visible="@ViewModel.IsOpen"
+                Style="background-color: rgba(0,0,0,.4); padding: 20px"
+                AutoClose="false" />
+
+    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4">
+        <div class="d-flex flex-column">
+            <div class="d-flex justify-end">
+                <MudIconButton Icon="@Icons.Material.Filled.Close"
+                               OnClick="() => ViewModel.IsOpen = false"
+                               Color="Color.Default"
+                               Class="ml-auto" />
+            </div>
+
+            <MudStepper @bind-ActiveStep="activeStepIndex">
+                <!-- Step 1: Company Details -->
+                <MudStep Title="Company">
+                    <MudStack Spacing="3">
+                        <MudTextField T="string"
+                                      Label="Company Name"
+                                      @bind-Value="companyName"
+                                      Variant="Variant.Outlined" />
+
+                        <MudTextField T="string"
+                                      Label="Description"
+                                      @bind-Value="companyDescription"
+                                      Variant="Variant.Outlined" />
+
+                        <MudTextField T="string"
+                                      Label="City"
+                                      @bind-Value="companyCity"
+                                      Variant="Variant.Outlined" />
+
+                        <MudTextField T="string"
+                                      Label="State/Province"
+                                      @bind-Value="companyState"
+                                      Variant="Variant.Outlined" />
+
+                        <MudTextField T="string"
+                                      Label="Country"
+                                      @bind-Value="companyCountry"
+                                      Variant="Variant.Outlined" />
+
+                        <MudTextField T="string"
+                                      Label="Website URL"
+                                      @bind-Value="companyUrl"
+                                      Variant="Variant.Outlined" />
+                    </MudStack>
+                </MudStep>
+
+                <!-- Step 2: Position Details -->
+                <MudStep Title="Position">
+                    <MudStack Spacing="3">
+                        <MudTextField T="string"
+                                      Label="Position Title"
+                                      @bind-Value="positionTitle"
+                                      Variant="Variant.Outlined" />
+
+                        <MudTextField T="string"
+                                      Label="Start Date (YYYY-MM-DD)"
+                                      @bind-Value="positionStartDate"
+                                      Variant="Variant.Outlined" />
+
+                        <MudTextField T="string"
+                                      Label="End Date (YYYY-MM-DD)"
+                                      @bind-Value="positionEndDate"
+                                      Variant="Variant.Outlined" />
+
+                        <MudTextField T="string"
+                                      Lines="3"
+                                      Label="Description"
+                                      @bind-Value="positionDescription"
+                                      Variant="Variant.Outlined" />
+
+                        <MudTextField T="int?"
+                                      Label="Sort Order"
+                                      @bind-Value="positionSortOrder"
+                                      Variant="Variant.Outlined" />
+                    </MudStack>
+                </MudStep>
+
+                <!-- Step 3: Project Details -->
+                <MudStep Title="Project">
+                    <MudStack Spacing="3">
+                        <MudTextField T="string"
+                                      Label="Project Name"
+                                      @bind-Value="projectName"
+                                      Variant="Variant.Outlined" />
+
+                        <MudTextField T="string"
+                                      Label="Project URL"
+                                      @bind-Value="projectUrl"
+                                      Variant="Variant.Outlined" />
+
+                        <MudTextField T="string"
+                                      Label="Source URL"
+                                      @bind-Value="sourceUrl"
+                                      Variant="Variant.Outlined" />
+
+                        <MudTextField T="string"
+                                      Label="License"
+                                      @bind-Value="license"
+                                      Variant="Variant.Outlined" />
+
+                        <MudTextField T="string"
+                                      Lines="5"
+                                      Label="Description"
+                                      @bind-Value="projectDescription"
+                                      Variant="Variant.Outlined" />
+
+                        <MudTextField T="int?"
+                                      Label="Sort Order"
+                                      @bind-Value="projectSortOrder"
+                                      Variant="Variant.Outlined" />
+                    </MudStack>
+                </MudStep>
+            </MudStepper>
+
+   
+        </div>
+    </MudPopover>
 }
+
+@code {
+    private int activeStepIndex = 0;
+
+    // Company fields
+    private string companyName = "";
+    private string companyDescription = "";
+    private string companyCity = "";
+    private string companyState = "";
+    private string companyCountry = "";
+    private string companyUrl = "";
+
+    // Position fields
+    private string positionTitle = "";
+    private string positionStartDate = DateTime.Now.ToString("yyyy-MM-dd");
+    private string positionEndDate = "";
+    private string positionDescription = "";
+    private int? positionSortOrder = null;
+
+    // Project fields
+    private string projectName = "";
+    private string projectUrl = "";
+    private string sourceUrl = "";
+    private string license = "";
+    private string projectDescription = "";
+    private int? projectSortOrder = null;
+
+    private async Task SaveAllData()
+    {
+        // Convert string dates to DateOnly
+        DateOnly? startDate = null;
+        DateOnly? endDate = null;
+
+        if (DateOnly.TryParse(positionStartDate, out var parsedStart))
+            startDate = parsedStart;
+
+        if (DateOnly.TryParse(positionEndDate, out var parsedEnd))
+            endDate = parsedEnd;
+
+        // Save company data
+        // await SaveCompany(companyName, companyDescription, ...);
+
+        // Save position data
+        // await SavePosition(positionTitle, startDate, endDate, ...);
+
+        // Save project data
+        ViewModel.Name = projectName;
+        ViewModel.ProjectUrl = projectUrl;
+        ViewModel.SourceUrl = sourceUrl;
+        ViewModel.License = license;
+        ViewModel.Description = projectDescription;
+        //ViewModel.SortOrder = projectSortOrder;
+
+        await ViewModel.Add.Execute().GetAwaiter();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && ViewModel != null)
+        {
+            await ViewModel.Init.Execute().GetAwaiter();
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}
+
