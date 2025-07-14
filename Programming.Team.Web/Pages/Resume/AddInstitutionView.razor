@@ -2,27 +2,32 @@
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
-    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4">
-        <div class="d-flex flex-column">
-            <MudStack>
-                <MudTextField @bind-Value="ViewModel.Name" Label="Name" Variant="Variant.Outlined" />
-                <MudTextField @bind-Value="ViewModel.Description" Label="Description" Variant="Variant.Outlined"
-                    Lines="10" />
-                <MudTextField @bind-Value="ViewModel.City" Label="City" Variant="Variant.Outlined" />
-                <MudTextField @bind-Value="ViewModel.State" Label="State" Variant="Variant.Outlined" />
-                <MudTextField @bind-Value="ViewModel.Country" Label="Country" Variant="Variant.Outlined" />
-                <MudTextField @bind-Value="ViewModel.Url" Label="URL" Variant="Variant.Outlined" />
-                <MudStack Row="true">
-                    <MudButton OnClick="ViewModel.Add.BindCommand<MouseEventArgs>()" Class="fw-bold"
-                        Variant="Variant.Filled" Color="Color.Primary">
-                        Add Institution</MudButton>
-                    <MudButton OnClick="ViewModel.Cancel.BindCommand<MouseEventArgs>()" Class="fw-bold"
-                        Variant="Variant.Filled" Color="Color.Primary">
-                        Cancel</MudButton>
+    @if(ViewModel.IsOpen)
+    {
+        <MudStack>
+            <div class="d-flex flex-column">
+                <MudStack>
+                    <MudTextField @bind-Value="ViewModel.Name" Label="Name" Variant="Variant.Outlined" />
+                    <MudTextField @bind-Value="ViewModel.Description" Label="Description" Variant="Variant.Outlined"
+                                  Lines="10" />
+                    <MudTextField @bind-Value="ViewModel.City" Label="City" Variant="Variant.Outlined" />
+                    <MudTextField @bind-Value="ViewModel.State" Label="State" Variant="Variant.Outlined" />
+                    <MudTextField @bind-Value="ViewModel.Country" Label="Country" Variant="Variant.Outlined" />
+                    <MudTextField @bind-Value="ViewModel.Url" Label="URL" Variant="Variant.Outlined" />
+                    <MudStack Row="true">
+                        <MudButton OnClick="ViewModel.Add.BindCommand<MouseEventArgs>()" Class="fw-bold"
+                                   Variant="Variant.Filled" Color="Color.Primary">
+                            Add Institution
+                        </MudButton>
+                        <MudButton OnClick="ViewModel.Cancel.BindCommand<MouseEventArgs>()" Class="fw-bold"
+                                   Variant="Variant.Filled" Color="Color.Primary">
+                            Cancel
+                        </MudButton>
+                    </MudStack>
                 </MudStack>
-            </MudStack>
-        </div>
-    </MudPopover>
+            </div>
+        </MudStack>
+    }
 }
 @code {
     protected override async Task OnAfterRenderAsync(bool firstRender)

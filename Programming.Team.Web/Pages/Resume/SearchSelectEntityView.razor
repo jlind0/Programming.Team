@@ -9,14 +9,43 @@
 {
     <AlertView Alert="ViewModel.Alert" />
     <MudStack>
-        <MudAutocomplete T="TEntity" CoerceText="false" Label="@typeof(TEntity).Name" ToStringFunc="c => c?.Name"
+        @if(!ViewModel.AddViewModel.IsOpen)
+        {
+            <MudAutocomplete T="TEntity" CoerceText="false" Label="@typeof(TEntity).Name" ToStringFunc="c => c?.Name"
                          @bind-Value="ViewModel.Selected" DebounceInterval="250" SearchFunc="ViewModel.Search.BindCommand()" />
+        }
         @if (ViewModel.CanAdd)
         {
-            <MudButton OnClick="ViewModel.StartAdd.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
-                       Color="Color.Primary">Add @typeof(TEntity).Name</MudButton>
+            if (!ViewModel.AddViewModel.IsOpen)
+            {
+                <MudButton OnClick="ViewModel.StartAdd.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
+                           Color="Color.Primary">Add @typeof(TEntity).Name</MudButton>
+            }
             <DynamicComponent Type="typeof(TAddView)" Parameters="@(new Dictionary<string, object> { { "ViewModel", ViewModel.AddViewModel } })" />
         }
     </MudStack>
 
+}
+
+@code{
+    private readonly CompositeDisposable disposables = new CompositeDisposable();
+    protected override void OnInitialized()
+    {
+        if(ViewModel != null)
+        {
+            ViewModel.AddViewModel.WhenPropertyChanged(p => p.IsOpen).Subscribe(p =>
+            {
+                StateHasChanged();
+            }).DisposeWith(disposables);
+        }
+        base.OnInitialized();
+    }
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            disposables.Dispose();
+        }
+        base.Dispose(disposing);
+    }
 }
