@@ -4,14 +4,20 @@
 @typeparam TSearchSelectViewModel where TSearchSelectViewModel : EntitySelectSearchViewModel<TKey, TEntity, TAddViewModel>
 @typeparam TAddView where TAddView : ReactiveComponentBase<TAddViewModel>
 @inherits ReactiveComponentBase<TSearchSelectViewModel>
-
+<style>
+    .autocomplete-left + .mud-popover {
+        left: auto !important;
+        right: 100% !important;
+        transform: translateX(-8px); /* Optional: tweak alignment */
+    }
+</style>
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
     <MudStack>
         @if(!ViewModel.AddViewModel.IsOpen)
         {
-            <MudAutocomplete T="TEntity" CoerceText="false" Label="@typeof(TEntity).Name" ToStringFunc="c => c?.Name"
+            <MudAutocomplete Class="autocomplete-left" Modal="false" T="TEntity" CoerceText="false" Label="@typeof(TEntity).Name" ToStringFunc="c => c?.Name"
                          @bind-Value="ViewModel.Selected" DebounceInterval="250" SearchFunc="ViewModel.Search.BindCommand()" />
         }
         @if (ViewModel.CanAdd)
