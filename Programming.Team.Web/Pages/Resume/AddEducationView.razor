@@ -28,7 +28,7 @@
 
             <MudStepper @bind-ActiveStep="activeStepIndex">
                 <!-- Step 1: Institution Details -->
-                <MudStep Title="Institution">
+                <MudStep Title="Institution" HasError="step1Error">
                     <MudStack Spacing="3">
                         <SearchSelectEntityView TAddView="AddInstitutionView"
                                                 TEntity="Institution" TKey="Guid" TAddViewModel="AddInstitutionViewModel"
@@ -38,7 +38,7 @@
                 </MudStep>
 
                 <!-- Step 2: Education Details -->
-                <MudStep Title="Education">
+                <MudStep Title="Education" Disabled="step1Error">
                     <MudStack Spacing="3">
                         <MudText>Selected Institution: @ViewModel.SelectInstiutionViewModel.Selected?.Name</MudText>
                         
@@ -79,7 +79,36 @@
 
 @code {
     private int activeStepIndex = 0;
-
+    private bool step1Error = true;
+    private readonly CompositeDisposable Disposables = new CompositeDisposable();
+    protected override void OnInitialized()
+    {
+        if(ViewModel != null)
+        {
+            ViewModel.SelectInstiutionViewModel.WhenPropertyChanged(p => p.Selected).Subscribe(p =>
+            {
+                if (p.Sender.Selected != null)
+                {
+                    step1Error = false;
+                }
+                else
+                {
+                    step1Error = true;
+                    activeStepIndex = 0; // Reset to first step
+                }
+                StateHasChanged();
+            }).DisposeWith(Disposables);
+        }
+        base.OnInitialized();
+    }
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            Disposables.Dispose();
+        }
+        base.Dispose(disposing);
+    }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && ViewModel != null)
