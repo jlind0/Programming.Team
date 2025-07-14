@@ -77,41 +77,18 @@
                 <!-- Step 1: Institution Details -->
                 <MudStep Title="Institution">
                     <MudStack Spacing="3">
-                        <MudTextField T="string"
-                                      Label="Name"
-                                      @bind-Value="institutionName"
-                                      Variant="Variant.Outlined" />
-
-                        <MudTextField T="string"
-                                      Label="Description"
-                                      @bind-Value="institutionDescription"
-                                      Variant="Variant.Outlined" />
-
-                        <MudTextField T="string"
-                                      Label="City"
-                                      @bind-Value="institutionCity"
-                                      Variant="Variant.Outlined" />
-
-                        <MudTextField T="string"
-                                      Label="State/Province"
-                                      @bind-Value="institutionState"
-                                      Variant="Variant.Outlined" />
-
-                        <MudTextField T="string"
-                                      Label="Country"
-                                      @bind-Value="institutionCountry"
-                                      Variant="Variant.Outlined" />
-
-                        <MudTextField T="string"
-                                      Label="Website URL"
-                                      @bind-Value="institutionUrl"
-                                      Variant="Variant.Outlined" />
+                        <SearchSelectEntityView TAddView="AddInstitutionView"
+                                                TEntity="Institution" TKey="Guid" TAddViewModel="AddInstitutionViewModel"
+                                                TSearchSelectViewModel="SearchSelectInstiutionViewModel"
+                                                ViewModel="ViewModel.SelectInstiutionViewModel" />
                     </MudStack>
                 </MudStep>
 
                 <!-- Step 2: Education Details -->
                 <MudStep Title="Education">
                     <MudStack Spacing="3">
+                        <MudText>Selected Institution: @ViewModel.SelectInstiutionViewModel.Selected?.Name</MudText>
+                        
                         <MudTextField T="string"
                                       Label="Major"
                                       @bind-Value="ViewModel.Major"
@@ -149,27 +126,6 @@
 
 @code {
     private int activeStepIndex = 0;
-
-    // Institution fields
-    private string institutionName = "";
-    private string institutionDescription = "";
-    private string institutionCity = "";
-    private string institutionState = "";
-    private string institutionCountry = "";
-    private string institutionUrl = "";
-
-    private async Task SaveEducation()
-    {
-        // First save institution if needed
-        if (!string.IsNullOrWhiteSpace(institutionName))
-        {
-            // Create institution object and save
-            // await ViewModel.SaveInstitution(...);
-        }
-
-        // Then save education
-        await ViewModel.Add.Execute().GetAwaiter();
-    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
