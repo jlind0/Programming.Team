@@ -55,16 +55,27 @@
 }*@
 
 @inherits ReactiveComponentBase<AddEducationViewModel>
+<style>
+.custom-dim {
+    z-index: 10000 !important; /* under autocomplete and popover */
+    position: fixed;
 
+}
+.popover-z {
+        z-index: 99999999 !important; /* above overlay, below autocomplete dropdown */
+        position:fixed !important;   
+}
+</style>
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
 
-    <MudOverlay ZIndex="5" Visible="@ViewModel.IsOpen"
+
+    <MudOverlay Visible="@ViewModel.IsOpen" Class="custom-dim"
                 Style="background-color: rgba(0,0,0,.4); padding: 20px"
                 AutoClose="false" />
 
-    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4">
+    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4 popover-z" Style="min-width:400px;">
         <div class="d-flex flex-column">
             <div class="d-flex justify-end">
                 <MudIconButton Icon="@Icons.Material.Filled.Close"
@@ -75,43 +86,20 @@
 
             <MudStepper @bind-ActiveStep="activeStepIndex">
                 <!-- Step 1: Institution Details -->
-                <MudStep Title="Institution">
+                <MudStep Title="Institution" HasError="step1Error">
                     <MudStack Spacing="3">
-                        <MudTextField T="string"
-                                      Label="Name"
-                                      @bind-Value="institutionName"
-                                      Variant="Variant.Outlined" />
-
-                        <MudTextField T="string"
-                                      Label="Description"
-                                      @bind-Value="institutionDescription"
-                                      Variant="Variant.Outlined" />
-
-                        <MudTextField T="string"
-                                      Label="City"
-                                      @bind-Value="institutionCity"
-                                      Variant="Variant.Outlined" />
-
-                        <MudTextField T="string"
-                                      Label="State/Province"
-                                      @bind-Value="institutionState"
-                                      Variant="Variant.Outlined" />
-
-                        <MudTextField T="string"
-                                      Label="Country"
-                                      @bind-Value="institutionCountry"
-                                      Variant="Variant.Outlined" />
-
-                        <MudTextField T="string"
-                                      Label="Website URL"
-                                      @bind-Value="institutionUrl"
-                                      Variant="Variant.Outlined" />
+                        <SearchSelectEntityView TAddView="AddInstitutionView"
+                                                TEntity="Institution" TKey="Guid" TAddViewModel="AddInstitutionViewModel"
+                                                TSearchSelectViewModel="SearchSelectInstiutionViewModel"
+                                                ViewModel="ViewModel.SelectInstiutionViewModel" />
                     </MudStack>
                 </MudStep>
 
                 <!-- Step 2: Education Details -->
-                <MudStep Title="Education">
+                <MudStep Title="Education" Disabled="step1Error">
                     <MudStack Spacing="3">
+                        <MudText>Selected Institution: @ViewModel.SelectInstiutionViewModel.Selected?.Name</MudText>
+
                         <MudTextField T="string"
                                       Label="Major"
                                       @bind-Value="ViewModel.Major"
@@ -142,7 +130,7 @@
                 </MudStep>
             </MudStepper>
 
-   
+
         </div>
     </MudPopover>
 }
@@ -150,27 +138,36 @@
 @code {
     private int activeStepIndex = 0;
 
-    // Institution fields
-    private string institutionName = "";
-    private string institutionDescription = "";
-    private string institutionCity = "";
-    private string institutionState = "";
-    private string institutionCountry = "";
-    private string institutionUrl = "";
-
-    private async Task SaveEducation()
+    private bool step1Error = true;
+    private readonly CompositeDisposable Disposables = new CompositeDisposable();
+    protected override void OnInitialized()
     {
-        // First save institution if needed
-        if (!string.IsNullOrWhiteSpace(institutionName))
+        if (ViewModel != null)
         {
-            // Create institution object and save
-            // await ViewModel.SaveInstitution(...);
+            ViewModel.SelectInstiutionViewModel.WhenPropertyChanged(p => p.Selected).Subscribe(p =>
+            {
+                if (p.Sender.Selected != null)
+                {
+                    step1Error = false;
+                }
+                else
+                {
+                    step1Error = true;
+                    activeStepIndex = 0; // Reset to first step
+                }
+                StateHasChanged();
+            }).DisposeWith(Disposables);
         }
-
-        // Then save education
-        await ViewModel.Add.Execute().GetAwaiter();
+        base.OnInitialized();
     }
-
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            Disposables.Dispose();
+        }
+        base.Dispose(disposing);
+    }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && ViewModel != null)

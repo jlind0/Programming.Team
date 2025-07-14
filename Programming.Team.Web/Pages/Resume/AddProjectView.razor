@@ -65,15 +65,27 @@
 }*@
 @inherits ReactiveComponentBase<AddProjectViewModel>
 
+<style>
+    .custom-dim {
+        z-index: 10000 !important; /* under autocomplete and popover */
+        position: fixed;
+    }
+
+    .popover-z {
+        z-index: 99999999 !important; /* above overlay, below autocomplete dropdown */
+        position: fixed !important;
+    }
+</style>
+
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
 
-    <MudOverlay ZIndex="5" Visible="@ViewModel.IsOpen"
+    <MudOverlay Visible="@ViewModel.IsOpen" Class="custom-dim"
                 Style="background-color: rgba(0,0,0,.4); padding: 20px"
                 AutoClose="false" />
 
-    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4">
+    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4 popover-z" Style="min-width:400px;">
         <div class="d-flex flex-column">
             <div class="d-flex justify-end">
                 <MudIconButton Icon="@Icons.Material.Filled.Close"
@@ -82,11 +94,11 @@
                                Class="ml-auto" />
             </div>
 
-            <MudStepper @bind-ActiveStep="activeStepIndex">
+            <MudStepper ActiveStepIndex="@activeStepIndex">
                 <!-- Step 1: Company Details -->
-                <MudStep Title="Company">
+                <MudStep Title="Company" HasError="step1Error">
                     <MudStack Spacing="3">
-                        <MudTextField T="string"
+                   @*     <MudTextField T="string"
                                       Label="Company Name"
                                       @bind-Value="companyName"
                                       Variant="Variant.Outlined" />
@@ -114,12 +126,16 @@
                         <MudTextField T="string"
                                       Label="Website URL"
                                       @bind-Value="companyUrl"
-                                      Variant="Variant.Outlined" />
+                                      Variant="Variant.Outlined" />*@
+                        <SearchSelectEntityView TAddView="AddPositionView"
+                                                TEntity="Programming.Team.Core.Position" TKey="Guid" TAddViewModel="AddPositionViewModel"
+                                                TSearchSelectViewModel="SearchSelectPositionViewModel"
+                                                ViewModel="ViewModel.PositionSelector" />
                     </MudStack>
                 </MudStep>
 
                 <!-- Step 2: Position Details -->
-                <MudStep Title="Position">
+             @*   <MudStep Title="Position">
                     <MudStack Spacing="3">
                         <MudTextField T="string"
                                       Label="Position Title"
@@ -147,10 +163,10 @@
                                       @bind-Value="positionSortOrder"
                                       Variant="Variant.Outlined" />
                     </MudStack>
-                </MudStep>
+                </MudStep>*@
 
-                <!-- Step 3: Project Details -->
-                <MudStep Title="Project">
+                <!-- Step 2: Project Details -->
+                <MudStep Title="Project" Disabled="step1Error">
                     <MudStack Spacing="3">
                         <MudTextField T="string"
                                       Label="Project Name"
@@ -192,7 +208,14 @@
 }
 
 @code {
+    private bool step1Error = true;
+    private readonly CompositeDisposable Disposables = new CompositeDisposable();
+
+    // Stepper control
     private int activeStepIndex = 0;
+
+    private void NextStep() => activeStepIndex++;
+    private void PreviousStep() => activeStepIndex--;
 
     // Company fields
     private string companyName = "";
@@ -253,6 +276,34 @@
             await ViewModel.Init.Execute().GetAwaiter();
         }
         await base.OnAfterRenderAsync(firstRender);
+    }
+    protected override void OnInitialized()
+    {
+        if (ViewModel != null)
+        {
+            ViewModel.PositionSelector.WhenPropertyChanged(p => p.Selected).Subscribe(p =>
+            {
+                if (p.Sender.Selected != null)
+                {
+                    step1Error = false;
+                }
+                else
+                {
+                    step1Error = true;
+                    activeStepIndex = 0; // Reset to first step
+                }
+                StateHasChanged();
+            }).DisposeWith(Disposables);
+        }
+        base.OnInitialized();
+    }
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            Disposables.Dispose();
+        }
+        base.Dispose(disposing);
     }
 }
 

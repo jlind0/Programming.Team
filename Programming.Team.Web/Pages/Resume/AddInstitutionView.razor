@@ -2,7 +2,7 @@
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
-    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4">
+    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4 dynamic-component-wrapper">
         <div class="d-flex flex-column">
             <MudStack>
                 <MudTextField @bind-Value="ViewModel.Name" Label="Name" Variant="Variant.Outlined" />
@@ -24,6 +24,9 @@
         </div>
     </MudPopover>
 }
+<style>
+
+</style>
 @code {
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
