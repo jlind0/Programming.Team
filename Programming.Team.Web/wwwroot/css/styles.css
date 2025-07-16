@@ -2599,3 +2599,55 @@ include-drop-zone {
     max-height: 40vmax !important;
  
 }
+.mud-stepper-button-next, .mud-stepper-button-previous {
+    background-color: blue !important;
+    color: white !important;
+
+ 
+
+}
+.mud-stepper-button-previous {
+    margin-top:5% !important;
+    margin-left:20% !important;
+}
+.mud-stepper-button-next {
+    margin-top:5% !important;
+    margin-right: 25% !important;
+}
+
+.mud-steppe1r-button-next:disabled, .mud-stepper-button-previous:disabled {
+    background-color: rgba(0,0,0,.1) !important;
+    color: white !important;
+}
+.mud-stepper-button-complete{
+    display:none !important;
+}
+.popover-z .mud-button.completeButtonPosition {
+    background-color: rgb(0,0,0) !important;
+    color: white !important;
+    position: absolute !important;
+    top: 92% !important;
+    margin-top:0.25%;
+    left: 55% !important;
+}
+
+/* Hover state */
+.popover-z .mud-button.completeButtonPosition:hover {
+    background-color: rgb(5, 190, 140) !important;
+    border-color: rgb(5, 190, 140) !important;
+}
+
+.mud-popover {
+    width: 30vmax;
+    padding: 1%;
+    position: absolute;
+    top: 40% !important;
+    left: 50% !important;
+    transform: translate(-40%, -50%) !important;
+    max-height: 90% !important;
+ 
+
+    overflow: scroll !important;
+}
+
+

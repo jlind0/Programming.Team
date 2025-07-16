@@ -188,6 +188,17 @@
                                    
                                       Label="Sort Order"
                                       Variant="Variant.Outlined" />
+
+                        <div class="step-actions">
+
+                            <div>
+
+                                <MudButton Class="completeButtonPosition"
+                                           OnClick="ViewModel.Add.BindCommand<MouseEventArgs>()">
+                                    Complete
+                                </MudButton>
+                            </div>
+                        </div>
                     </MudStack>
                 </MudStep>
             </MudStepper>

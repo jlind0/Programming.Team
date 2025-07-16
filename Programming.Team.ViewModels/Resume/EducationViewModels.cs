@@ -6,6 +6,7 @@ using Programming.Team.Core;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.Design;
 using System.Linq;
 using System.Linq.Expressions;
@@ -22,6 +23,9 @@ namespace Programming.Team.ViewModels.Resume
         }
 
         private string name = null!;
+
+        [Required(ErrorMessage = "Name is required.")]
+        [StringLength(100, ErrorMessage = "Name can't be longer than 100 characters.")]
         public string Name
         {
             get => name;

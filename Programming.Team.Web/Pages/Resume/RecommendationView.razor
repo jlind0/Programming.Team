@@ -3,20 +3,147 @@
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
-    <MudStack>
-        <MudText>Postion: @ViewModel.Position?.Company?.Name</MudText>
-        <MudTextField @bind-Value="ViewModel.Name" Label="Name" Variant="Variant.Outlined" />
-        <MudTextField @bind-Value="ViewModel.Title" Label="Title" Variant="Variant.Outlined" />
-        <MudTextField Lines="10" @bind-Value="ViewModel.Body" Label="Body" Variant="Variant.Outlined" />
-        <MudTextField @bind-Value="ViewModel.SortOrder" Label="Sort Order" Variant="Variant.Outlined" />
-        <MudStack Row="true">
-            <MudButton OnClick="ViewModel.Update.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
-                Color="Color.Primary">Update</MudButton>
-            <MudButton OnClick="ViewModel.Delete.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
-                Color="Color.Primary">Delete</MudButton>
-        </MudStack>
-    </MudStack>
+    
+    <MudPaper Class="pa-8 rounded-xl" Elevation="10" Style="
+        background: white;
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.04), 0 2px 6px rgba(0,0,0,0.04), 0 0 1px rgba(0,0,0,0.04);
+    ">
+        <!-- Header with subtle accent -->
+        <div class="mb-6 pb-2" style="border-bottom: 1px solid rgba(var(--mud-palette-primary-rgb), 0.2);">
+            <MudText Typo="Typo.h4" Class="text-primary" Style="
+                font-weight: 600;
+                letter-spacing: -0.5px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            ">
+                <MudIcon Icon="@Icons.Material.Filled.ThumbUp" Size="Size.Medium" />
+                <span>Recommendation Details</span>
+            </MudText>
+        </div>
+        
+        <MudGrid Spacing="4" Justify="Justify.Center">
+            <!-- Position -->
+            <MudItem xs="12">
+                <MudText Typo="Typo.subtitle1" Class="mb-2" Style="font-weight: 500;">
+                    <MudIcon Icon="@Icons.Material.Filled.Business" Class="mr-2" />
+                    Position: @ViewModel.Position?.Company?.Name
+                </MudText>
+            </MudItem>
+            
+            <!-- Name -->
+            <MudItem xs="12" md="6">
+                <MudTextField @bind-Value="ViewModel.Name" 
+                              Label="Recommender Name" 
+                              Variant="Variant.Outlined" 
+                              AdornmentIcon="@Icons.Material.Filled.Person"
+                              Adornment="Adornment.Start"
+                              Class="fancy-input"
+                              InputStyle="padding-left: 8px;"
+                              LabelClass="font-weight-bold">
+                </MudTextField>
+            </MudItem>
+            
+            <!-- Title -->
+            <MudItem xs="12" md="6">
+                <MudTextField @bind-Value="ViewModel.Title" 
+                              Label="Recommender Title" 
+                              Variant="Variant.Outlined" 
+                              AdornmentIcon="@Icons.Material.Filled.Work"
+                              Adornment="Adornment.Start"
+                              Class="fancy-input"
+                              InputStyle="padding-left: 8px;"
+                              LabelClass="font-weight-bold">
+                </MudTextField>
+            </MudItem>
+            
+            <!-- Sort Order -->
+            <MudItem xs="12" md="6">
+                <MudTextField @bind-Value="ViewModel.SortOrder" 
+                              Label="Sort Order" 
+                              Variant="Variant.Outlined" 
+                              AdornmentIcon="@Icons.Material.Filled.Sort"
+                              Adornment="Adornment.Start"
+                              Class="fancy-input"
+                              InputStyle="padding-left: 8px;"
+                              LabelClass="font-weight-bold">
+                </MudTextField>
+            </MudItem>
+            
+            <!-- Body -->
+            <MudItem xs="12">
+                <MudTextField Lines="5" 
+                             @bind-Value="ViewModel.Body" 
+                             Label="Recommendation Text" 
+                             Variant="Variant.Outlined"
+                             Class="fancy-input"
+                             InputStyle="padding-left: 8px;"
+                             LabelClass="font-weight-bold">
+                    <Adornment StartAdornment>
+                        <MudIcon Icon="@Icons.Material.Filled.FormatQuote" Class="mr-2" />
+                    </Adornment>
+                </MudTextField>
+            </MudItem>
+            
+            <!-- Action Buttons -->
+            <MudItem xs="12" Class="mt-6">
+                <MudStack Row="true" Justify="Justify.Center" Spacing="4">
+                    <MudButton OnClick="ViewModel.Update.BindCommand<MouseEventArgs>()" 
+                              Class="fw-bold px-6 py-3" 
+                              Variant="Variant.Filled"
+                              Color="Color.Primary"
+                              EndIcon="@Icons.Material.Filled.Save"
+                              Style="
+                                  min-width: 150px;
+                                  border-radius: 8px;
+                                  text-transform: none;
+                                  letter-spacing: 0.5px;
+                              ">
+                        Update Recommendation
+                    </MudButton>
+                    
+                    <MudButton OnClick="ViewModel.Delete.BindCommand<MouseEventArgs>()" 
+                              Class="fw-bold px-6 py-3" 
+                              Variant="Variant.Outlined"
+                              Color="Color.Error"
+                              EndIcon="@Icons.Material.Filled.Delete"
+                              Style="
+                                  min-width: 150px;
+                                  border-radius: 8px;
+                                  text-transform: none;
+                                  letter-spacing: 0.5px;
+                                  border-width: 2px;
+                              ">
+                        Delete
+                    </MudButton>
+                </MudStack>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
 }
+
+<style>
+    .fancy-input .mud-input-outlined-border {
+        border-radius: 8px;
+        border-width: 1.5px;
+        transition: border-color 0.2s ease;
+    }
+
+    .fancy-input:hover .mud-input-outlined-border {
+        border-color: var(--mud-palette-primary) !important;
+    }
+
+    .mud-input-label-outlined {
+        background: white !important;
+        padding: 0 8px !important;
+        left: 8px !important;
+    }
+
+    .mud-input-control-outlined .mud-input-slot {
+        padding-left: 8px;
+    }
+</style>
 
 @code {
 }

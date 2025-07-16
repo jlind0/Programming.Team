@@ -81,6 +81,7 @@
 
 
     <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4 popover-z" Style="min-width:400px;">
+    
         <div class="d-flex flex-column">
             <div class="d-flex justify-end">
                 <MudIconButton Icon="@Icons.Material.Filled.Close"
@@ -119,6 +120,17 @@
                                        MinDate="new DateTime(1950, 1, 1)" />
                         <MudTextField Lines="10" @bind-Value="ViewModel.Description" Label="Description"
                                       Variant="Variant.Outlined" />
+
+                        <div class="step-actions">
+
+                            <div>
+
+                                <MudButton Class="completeButtonPosition"
+                                           OnClick="ViewModel.Add.BindCommand<MouseEventArgs>()">
+                                    Complete
+                                </MudButton>
+                            </div>
+                        </div>
 
                   
                 
