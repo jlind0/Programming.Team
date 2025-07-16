@@ -55,6 +55,7 @@
 }*@
 
 @inherits ReactiveComponentBase<AddEducationViewModel>
+@using System.ComponentModel.DataAnnotations
 <style>
     .custom-dim {
         z-index: 10000 !important;
@@ -178,7 +179,9 @@
                 <!-- Step 2: Education Details -->
                 <MudStep Title="Education" Disabled="step1Error">
                     <MudStack Spacing="3">
-                        <MudText>Selected Institution: @ViewModel.SelectInstiutionViewModel.Selected?.Name</MudText>
+                        <MudText>
+                            Selected Institution: @ViewModel.SelectInstiutionViewModel.Selected?.Name
+                        </MudText>
 
                         <MudTextField T="string"
                                       Label="Major"
