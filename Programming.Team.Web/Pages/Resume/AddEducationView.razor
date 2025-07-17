@@ -1,4 +1,4 @@
-﻿@inherits ReactiveComponentBase<AddEducationViewModel>
+﻿@*@inherits ReactiveComponentBase<AddEducationViewModel>
 
 @if (ViewModel != null)
 {
@@ -44,6 +44,228 @@
 }
 
 @code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && ViewModel != null)
+        {
+            await ViewModel.Init.Execute().GetAwaiter();
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}*@
+
+@inherits ReactiveComponentBase<AddEducationViewModel>
+@using System.ComponentModel.DataAnnotations
+<style>
+    .custom-dim {
+        z-index: 10000 !important;
+        position: fixed;
+    }
+
+    .popover-z {
+        z-index: 99999999 !important;
+        position: fixed !important;
+    }
+
+        /* Stepper styling */
+        .popover-z .mud-stepper {
+            padding: 0 8px;
+        }
+
+        .popover-z .mud-step-content {
+            padding: 16px 8px;
+        }
+
+    /* Step navigation buttons */
+    .step-actions {
+        margin-top: 24px;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    /* Institution selection display */
+    .popover-z .mud-text {
+        margin-bottom: 16px;
+        font-size: 0.875rem;
+        color: var(--mud-palette-text-secondary);
+        padding: 8px 12px;
+        background-color: var(--mud-palette-action-hover);
+        border-radius: 4px;
+    }
+
+    /* Form fields styling */
+    .popover-z .mud-text-field,
+    .popover-z .mud-date-picker {
+        margin-bottom: 16px;
+    }
+
+    .popover-z .mud-input-control {
+        background-color: white;
+    }
+
+    .popover-z .mud-input-outlined-border {
+        border-radius: 8px;
+        border-width: 1.5px;
+        transition: all 0.2s ease;
+    }
+
+        .popover-z .mud-input-outlined-border:hover {
+            border-color: var(--mud-palette-primary) !important;
+        }
+
+    .popover-z .mud-input-label-outlined {
+        background: white !important;
+        padding: 0 8px !important;
+        left: 8px !important;
+        font-weight: 500;
+    }
+
+    /* Checkbox styling */
+    .popover-z .mud-checkbox {
+        margin: 8px 0 16px 0;
+    }
+
+
+
+    /* Close button styling */
+    .popover-z .mud-icon-button {
+        transition: transform 0.2s ease;
+    }
+
+        .popover-z .mud-icon-button:hover {
+            transform: rotate(90deg);
+            background-color: rgba(0,0,0,0.05);
+        }
+
+    /* Responsive adjustments */
+    @@media (max-width: 600px) {
+        .popover-z {
+            width: 95vw !important;
+            max-width: 95vw !important;
+            left: 2.5vw !important;
+        }
+    }
+</style>
+@if (ViewModel != null)
+{
+    <AlertView Alert="ViewModel.Alert" />
+
+    <MudOverlay Visible="@ViewModel.IsOpen" Class="custom-dim"
+                Style="background-color: rgba(0,0,0,.4); padding: 20px"
+                AutoClose="false" />
+
+    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4 popover-z" Style="min-width:400px;">
+        <div class="d-flex flex-column">
+            <div class="d-flex justify-end">
+                <MudIconButton Icon="@Icons.Material.Filled.Close"
+                               OnClick="() => ViewModel.IsOpen = false"
+                               Color="Color.Default"
+                               Class="ml-auto" />
+            </div>
+
+            <MudStepper @bind-ActiveStep="activeStepIndex">
+                <!-- Step 1: Institution Details -->
+                <MudStep Title="Institution" HasError="step1Error">
+                    <MudStack Spacing="3">
+                        <SearchSelectEntityView TAddView="AddInstitutionView"
+                                                TEntity="Institution" TKey="Guid" TAddViewModel="AddInstitutionViewModel"
+                                                TSearchSelectViewModel="SearchSelectInstiutionViewModel"
+                                                ViewModel="ViewModel.SelectInstiutionViewModel" />
+                      
+                    </MudStack>
+                </MudStep>
+
+                <!-- Step 2: Education Details -->
+                <MudStep Title="Education" Disabled="step1Error">
+                    <MudStack Spacing="3">
+                        <MudText>
+                            Selected Institution: @ViewModel.SelectInstiutionViewModel.Selected?.Name
+                        </MudText>
+
+                        <MudTextField T="string"
+                                      Label="Major"
+                                      @bind-Value="ViewModel.Major"
+                                      Variant="Variant.Outlined" />
+
+                        <MudCheckBox T="bool"
+                                     Label="Graduated?"
+                                     @bind-Value="ViewModel.Graduated" />
+
+                        <MudDatePicker T="DateTime?"
+                                       Label="Start Date"
+                                       @bind-Date="ViewModel.StartDateTime"
+                                       MinDate="new DateTime(1950, 1, 1)"
+                                       Variant="Variant.Outlined" />
+
+                        <MudDatePicker T="DateTime?"
+                                       Label="End Date"
+                                       @bind-Date="ViewModel.EndDateTime"
+                                       MinDate="new DateTime(1950, 1, 1)"
+                                       Variant="Variant.Outlined" />
+
+                        <MudTextField T="string"
+                                      Lines="5"
+                                      Label="Description"
+                                      @bind-Value="ViewModel.Description"
+                                      Variant="Variant.Outlined" />
+
+                        <div class="step-actions">
+                     
+                            <div>
+                           
+                                <MudButton 
+                                           Class="completeButtonPosition"
+                                           OnClick="ViewModel.Add.BindCommand<MouseEventArgs>()">
+                                    Complete
+                                </MudButton>
+                            </div>
+                        </div>
+                    </MudStack>
+                </MudStep>
+            </MudStepper>
+        </div>
+    </MudPopover>
+}
+
+@code {
+    private int activeStepIndex = 0;
+    private bool step1Error = true;
+    private readonly CompositeDisposable Disposables = new CompositeDisposable();
+
+    protected override void OnInitialized()
+    {
+        if (ViewModel != null)
+        {
+            ViewModel.SelectInstiutionViewModel.WhenPropertyChanged(p => p.Selected).Subscribe(p =>
+            {
+                if (p.Sender.Selected != null)
+                {
+                    step1Error = false;
+                }
+                else
+                {
+                    step1Error = true;
+                    activeStepIndex = 0; // Reset to first step
+                }
+                StateHasChanged();
+            }).DisposeWith(Disposables);
+
+            // Close the dialog when Add command completes
+            ViewModel.Add.Subscribe(_ => ViewModel.IsOpen = false).DisposeWith(Disposables);
+        }
+        base.OnInitialized();
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            Disposables.Dispose();
+        }
+        base.Dispose(disposing);
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && ViewModel != null)

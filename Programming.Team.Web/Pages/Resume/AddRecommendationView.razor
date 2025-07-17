@@ -1,46 +1,172 @@
 ﻿@inherits ReactiveComponentBase<AddRecommendationViewModel>
 
+<style>
+    .custom-dim {
+        z-index: 10000 !important; /* under autocomplete and popover */
+        position: fixed;
+    }
+
+    .popover-z {
+        z-index: 99999999 !important; /* above overlay, below autocomplete dropdown */
+        position: fixed !important;
+    }
+</style>
+
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
-
-    <MudOverlay ZIndex="5" Visible="@ViewModel.IsOpen"
-                Style="background-color: rgba(255,255,255,.3); padding: 20px"
+    <MudOverlay Visible="@ViewModel.IsOpen" Class="custom-dim"
+                Style="background-color: rgba(0,0,0,.4); padding: 20px"
                 AutoClose="false" />
-                    
-    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4">
+
+    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4 popover-z" Style="min-width:400px;">
         <div class="d-flex flex-column">
             <div class="d-flex justify-end">
                 <MudIconButton Icon="@Icons.Material.Filled.Close"
-                               OnClick="() => ViewModel.IsOpen = false"
+                               OnClick="ClosePopup"
                                Color="Color.Default"
                                Class="ml-auto" />
             </div>
-            <MudStack>
-                <SearchSelectEntityView TAddView="AddPositionView"
-                                        TEntity="Core.Position" TKey="Guid" TAddViewModel="AddPositionViewModel"
-                                        TSearchSelectViewModel="SearchSelectPositionViewModel"
-                                        ViewModel="ViewModel.SelectPosition" />
-                <MudTextField @bind-Value="ViewModel.Name" Label="Name" Variant="Variant.Outlined" />
-                <MudTextField @bind-Value="ViewModel.Title" Label="Title" Variant="Variant.Outlined" />
-                <MudTextField Lines="10" @bind-Value="ViewModel.Body" Label="Body" Variant="Variant.Outlined" />
-                <MudTextField @bind-Value="ViewModel.SortOrder" Label="Sort Order" Variant="Variant.Outlined" />
-                <MudStack Row="true">
-                    <MudButton OnClick="ViewModel.Add.BindCommand<MouseEventArgs>()" Class="fw-bold"
-                        Variant="Variant.Filled" Color="Color.Primary">
-                            Add Recommendation</MudButton>
-                    <MudButton OnClick="ViewModel.Cancel.BindCommand<MouseEventArgs>()" Class="fw-bold"
-                        Variant="Variant.Filled" Color="Color.Primary">
-                        Cancel</MudButton>
-                </MudStack>
-            </MudStack>
+
+            <MudStepper ActiveStepIndex="@activeStepIndex">
+                <!-- Step 1: Basic Information -->
+                <MudStep Title="Basic Information" HasError="step1Error">
+                    <MudStack Spacing="3">
+                 @*       <MudTextField T="string"
+                                      Label="Position"
+                                      @oninput="e => position = e.Value.ToString()"
+                                      Variant="Variant.Outlined" />
+
+                        <MudTextField T="string"
+                                      Label="Name"
+                                      @oninput="e => name = e.Value.ToString()"
+                                      Variant="Variant.Outlined" />
+
+                        <MudTextField T="string"
+                                      Label="Title"
+                                      @oninput="e => title = e.Value.ToString()"
+                                      Variant="Variant.Outlined" />
+
+                        <MudTextField T="string"
+                                      Lines="5"
+                                      Label="Body"
+                                      @oninput="e => body = e.Value.ToString()"
+                                      Variant="Variant.Outlined" />
+
+                        <MudNumericField T="int?"
+                                         Label="Sort Order"
+                                         @bind-Value="sortOrder"
+                                         Variant="Variant.Outlined" />*@
+                        <SearchSelectEntityView TAddView="AddPositionView"
+                                                TEntity="Core.Position" TKey="Guid" TAddViewModel="AddPositionViewModel"
+                                                TSearchSelectViewModel="SearchSelectPositionViewModel"
+                                                ViewModel="ViewModel.SelectPosition" />
+                    </MudStack>
+                </MudStep>
+
+                <!-- Step 2: Company Details -->
+                <MudStep Title="Company Details" Disabled="step1Error">
+                    <MudStack Spacing="3">
+                        <MudTextField T="string"
+                                      Label="Company"
+                                      @oninput="e => company = e.Value.ToString()"
+                                      Variant="Variant.Outlined" />
+
+                        <MudTextField T="string"
+                                      Label="Job Title"
+                                      @oninput="e => jobTitle = e.Value.ToString()"
+                                      Variant="Variant.Outlined" />
+
+                        <MudDatePicker T="DateTime?"
+                                       Label="Start Date"
+                                       @bind-Date="startDate"
+                                       Variant="Variant.Outlined" />
+
+                        <MudDatePicker T="DateTime?"
+                                       Label="End Date"
+                                       @bind-Date="endDate"
+                                       Variant="Variant.Outlined" />
+
+                        <MudNumericField T="int?"
+                                         Label="Sort Order"
+                                         @bind-Value="companySortOrder"
+                                         Variant="Variant.Outlined" />
+
+                        <div class="step-actions">
+
+                            <div>
+
+                                <MudButton Class="completeButtonPosition"
+                                           OnClick="ViewModel.Add.BindCommand<MouseEventArgs>()">
+                                    Complete
+                                </MudButton>
+                            </div>
+                        </div>
+
+
+
+                    </MudStack>
+                </MudStep>
+            </MudStepper>
+
 
         </div>
     </MudPopover>
-
 }
 
 @code {
+    // Form fields
+    private string position = "";
+    private string name = "";
+    private string title = "";
+    private string body = "";
+    private int? sortOrder = 0;
+    private string company = "";
+    private string jobTitle = "";
+    private DateTime? startDate = DateTime.Today;
+    private DateTime? endDate = DateTime.Today;
+    private int? companySortOrder = 0;
+
+    private bool step1Error = true;
+        private readonly CompositeDisposable Disposables = new CompositeDisposable();
+
+    // Stepper control
+    private int activeStepIndex = 0;
+
+    private void NextStep() => activeStepIndex++;
+    private void PreviousStep() => activeStepIndex--;
+
+    private void ClosePopup()
+    {
+        if (ViewModel != null)
+        {
+            ViewModel.IsOpen = false;
+        }
+    }
+
+    private async Task SaveData()
+    {
+        // Create your data object here
+        var recommendationData = new
+        {
+            Position = position,
+            Name = name,
+            Title = title,
+            Body = body,
+            SortOrder = sortOrder,
+            Company = company,
+            JobTitle = jobTitle,
+            StartDate = startDate,
+            EndDate = endDate,
+            CompanySortOrder = companySortOrder
+        };
+
+        // Call your save logic here
+        // await ViewModel.SaveCommand.ExecuteAsync(recommendationData);
+
+        ClosePopup();
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && ViewModel != null)
@@ -48,5 +174,33 @@
             await ViewModel.Init.Execute().GetAwaiter();
         }
         await base.OnAfterRenderAsync(firstRender);
+    }
+    protected override void OnInitialized()
+    {
+        if (ViewModel != null)
+        {
+            ViewModel.SelectPosition.WhenPropertyChanged(p => p.Selected).Subscribe(p =>
+            {
+                if (p.Sender.Selected != null)
+                {
+                    step1Error = false;
+                }
+                else
+                {
+                    step1Error = true;
+                    activeStepIndex = 0; // Reset to first step
+                }
+                StateHasChanged();
+            }).DisposeWith(Disposables);
+        }
+        base.OnInitialized();
+    }
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            Disposables.Dispose();
+        }
+        base.Dispose(disposing);
     }
 }

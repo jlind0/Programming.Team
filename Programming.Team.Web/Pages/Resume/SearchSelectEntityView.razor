@@ -5,18 +5,79 @@
 @typeparam TAddView where TAddView : ReactiveComponentBase<TAddViewModel>
 @inherits ReactiveComponentBase<TSearchSelectViewModel>
 
+<style>
+    .autocomplete-left + .mud-popover {
+        left: auto !important;
+        right: 100% !important;
+        transform: translateX(-8px); /* Optional: tweak alignment */
+    }
+
+    .add-entity-popup .mud-popover {
+        /* Popup container styles */
+        min-width: 500px;
+        padding: 20px;
+    }
+
+    .add-entity-popup .mud-dialog-title {
+        /* Title styles */
+        font-size: 1.5rem;
+        color: var(--mud-palette-primary);
+    }
+
+    .add-entity-popup .mud-dialog-actions {
+        /* Button container styles */
+        justify-content: space-between;
+        padding: 16px;
+    }
+
+
+</style>
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
     <MudStack>
-        <MudAutocomplete T="TEntity" CoerceText="false" Label="@typeof(TEntity).Name" ToStringFunc="c => c?.Name"
+        @if(!ViewModel.AddViewModel.IsOpen)
+        {
+          
+            <MudAutocomplete Class="autocomplete-left" Modal="false" T="TEntity" CoerceText="false" Label="@typeof(TEntity).Name" ToStringFunc="c => c?.Name"
                          @bind-Value="ViewModel.Selected" DebounceInterval="250" SearchFunc="ViewModel.Search.BindCommand()" />
+        }
         @if (ViewModel.CanAdd)
         {
-            <MudButton OnClick="ViewModel.StartAdd.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
-                       Color="Color.Primary">Add @typeof(TEntity).Name</MudButton>
-            <DynamicComponent Type="typeof(TAddView)" Parameters="@(new Dictionary<string, object> { { "ViewModel", ViewModel.AddViewModel } })" />
+            if (!ViewModel.AddViewModel.IsOpen)
+            {
+                <MudButton OnClick="ViewModel.StartAdd.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
+                           Color="Color.Primary">Add @typeof(TEntity).Name</MudButton>
+            }
+           <DynamicComponent Type="typeof(TAddView)" Parameters="@(new Dictionary<string, object> { { "ViewModel", ViewModel.AddViewModel },  })" />
+   
+
+       
+       
+  
         }
     </MudStack>
-
 }
+
+@code{
+    private readonly CompositeDisposable disposables = new CompositeDisposable();
+    protected override void OnInitialized()
+    {
+        if(ViewModel != null)
+        {
+            ViewModel.AddViewModel.WhenPropertyChanged(p => p.IsOpen).Subscribe(p =>
+            {
+                StateHasChanged();
+            }).DisposeWith(disposables);
+        }
+        base.OnInitialized();
+    }
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            disposables.Dispose();
+        }
+        base.Dispose(disposing);
+    }
+   }

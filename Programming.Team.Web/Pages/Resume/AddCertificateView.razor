@@ -1,4 +1,4 @@
-﻿@inherits ReactiveComponentBase<AddCertificateViewModel>
+﻿@*@inherits ReactiveComponentBase<AddCertificateViewModel>
 
 @if (ViewModel != null)
 {
@@ -46,6 +46,134 @@
 }
 
 @code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && ViewModel != null)
+        {
+            await ViewModel.Init.Execute().GetAwaiter();
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}
+*@
+
+@inherits ReactiveComponentBase<AddCertificateViewModel>
+
+<style>
+    .custom-dim {
+        z-index: 10000 !important; /* under autocomplete and popover */
+        position: fixed;
+    }
+
+    .popover-z {
+        z-index: 99999999 !important; /* above overlay, below autocomplete dropdown */
+        position: fixed !important;
+    }
+</style>
+
+@if (ViewModel != null)
+{
+    <AlertView Alert="ViewModel.Alert" />
+
+    <MudOverlay Visible="@ViewModel.IsOpen" Class="custom-dim"
+                Style="background-color: rgba(0,0,0,.4); padding: 20px"
+                AutoClose="false" />
+
+
+    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4 popover-z" Style="min-width:400px;">
+    
+        <div class="d-flex flex-column">
+            <div class="d-flex justify-end">
+                <MudIconButton Icon="@Icons.Material.Filled.Close"
+                               OnClick="() => ViewModel.IsOpen = false"
+                               Color="Color.Default"
+                               Class="ml-auto" />
+            </div>
+
+            <MudStepper @bind-ActiveStep="activeStepIndex">
+                <!-- Step 1: Certificate Issuer Details -->
+                <MudStep Title="Issuer Details" HasError="step1Error">
+                    <MudStack>
+                    @*    <MudTextField @bind-Value="searchText"
+                                      @bind-Value:event="oninput"
+                                      Label="Search"
+                                      Immediate="true" />
+                        <MudTextField @bind-Value="ViewModel.Name" Label="Name" Variant="Variant.Outlined" />
+                        <MudTextField @bind-Value="ViewModel.Description" Label="Description" Variant="Variant.Outlined" />
+                        <MudTextField @bind-Value="ViewModel.Url" Label="URL" Variant="Variant.Outlined" />
+                        *@
+                        <SearchSelectEntityView TAddView="AddCertificateIssuerView"
+                                                TEntity="CertificateIssuer" TKey="Guid" TAddViewModel="AddCertificateIssuerViewModel"
+                                                TSearchSelectViewModel="SearchSelectCertificateIssuerViewModel" ViewModel="ViewModel.CertificateIssuer" />
+                    
+                    </MudStack>
+                </MudStep>
+
+                <!-- Step 2: Certificate Details -->
+                <MudStep Title="Certificate Details" Disabled="step1Error">
+                    <MudStack>
+                        <MudTextField @bind-Value="ViewModel.Name" Label="Name" Variant="Variant.Outlined" />
+                        <MudTextField @bind-Value="ViewModel.Url" Label="URL" Variant="Variant.Outlined" />
+                        <MudDatePicker @bind-Date="ViewModel.ValidFromDateTime" Label="Valid From Date"
+                                       MinDate="new DateTime(1950, 1, 1)" />
+                        <MudDatePicker @bind-Date="ViewModel.ValidToDateTime" Label="Valid To Date"
+                                       MinDate="new DateTime(1950, 1, 1)" />
+                        <MudTextField Lines="10" @bind-Value="ViewModel.Description" Label="Description"
+                                      Variant="Variant.Outlined" />
+
+                        <div class="step-actions">
+
+                            <div>
+
+                                <MudButton Class="completeButtonPosition"
+                                           OnClick="ViewModel.Add.BindCommand<MouseEventArgs>()">
+                                    Complete
+                                </MudButton>
+                            </div>
+                        </div>
+
+                  
+                
+                    </MudStack>
+                </MudStep>
+            </MudStepper>
+        </div>
+    </MudPopover>
+}
+
+@code {
+    private int activeStepIndex = 0;
+
+    private bool step1Error = true;
+    private readonly CompositeDisposable Disposables = new CompositeDisposable();
+    protected override void OnInitialized()
+    {
+        if (ViewModel != null)
+        {
+            ViewModel.CertificateIssuer.WhenPropertyChanged(p => p.Selected).Subscribe(p =>
+            {
+                if (p.Sender.Selected != null)
+                {
+                    step1Error = false;
+                }
+                else
+                {
+                    step1Error = true;
+                    activeStepIndex = 0; // Reset to first step
+                }
+                StateHasChanged();
+            }).DisposeWith(Disposables);
+        }
+        base.OnInitialized();
+    }
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            Disposables.Dispose();
+        }
+        base.Dispose(disposing);
+    }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && ViewModel != null)
