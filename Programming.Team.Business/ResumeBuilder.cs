@@ -83,7 +83,7 @@ namespace Programming.Team.Business
                     var certs = await CertificateFacade.Get(work: uow, properites: GetCertificateProperties(), orderBy: q => q.OrderByDescending(e => e.ValidToDate ?? DateOnly.MaxValue).ThenByDescending(e => e.ValidFromDate),
                         filter: q => q.UserId == userId, token: token);
                     resume.Certificates.AddRange(certs.Entities);
-                    resume.Recommendations = resume.Positions.SelectMany(e => e.Recommendations).OrderBy(c => c.SortOrder).ThenBy(c => c.Name).ToList();
+                    resume.Recommendations = resume.Positions.SelectMany(e => e.Recommendations.Where(r => r.UserId == resume.User.Id)).OrderBy(c => c.SortOrder).ThenBy(c => c.Name).ToList();
                     
                     foreach(var position in resume.Positions)
                     {
