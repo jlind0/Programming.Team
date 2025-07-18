@@ -81,11 +81,12 @@
 {
     <AlertView Alert="ViewModel.Alert" />
 
-    <MudOverlay Visible="@ViewModel.IsOpen" Class="custom-dim"
-                Style="background-color: rgba(0,0,0,.4); padding: 20px"
-                AutoClose="false" />
-
-    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4 popover-z" Style="min-width:400px;">
+      <MudDialog @bind-Visible="ViewModel.IsOpen" 
+           MaxWidth="MaxWidth.Medium" 
+           FullWidth="true" 
+           Class="px-4 pt-4 popover-z"
+           Style="min-width:400px;">
+    <DialogContent>
         <div class="d-flex flex-column">
             <div class="d-flex justify-end">
                 <MudIconButton Icon="@Icons.Material.Filled.Close"
@@ -216,7 +217,10 @@
 
    
         </div>
-    </MudPopover>
+        </DialogContent>
+        @*</MudPopover> *@
+    </MudDialog>
+
 }
 
 @code {

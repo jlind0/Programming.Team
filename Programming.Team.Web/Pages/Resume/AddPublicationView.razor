@@ -1,9 +1,21 @@
 ﻿@inherits ReactiveComponentBase<AddPublicationViewModel>
+
+
+
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
        
-        <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4" >
+         
+
+    <MudDialog @bind-Visible="ViewModel.IsOpen" 
+           MaxWidth="MaxWidth.Medium" 
+           FullWidth="true" 
+           Class="px-4 pt-4 popover-z"
+           Style="min-width:400px;">
+    <DialogContent>
+
+    @*<MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4 popover-z" Style="min-width:400px;">*@
         <div class="d-flex flex-column">
             <div class="d-flex justify-end">
                 <MudIconButton Icon="@Icons.Material.Filled.Close"
@@ -18,7 +30,7 @@
                 <MudTextField @bind-Value="ViewModel.Url" Label="URL" Variant="Variant.Outlined" />
                 <MudDatePicker @bind-Date="ViewModel.PublishDateTime" Label="Publish Date"
                                 MinDate="new DateTime(1950, 1, 1)" />
-                <MudStack Row="true">
+               <MudStack Row="true">
                     <MudButton OnClick="ViewModel.Add.BindCommand<MouseEventArgs>()" Class="fw-bold"
                                 Variant="Variant.Filled" Color="Color.Primary">
                         Add Publication
@@ -30,12 +42,15 @@
                 </MudStack>
             </MudStack>
         </div>
-    </MudPopover>
-    <MudOverlay Visible="ViewModel.IsOpen" DarkBackground="true" AutoClose="false">
-    </MudOverlay>
+    </DialogContent>
+    @*</MudPopover> *@
+</MudDialog>
+
 }
 
 @code {
+
+    public DateTime? SelectedDate { get; set; } = DateTime.Now;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && ViewModel != null)
