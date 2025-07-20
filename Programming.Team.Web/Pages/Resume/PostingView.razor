@@ -67,8 +67,17 @@
             <MudButton OnClick="ViewModel.Render.BindCommand<MouseEventArgs>()">Render Resume</MudButton>
             <MudButton OnClick="ViewModel.GenerateCoverLetter.BindCommand<MouseEventArgs>()">Generate Cover Letter</MudButton>
             <MudButton OnClick="ViewModel.RenderCoverLetter.BindCommand<MouseEventArgs>()">Render Cover Letter</MudButton>
+            @if(ViewModel.CanGenerateInterviewQuestions)
+            {
+                <MudButton OnClick="ViewModel.GenerateInterviewQuestions.BindCommand<MouseEventArgs>()">Generate Interview Questions</MudButton>
+            }
             <MudButton OnClick="ViewModel.Delete.BindCommand<MouseEventArgs>()">Delete</MudButton>
         </MudStack>
+        @if(!string.IsNullOrWhiteSpace(ViewModel.InterviewQuestions))
+        {
+            <Markdown>@ViewModel.InterviewQuestions</Markdown>
+        }
+    )
     </MudStack>
     <MudOverlay @bind-Visible="ViewModel.IsOverlayOpen" DarkBackground="true" AutoClose="false">
         <MudProgressCircular Color="Color.Secondary" Size="Size.Large" Indeterminate="true"/>

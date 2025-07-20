@@ -111,6 +111,16 @@ namespace Programming.Team.AI
             };
             return await CallTool<string?>(msg => msg?.Text, "researchCompany", args, token);
         }
+        public async Task<string?> GenerateInterviewQuestions(string jd, string resume, int maxTokens = 2048, CancellationToken token = default)
+        {
+            var args = new Dictionary<string, object?>
+            {
+                ["jd"] = jd,
+                ["resume"] = resume,
+                ["maxTokens"] = maxTokens
+            };
+            return await CallTool<string?>(msg => msg?.Text, "generateInterviewQuestions", args, token);
+        }
         protected async Task<T> CallTool<T>(Func<Content?, T> readValue, string toolName, IReadOnlyDictionary<string, object?> args, CancellationToken token)
         {
             bool isFirstAttempt = true;
