@@ -40,6 +40,21 @@ namespace Programming.Team.Web.Controllers
                 return BadRequest(ex);
             }
         }
+        [HttpGet("{postingId}.tex")]
+        public async Task<IActionResult> GetLaTeX(Guid postingId, CancellationToken token = default)
+        {
+            try
+            {
+                var posting = await Facade.GetByID(postingId, token: token);
+                if (posting?.RenderedLaTex == null)
+                    return BadRequest();
+                return Content(posting.RenderedLaTex, "application/x-tex", System.Text.Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
     }
     [Route("api/[controller]")]
     [ApiController]
@@ -47,14 +62,31 @@ namespace Programming.Team.Web.Controllers
     public class CoverLettersController : ControllerBase
     {
         protected IResumeBlob ResumeBlob { get; }
-        public CoverLettersController(IResumeBlob resumeBlob)
+        protected IBusinessRepositoryFacade<Posting, Guid> Facade { get; }
+        public CoverLettersController(IResumeBlob resumeBlob, IBusinessRepositoryFacade<Posting, Guid> facade)
         {
             ResumeBlob = resumeBlob;
+            Facade = facade;
         }
         [HttpGet("{postingId}")]
         public async Task<IResult> GetThumbnail(Guid postingId, CancellationToken token = default)
         {
             return RS.Bytes(await ResumeBlob.GetCoverLetter(postingId, token) ?? throw new InvalidDataException(), "application/pdf");
+        }
+        [HttpGet("{postingId}.tex")]
+        public async Task<IActionResult> GetLaTeX(Guid postingId, CancellationToken token = default)
+        {
+            try
+            {
+                var posting = await Facade.GetByID(postingId, token: token);
+                if (posting?.CoverLetterLaTeX == null)
+                    return BadRequest();
+                return Content(posting.CoverLetterLaTeX, "application/x-tex", System.Text.Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
         }
     }
 }
