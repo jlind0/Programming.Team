@@ -9,12 +9,17 @@
     <MudStack Row="true" Wrap="Wrap.Wrap">
         @foreach (var e in ViewModel.Entities)
         {
+         
             <ProjectSkillView ViewModel="e" />
+     
         }
     </MudStack>
     <SuggestAddSkillsForProjectView ViewModel="ViewModel.SuggestAddSkillsVM" />
-    <MudButton OnClick="ViewModel.ExtractSkills.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
-               Color="Color.Primary">Extract Skills</MudButton>
+    <div class="hover-wrapper">
+        <MudButton OnClick="ViewModel.ExtractSkills.BindCommand<MouseEventArgs>()" Class="fw-bold hover-button" Variant="Variant.Filled"
+                   Color="Color.Primary">Extract Skills</MudButton>
+        <span class="hover-tooltip">Extract skills is for extracting additional skills using AI.</span>
+    </div>
     @if (ViewModel.RawSkills.Count > 0)
     {
         <MudStack Row="true" Wrap="Wrap.Wrap">
