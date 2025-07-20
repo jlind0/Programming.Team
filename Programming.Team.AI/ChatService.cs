@@ -93,7 +93,15 @@ namespace Programming.Team.AI
             };
             return await CallTool<string?>(msg => msg?.Text, "extractCompanyName", args, token);
         }
-
+        public async Task<string?> ExtractPostingTitle(string jd, int maxTokens = 2048, CancellationToken token = default)
+        {
+            var args = new Dictionary<string, object?>
+            {
+                ["jd"] = jd,
+                ["maxTokens"] = maxTokens
+            };
+            return await CallTool<string?>(msg => msg?.Text, "extractPostingTitle", args, token);
+        }
         public async Task<string?> ResearchCompany(string companyName, int maxTokens = 2048, CancellationToken token = default)
         {
             var args = new Dictionary<string, object?>
