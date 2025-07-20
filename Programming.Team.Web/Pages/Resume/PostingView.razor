@@ -13,10 +13,22 @@
         </MudSelect>
         <ResumeConfigurationView ViewModel="ViewModel.ConfigurationViewModel"/>
         <MudTextField Lines="10" @bind-Value="ViewModel.Details" Label="Details" Variant="Variant.Outlined" />
+        <MudStack Row="true">
+            <MudTextField @bind-Value="ViewModel.CompanyName" Label="Company Name" Variant="Variant.Outlined"/>
+            <MudButton OnClick="ViewModel.ExtractCompanyName.BindCommand<MouseEventArgs>()">Extract Company Name</MudButton>
+            @if (ViewModel.CanResearchCompany)
+            {
+                <MudButton OnClick="ViewModel.ResearchCompany.BindCommand<MouseEventArgs>()">Research Company</MudButton>
+            }
+        </MudStack>
         <MudTextField Lines="10" @bind-Value="ViewModel.RenderedLaTex" Label="Resume LaTeX" Variant="Variant.Outlined" />
         @{
             var str = $"/api/resumes/{ViewModel.Id}";
             <MudLink Href="@str" Target="_blank">Download Resume</MudLink>
+        }
+        @if(!string.IsNullOrWhiteSpace(ViewModel.CompanyResearch))
+        {
+            <Markdown>@ViewModel.CompanyResearch</Markdown>
         }
         <CoverLetterConfigurationView ViewModel="ViewModel.CoverLetterConfigurationViewModel"/>
         @if (!string.IsNullOrWhiteSpace(ViewModel.CoverLetterLaTeX))
@@ -61,6 +73,9 @@
     <MudOverlay @bind-Visible="ViewModel.IsOverlayOpen" DarkBackground="true" AutoClose="false">
         <MudProgressCircular Color="Color.Secondary" Size="Size.Large" Indeterminate="true"/>
         <h1><MudText Color="Color.Secondary">@ViewModel.Progress</MudText></h1>
+    </MudOverlay>
+    <MudOverlay @bind-Visible="ViewModel.IsProcessing" DarkBackground="true" AutoClose="false">
+        <MudProgressCircular Color="Color.Secondary" Size="Size.Large" Indeterminate="true" />
     </MudOverlay>
 }
 

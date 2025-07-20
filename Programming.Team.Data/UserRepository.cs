@@ -232,7 +232,8 @@ namespace Programming.Team.Data
                     IsDeleted = x.IsDeleted,
                     UserId = x.UserId,
                     User = x.User,
-                    Details = x.Details
+                    Details = x.Details,
+                    CompanyName = x.CompanyName,
                 });
                 var data = await query.ToArrayAsync(t);
                 res.Entities = data;
@@ -244,13 +245,13 @@ namespace Programming.Team.Data
         public override async Task<Posting> Update(Posting entity, IUnitOfWork? work = null, Func<IQueryable<Posting>, IQueryable<Posting>>? properites = null, CancellationToken token = default)
         {
             if (!string.IsNullOrWhiteSpace(entity.ResumeJson))
-                entity.ResumeJson = await ComnpressString(entity.ResumeJson);
+                entity.ResumeJson = await CompressString(entity.ResumeJson);
             return await base.Update(entity, work, properites, token);
         }
         public override async Task Add(Posting entity, IUnitOfWork? work = null, CancellationToken token = default)
         {
             if (!string.IsNullOrWhiteSpace(entity.ResumeJson))
-                entity.ResumeJson = await ComnpressString(entity.ResumeJson);
+                entity.ResumeJson = await CompressString(entity.ResumeJson);
             await base.Add(entity, work, token);
         }
         public override async Task<Posting?> GetByID(Guid key, IUnitOfWork? work = null, Func<IQueryable<Posting>, IQueryable<Posting>>? properites = null, CancellationToken token = default)
@@ -260,7 +261,7 @@ namespace Programming.Team.Data
                 posting.ResumeJson = await DecompressString(posting.ResumeJson);
             return posting;
         }
-        protected async Task<string> ComnpressString(string text)
+        protected async Task<string> CompressString(string text)
         {
             var bytes = Encoding.UTF8.GetBytes(text);
 

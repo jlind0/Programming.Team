@@ -201,4 +201,62 @@ namespace Programming.Team.AI.MCP
             return resp.Messages.FirstOrDefault()?.Text;
         }
     }
+    [McpServerToolType]
+    public sealed class ExtractCompanyNameTool
+    {
+        [McpServerTool(Name = "extractCompanyName"), Description("Extract Company Name")]
+        public static async Task<string?> GenerateCoverLetter(
+        IMcpServer thisServer,
+        [Description("Job Description")] string jd,
+        [Description("Maximum number of tokens to generate")] int maxTokens = 2048,
+        CancellationToken cancellationToken = default)
+        {
+            ChatMessage[] messages =
+            [
+                new(ChatRole.User,$"Extract output the company name, just the company name no extraneous details, the user is applying to given this job description: {jd}"),
+            ];
+
+            ChatOptions options = new()
+            {
+                MaxOutputTokens = maxTokens,
+                Temperature = 1f,
+                TopP = 1,
+                FrequencyPenalty = 0,
+                PresencePenalty = 0,
+
+            };
+
+            var resp = await thisServer.AsSamplingChatClient().GetResponseAsync(messages, options, cancellationToken);
+            return resp.Messages.FirstOrDefault()?.Text;
+        }
+    }
+    [McpServerToolType]
+    public sealed class ResearchCompanyTool
+    {
+        [McpServerTool(Name = "researchCompany"), Description("Research Company")]
+        public static async Task<string?> GenerateCoverLetter(
+        IMcpServer thisServer,
+        [Description("Company")] string company,
+        [Description("Maximum number of tokens to generate")] int maxTokens = 2048,
+        CancellationToken cancellationToken = default)
+        {
+            ChatMessage[] messages =
+            [
+                new(ChatRole.User,$"Build a research profile for the following company and output in markdown: {company}"),
+            ];
+
+            ChatOptions options = new()
+            {
+                MaxOutputTokens = maxTokens,
+                Temperature = 1f,
+                TopP = 1,
+                FrequencyPenalty = 0,
+                PresencePenalty = 0,
+
+            };
+
+            var resp = await thisServer.AsSamplingChatClient().GetResponseAsync(messages, options, cancellationToken);
+            return resp.Messages.FirstOrDefault()?.Text;
+        }
+    }
 }

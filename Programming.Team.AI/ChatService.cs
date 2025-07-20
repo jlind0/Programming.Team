@@ -71,7 +71,7 @@ namespace Programming.Team.AI
             };
             return await CallTool<string?>(msg => msg?.Text, "tailorPosition", args, token);
         }
-       
+        
         public async Task<string?> GenerateCoverLetter(string jd, string resume, int targetLength, int numberOfBullets, int maxTokens = 2048, CancellationToken token = default)
         {
             var args = new Dictionary<string, object?>
@@ -83,6 +83,25 @@ namespace Programming.Team.AI
                 ["maxTokens"] = maxTokens
             };
             return await CallTool<string?>(msg => msg?.Text, "generateCoverLetter", args, token);
+        }
+        public async Task<string?> ExtractCompanyName(string jd, int maxTokens = 2048, CancellationToken token = default)
+        {
+            var args = new Dictionary<string, object?>
+            {
+                ["jd"] = jd,
+                ["maxTokens"] = maxTokens
+            };
+            return await CallTool<string?>(msg => msg?.Text, "extractCompanyName", args, token);
+        }
+
+        public async Task<string?> ResearchCompany(string companyName, int maxTokens = 2048, CancellationToken token = default)
+        {
+            var args = new Dictionary<string, object?>
+            {
+                ["company"] = companyName,
+                ["maxTokens"] = maxTokens
+            };
+            return await CallTool<string?>(msg => msg?.Text, "researchCompany", args, token);
         }
         protected async Task<T> CallTool<T>(Func<Content?, T> readValue, string toolName, IReadOnlyDictionary<string, object?> args, CancellationToken token)
         {
@@ -120,5 +139,7 @@ namespace Programming.Team.AI
             };
             return await attempt();
         }
+
+        
     }
 }

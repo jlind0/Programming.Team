@@ -2,6 +2,7 @@
 using DynamicData.Binding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Programming.Team.AI.Core;
 using Programming.Team.Business.Core;
 using Programming.Team.Core;
 using ReactiveUI;
@@ -41,12 +42,14 @@ namespace Programming.Team.ViewModels.Resume
         protected IResumeBuilder Builder { get; }
         protected ISectionTemplateBusinessFacade SectionFacade { get; }
         protected IDocumentTemplateBusinessFacade DocumentTemplateFacade { get; }
-        public PostingLoaderViewModel(IResumeBuilder builder, IDocumentTemplateBusinessFacade docTemplateFacade, 
+        protected IChatService ResumeEnricher { get; }
+        public PostingLoaderViewModel(IChatService resumeEnricher, IResumeBuilder builder, IDocumentTemplateBusinessFacade docTemplateFacade, 
             ISectionTemplateBusinessFacade sectionFacade, IBusinessRepositoryFacade<Posting, Guid> facade, ILogger<EntityLoaderViewModel<Guid, Posting, PostingViewModel, IBusinessRepositoryFacade<Posting, Guid>>> logger) : base(facade, logger)
         {
             SectionFacade = sectionFacade;
             DocumentTemplateFacade = docTemplateFacade;
             Builder = builder;
+            ResumeEnricher = resumeEnricher;
         }
         protected override async Task DoLoad(Guid key, CancellationToken token)
         { 
@@ -59,7 +62,7 @@ namespace Programming.Team.ViewModels.Resume
         }
         protected override PostingViewModel Construct(Posting entity)
         {
-            return new PostingViewModel(Builder, 
+            return new PostingViewModel(ResumeEnricher, Builder, 
                 new ResumeConfigurationViewModel(SectionFacade, DocumentTemplateFacade),
                 new CoverLetterConfigurationViewModel(DocumentTemplateFacade), DocumentTemplateFacade, Logger, Facade, entity);
         }
@@ -72,43 +75,100 @@ namespace Programming.Team.ViewModels.Resume
         public ObservableCollection<DocumentTemplate> DocumentTemplates { get; } = new ObservableCollection<DocumentTemplate>();
         protected IDocumentTemplateBusinessFacade DocumentTemplateFacade { get; }
         protected IResumeBuilder Builder { get; }
+        protected IChatService Enricher { get; }
         public ReactiveCommand<Unit, Unit> Rebuild { get; }
         public ReactiveCommand<Unit, Unit> Render { get; }
         public ReactiveCommand<Unit, Unit> GenerateCoverLetter { get; }
         public ReactiveCommand<Unit, Unit> RenderCoverLetter { get; }
         public ReactiveCommand<Unit, Unit> RenderMarkdown { get; }
+        public ReactiveCommand<Unit, Unit> ExtractCompanyName { get; }
+        public ReactiveCommand<Unit, Unit> ResearchCompany { get; }
         ~PostingViewModel()
         {
             disposables.Dispose();
         }
-        public PostingViewModel(IResumeBuilder builder, ResumeConfigurationViewModel config, 
+        public PostingViewModel(IChatService resumeEnricher, IResumeBuilder builder, ResumeConfigurationViewModel config, 
             CoverLetterConfigurationViewModel coverConfig, IDocumentTemplateBusinessFacade documentTemplateFacade, 
             ILogger logger, IBusinessRepositoryFacade<Posting, Guid> facade, Guid id) : base(logger, facade, id)
         {
             ConfigurationViewModel = config;
             DocumentTemplateFacade = documentTemplateFacade;
             Builder = builder;
+            Enricher = resumeEnricher;
             Rebuild = ReactiveCommand.CreateFromTask(DoRebuild);
             Render = ReactiveCommand.CreateFromTask(DoRender);
             GenerateCoverLetter = ReactiveCommand.CreateFromTask(DoGenerateCoverLetter);
             RenderCoverLetter = ReactiveCommand.CreateFromTask(DoRenderCoverLetter);
             RenderMarkdown = ReactiveCommand.CreateFromTask(DoRenderMarkdown);
+            ExtractCompanyName = ReactiveCommand.CreateFromTask(DoExtractCompanyName);
+            ResearchCompany = ReactiveCommand.CreateFromTask(DoResearchCompany);
             CoverLetterConfigurationViewModel = coverConfig;
             WireUpEvents();
         }
 
-        public PostingViewModel(IResumeBuilder builder, ResumeConfigurationViewModel config, CoverLetterConfigurationViewModel coverConfig, IDocumentTemplateBusinessFacade documentTemplateFacade, ILogger logger, IBusinessRepositoryFacade<Posting, Guid> facade, Posting entity) : base(logger, facade, entity)
+        public PostingViewModel(IChatService resumeEnricher, IResumeBuilder builder, ResumeConfigurationViewModel config, CoverLetterConfigurationViewModel coverConfig, IDocumentTemplateBusinessFacade documentTemplateFacade, ILogger logger, IBusinessRepositoryFacade<Posting, Guid> facade, Posting entity) : base(logger, facade, entity)
         {
             ConfigurationViewModel = config;
             DocumentTemplateFacade = documentTemplateFacade;
             Builder = builder;
+            Enricher = resumeEnricher;
             Rebuild = ReactiveCommand.CreateFromTask(DoRebuild);
             Render = ReactiveCommand.CreateFromTask(DoRender);
             GenerateCoverLetter = ReactiveCommand.CreateFromTask(DoGenerateCoverLetter);
             RenderCoverLetter = ReactiveCommand.CreateFromTask(DoRenderCoverLetter);
             CoverLetterConfigurationViewModel = coverConfig;
             RenderMarkdown = ReactiveCommand.CreateFromTask(DoRenderMarkdown);
+            ExtractCompanyName = ReactiveCommand.CreateFromTask(DoExtractCompanyName);
+            ResearchCompany = ReactiveCommand.CreateFromTask(DoResearchCompany);
             WireUpEvents();
+        }
+        private bool isProcessing = false;
+        public bool IsProcessing
+        {
+            get => isProcessing;
+            set => this.RaiseAndSetIfChanged(ref isProcessing, value);
+        }
+        public bool CanResearchCompany
+        {
+            get => !string.IsNullOrWhiteSpace(CompanyName);
+        }
+        protected async Task DoExtractCompanyName(CancellationToken token)
+        {
+            try
+            {
+                IsProcessing = true;
+                CompanyName = await Enricher.ExtractCompanyName(Details, token: token);
+                await Update.Execute().GetAwaiter();
+            }
+            catch(Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
+                await Alert.Handle(ex.Message).GetAwaiter();
+            }
+            finally
+            {
+                IsProcessing = false;
+            }
+        }
+        protected async Task DoResearchCompany(CancellationToken token)
+        {
+            try
+            {
+                if(!CanResearchCompany)
+                    throw new InvalidDataException("No Company Name Set");
+                IsProcessing = true;
+                CompanyResearch = await Enricher.ResearchCompany(CompanyName ?? throw new InvalidDataException("No Company Name Set"), token: token);
+                await Update.Execute().GetAwaiter();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
+                await Alert.Handle(ex.Message).GetAwaiter();
+            }
+            finally
+            {
+                IsProcessing = false;
+            }
         }
         protected async Task DoRenderMarkdown(CancellationToken token)
         {
@@ -343,6 +403,22 @@ namespace Programming.Team.ViewModels.Resume
             set => this.RaiseAndSetIfChanged(ref resumeMarkdown, value);
         }
         public ObservableCollection<DocumentTemplate> MarkdownTemplates { get; } = new ObservableCollection<DocumentTemplate>();
+        private string? companyName;
+        public string? CompanyName
+        {
+            get => companyName;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref companyName, value);
+                this.RaisePropertyChanging(nameof(CanResearchCompany));
+            }
+        }
+        private string? companyResearch;
+        public string? CompanyResearch
+        {
+            get => companyResearch;
+            set => this.RaiseAndSetIfChanged(ref companyResearch, value);
+        }
 
         protected override async Task<Posting?> DoLoad(CancellationToken token)
         {
@@ -382,7 +458,9 @@ namespace Programming.Team.ViewModels.Resume
                 CoverLetterLaTeX = CoverLetterLaTeX,
                 ResumeJson = ResumeJson,
                 ResumeMarkdown = ResumeMarkdown,
-                UserId = UserId
+                UserId = UserId,
+                CompanyName = CompanyName,
+                CompanyResearch = CompanyResearch,
             });
         }
 
@@ -398,6 +476,8 @@ namespace Programming.Team.ViewModels.Resume
             UserId = entity.UserId;
             ResumeJson = entity.ResumeJson;
             ResumeMarkdown = entity.ResumeMarkdown;
+            CompanyName = entity.CompanyName;
+            CompanyResearch = entity.CompanyResearch;
             await ConfigurationViewModel.Load(entity.Configuration);
             await CoverLetterConfigurationViewModel.Load(entity.CoverLetterConfiguration);
         }
