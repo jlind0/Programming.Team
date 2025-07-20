@@ -231,6 +231,35 @@ namespace Programming.Team.AI.MCP
         }
     }
     [McpServerToolType]
+    public sealed class ExtractPostingTitleTool
+    {
+        [McpServerTool(Name = "extractPostingTitle"), Description("Extract Posting Title")]
+        public static async Task<string?> GenerateCoverLetter(
+        IMcpServer thisServer,
+        [Description("Job Description")] string jd,
+        [Description("Maximum number of tokens to generate")] int maxTokens = 2048,
+        CancellationToken cancellationToken = default)
+        {
+            ChatMessage[] messages =
+            [
+                new(ChatRole.User,$"Extract output the position title, just the position title no extraneous details, the user is applying to given this job description: {jd}"),
+            ];
+
+            ChatOptions options = new()
+            {
+                MaxOutputTokens = maxTokens,
+                Temperature = 1f,
+                TopP = 1,
+                FrequencyPenalty = 0,
+                PresencePenalty = 0,
+
+            };
+
+            var resp = await thisServer.AsSamplingChatClient().GetResponseAsync(messages, options, cancellationToken);
+            return resp.Messages.FirstOrDefault()?.Text;
+        }
+    }
+    [McpServerToolType]
     public sealed class ResearchCompanyTool
     {
         [McpServerTool(Name = "researchCompany"), Description("Research Company")]

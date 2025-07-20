@@ -33,11 +33,19 @@
                 <div class="space-y-6">
                     <MudGrid Spacing="3" >
                         <MudItem xs="12">
-                            <MudTextField @bind-Value="ViewModel.Name"
+                            <MudStack Row="true">
+                                <MudTextField @bind-Value="ViewModel.Name"
                                           Label="Posting Name"
                                           Variant="Variant.Outlined"
                                           AdornmentIcon="@Icons.Material.Filled.Person"
                                           Class="rounded-lg" />
+                                <MudButton OnClick="ViewModel.ExtractTitle.BindCommand<MouseEventArgs>()"
+                                           Variant="Variant.Filled"
+                                           Color="Color.Primary"
+                                           Size="Size.Small"
+                                       Class="ml-2">Extract Name</MudButton>
+                            </MudStack>
+                            
                         </MudItem>
 
                         <MudItem xs="12">

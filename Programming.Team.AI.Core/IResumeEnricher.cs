@@ -42,6 +42,7 @@ namespace Programming.Team.AI.Core
         Task<string?> GenerateCoverLetter(string jd, string resume, int targetLength, int numberOfBullets, int maxTokens = 2048, CancellationToken token = default);
         Task<string?> ExtractCompanyName(string jd, int maxTokens = 2048, CancellationToken token = default);
         Task<string?> ResearchCompany(string companyName, int maxTokens = 2048, CancellationToken token = default);
+        Task<string?> ExtractPostingTitle(string jd, int maxTokens = 2048, CancellationToken token = default);
     }
     /// <summary>
     /// Provides natural language processing (NLP) functionality for identifying paragraphs in a given text.

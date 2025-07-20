@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Storage.Json;
 using Microsoft.Extensions.Logging;
+using Programming.Team.AI.Core;
 using Programming.Team.Business.Core;
 using Programming.Team.Core;
 using ReactiveUI;
@@ -28,10 +29,12 @@ namespace Programming.Team.ViewModels.Resume
         protected IResumeBuilder Builder { get; }
         public ReactiveCommand<Unit, Unit> Build { get; }
         public ReactiveCommand<Unit, Unit> Load { get; }
+        public ReactiveCommand<Unit, Unit> ExtractTitle { get; }
         protected IBusinessRepositoryFacade<DocumentTemplate, Guid> DocumentTemplateFacade { get; }
         protected IUserBusinessFacade UserFacade { get; }
         protected NavigationManager NavMan { get; }
-        public ResumeBuilderViewModel(NavigationManager navMan, ResumeConfigurationViewModel config, IUserBusinessFacade userFacade, IBusinessRepositoryFacade<DocumentTemplate, Guid>  documentTemplateFacade, ILogger<ResumeBuilderViewModel> logger, IResumeBuilder builder)
+        protected IChatService ResumeEnricher { get; }
+        public ResumeBuilderViewModel(IChatService resumeEnricher, NavigationManager navMan, ResumeConfigurationViewModel config, IUserBusinessFacade userFacade, IBusinessRepositoryFacade<DocumentTemplate, Guid> documentTemplateFacade, ILogger<ResumeBuilderViewModel> logger, IResumeBuilder builder)
         {
             Configuration = config;
             Logger = logger;
@@ -41,6 +44,14 @@ namespace Programming.Team.ViewModels.Resume
             Build = ReactiveCommand.CreateFromTask(DoBuild);
             Load = ReactiveCommand.CreateFromTask(DoLoad);
             NavMan = navMan;
+            ExtractTitle = ReactiveCommand.CreateFromTask(DoExtractTitle);
+            ResumeEnricher = resumeEnricher;
+        }
+        private bool isProcessing = false;
+        public bool IsProcessing
+        {
+            get => isProcessing;
+            set => this.RaiseAndSetIfChanged(ref isProcessing, value);
         }
         private string postingText = string.Empty;
         public string PostingText
@@ -83,7 +94,7 @@ namespace Programming.Team.ViewModels.Resume
                     Progress = str;
                 });
                 var resume = await Builder.BuildResume(userId.Value, progressable, token);
-                var posting = await Builder.BuildPosting(userId.Value, Configuration.SelectedTemplate.Id, Name, PostingText, resume,progressable, Configuration.GetConfiguration(), token: token);
+                var posting = await Builder.BuildPosting(userId.Value, Configuration.SelectedTemplate.Id, Name, PostingText, resume, progressable, Configuration.GetConfiguration(), token: token);
                 Progress = null;
                 await Alert.Handle("Resume Built").GetAwaiter();
                 NavMan.NavigateTo($"/resume/postings/{posting.Id}");
@@ -103,10 +114,29 @@ namespace Programming.Team.ViewModels.Resume
                 var dts = await DocumentTemplateFacade.Get(orderBy: o => o.OrderBy(e => e.Name), token: token);
                 await Configuration.Load(user?.DefaultResumeConfiguration);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Logger.LogError(ex, ex.Message);
                 await Alert.Handle(ex.Message).GetAwaiter();
+            }
+        }
+        protected async Task DoExtractTitle(CancellationToken token)
+        {
+            try
+            {
+                IsProcessing = true;
+                if (string.IsNullOrWhiteSpace(PostingText))
+                    throw new InvalidOperationException("Posting text cannot be empty");
+                Name = await ResumeEnricher.ExtractPostingTitle(PostingText ?? throw new InvalidDataException("Posting text cannot be empty"), token: token) ?? string.Empty;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
+                await Alert.Handle(ex.Message).GetAwaiter();
+            }
+            finally
+            {
+                IsProcessing = false;
             }
         }
     }
