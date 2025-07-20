@@ -55,7 +55,7 @@ namespace Programming.Team.AI
                 if (!string.IsNullOrWhiteSpace(resume.User.Bio))
                 {
                     progress?.Report("Tailoring Bio");
-                    resume.User.Bio = await ChatService.TailorBio(posting.Details, resume.User.Bio, token: token);
+                    resume.User.Bio = await ChatService.TailorBio(posting.Details, resume.User.Bio, config.BioParagraphs ?? 3, config.BioBullets ?? 6, token: token);
                     resume.User.Bio = resume.User.Bio?.Replace("#", "\\#").Replace("$", "\\$").Replace("&", "\\&").Replace("%", "\\%");
                 }
                 foreach (var skill in resume.Skills.Select(p => p.Skill).Union(resume.Positions.SelectMany(p => p.PositionSkills.Select(p => p.Skill))))

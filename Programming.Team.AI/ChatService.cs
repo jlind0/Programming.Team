@@ -46,12 +46,14 @@ namespace Programming.Team.AI
             return await CallTool<double>(msg => msg?.Text == null ? 0d : double.Parse(msg.Text), "percentMatch", args, token);
         }
 
-        public async Task<string?> TailorBio(string jd, string bio, int maxTokens = 2048, CancellationToken token = default)
+        public async Task<string?> TailorBio(string jd, string bio, int paragraphs = 3, int bullets = 6, int maxTokens = 2048, CancellationToken token = default)
         {
             var args = new Dictionary<string, object?>
             {
                 ["jd"] = jd,
                 ["bio"] = bio,
+                ["paragraphs"] = paragraphs,
+                ["bullets"] = bullets,
                 ["maxTokens"] = maxTokens
             };
             return await CallTool<string?>(msg => msg?.Text, "tailorBio", args, token);

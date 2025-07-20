@@ -78,12 +78,14 @@ namespace Programming.Team.AI.MCP
             IMcpServer thisServer,
             [Description("Job Description")] string jd,
             [Description("Raw Bio")] string bio,
+            [Description("Bullet Count")] int bullets = 6,
+            [Description("Paragraph Count")] int paragraphs = 3,
             [Description("Maximum number of tokens to generate")] int maxTokens = 2048,
             CancellationToken cancellationToken = default)
         {
             ChatMessage[] messages =
             [
-                new(ChatRole.User, $"Output a LaTex snippet that will be added to an existing latex document - do not generate opening or closing article, document, sections, textbf or pargraph tags. Do not use LaTeX special charachter escaping. The user message is a biography: tailor/summarize it highlighting how it pertains the following job description, write three paragraphs and 6 bullet points (written with itemize, no dashes) - stick to what you know, don't make things up for the following job description:  {jd};;;; and bio:{bio} "),
+                new(ChatRole.User, $"Output a LaTex snippet that will be added to an existing latex document - do not generate opening or closing article, document, sections, textbf or pargraph tags. Do not use LaTeX special charachter escaping. The user message is a biography: tailor/summarize it highlighting how it pertains the following job description, write {paragraphs} paragraphs and {bullets} bullet points (written with itemize, no dashes) - stick to what you know, don't make things up for the following job description:  {jd};;;; and bio:{bio} "),
             ];
 
             ChatOptions options = new()

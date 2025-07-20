@@ -570,6 +570,8 @@ namespace Programming.Team.ViewModels.Resume
             BulletsPer20Percent = config.BulletsPer20Percent;
             HidePositionsNotInJD = config.HidePositionsNotInJD;
             SkillsPer20Percent = config.SkillsPer20Percent;
+            BioBullets = config.BioBullets;
+            BioParagraphs = config.BioParagraphs;
             Parts = config.Parts;
             SectionTemplates = config.SectionTemplates;
             DocumentTemplates.Clear();
@@ -589,7 +591,9 @@ namespace Programming.Team.ViewModels.Resume
                 Parts = ResumeParts.Where(p => p.Selected).OrderBy(p => p.Order).Select(p => p.Part).ToArray(),
                 SectionTemplates = ResumeParts.Where(p => p.Selected).ToDictionary(p => p.Part, p => p.SelectedTemplate?.Id),
                 SkillsPer20Percent = SkillsPer20Percent,
-                DefaultDocumentTemplateId = DefaultDocumentTemplateId
+                DefaultDocumentTemplateId = DefaultDocumentTemplateId,
+                BioBullets = BioBullets,
+                BioParagraphs = BioParagraphs
             };
             return config;
         }
@@ -650,6 +654,17 @@ namespace Programming.Team.ViewModels.Resume
             get => selectedTemplate;
             set => this.RaiseAndSetIfChanged(ref selectedTemplate, value);
         }
-        public Guid? DefaultMarkdownTemplateId { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        private int? bioParagraphs;
+        public int? BioParagraphs
+        {
+            get => bioParagraphs;
+            set => this.RaiseAndSetIfChanged(ref bioParagraphs, value);
+        }
+        private int? bioBullets;
+        public int? BioBullets
+        {
+            get => bioBullets;
+            set => this.RaiseAndSetIfChanged(ref bioBullets, value);
+        }
     }
 }

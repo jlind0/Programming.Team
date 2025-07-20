@@ -41,6 +41,8 @@ namespace Programming.Team.Core
         Dictionary<ResumePart, Guid?> SectionTemplates { get; set; }
         double? SkillsPer20Percent { get; set; }
         Guid? DefaultDocumentTemplateId { get; set; }
+        int? BioParagraphs { get; set; }
+        int? BioBullets { get; set; }
     }
     public class ResumeConfiguration : IResumeConfiguration
     {
@@ -53,5 +55,7 @@ namespace Programming.Team.Core
         public Dictionary<ResumePart, Guid?> SectionTemplates { get; set; } = [];
         public Guid? DefaultDocumentTemplateId { get; set; }
         public double? SkillsPer20Percent { get; set; }
+        public int? BioParagraphs { get; set; } = 3;
+        public int? BioBullets { get; set; } = 6;
     }
 }
