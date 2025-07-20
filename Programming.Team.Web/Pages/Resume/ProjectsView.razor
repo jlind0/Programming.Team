@@ -19,18 +19,15 @@
                       Class="searchData" />
 
             <div class="panels">
-                @{
-                    int index = 0;
-                }
             <MudExpansionPanels MultiExpansion="true" >
                 @foreach (var position in ViewModel.Entities)
                 {
-                    @if (index == 0)
+                    @if (ViewModel.Entities.First() == position)
                     {
                         <MudCard Class="thin-panel">
 
-                            <MudExpansionPanel Text=@position.Description Expanded="true">
-                                <ProjectView ViewModel=position />
+                            <MudExpansionPanel @bind-Text="position.Name" Expanded="true">
+                                <ProjectView ViewModel="position" />
                             </MudExpansionPanel>
                         </MudCard>
                     }
@@ -38,12 +35,11 @@
                     {
                         <MudCard Class="thin-panel">
 
-                            <MudExpansionPanel Text=@position.Description>
-                                <ProjectView ViewModel=position />
+                            <MudExpansionPanel @bind-Text="position.Name">
+                                <ProjectView ViewModel="position" />
                             </MudExpansionPanel>
                         </MudCard>
                     }
-                    index++;
                 }
             </MudExpansionPanels>
             </div>
