@@ -14,6 +14,8 @@ public interface IPosting : IEntity<Guid>, IUserPartionedEntity, INamedEntity
     string? Configuration { get; set; }
     string? ResumeJson { get; set; }
     string? ResumeMarkdown { get; set; }
+    string? CompanyName { get; set; }
+    string? CompanyResearch { get; set; }
 }
 public partial class Posting : Entity<Guid>, IPosting
 {
@@ -37,4 +39,6 @@ public partial class Posting : Entity<Guid>, IPosting
     public string? CoverLetterConfiguration { get; set; }
     public string? ResumeJson { get; set; }
     public string? ResumeMarkdown { get; set; }
+    public string? CompanyName { get; set; }
+    public string? CompanyResearch { get; set; }
 }

@@ -78,12 +78,14 @@ namespace Programming.Team.AI.MCP
             IMcpServer thisServer,
             [Description("Job Description")] string jd,
             [Description("Raw Bio")] string bio,
+            [Description("Bullet Count")] int bullets = 6,
+            [Description("Paragraph Count")] int paragraphs = 3,
             [Description("Maximum number of tokens to generate")] int maxTokens = 2048,
             CancellationToken cancellationToken = default)
         {
             ChatMessage[] messages =
             [
-                new(ChatRole.User, $"Output a LaTex snippet that will be added to an existing latex document - do not generate opening or closing article, document, sections, textbf or pargraph tags. Do not use LaTeX special charachter escaping. The user message is a biography: tailor/summarize it highlighting how it pertains the following job description, write three paragraphs and 6 bullet points (written with itemize, no dashes) - stick to what you know, don't make things up for the following job description:  {jd};;;; and bio:{bio} "),
+                new(ChatRole.User, $"Output a LaTex snippet that will be added to an existing latex document - do not generate opening or closing article, document, sections, textbf or pargraph tags. Do not use LaTeX special charachter escaping. The user message is a biography: tailor/summarize it highlighting how it pertains the following job description, write {paragraphs} paragraphs and {bullets} bullet points (written with itemize, no dashes) - stick to what you know, don't make things up for the following job description:  {jd};;;; and bio:{bio} "),
             ];
 
             ChatOptions options = new()
@@ -183,6 +185,64 @@ namespace Programming.Team.AI.MCP
             ChatMessage[] messages =
             [
                 new(ChatRole.User,$"Output a LaTex snippet that will be added to an existing latex document - do not generate opening or closing article, document sections or headers. Do not escape special characters. The user message is a latex resume: tailor/summarize it, to generate a cover letter, highlighting how it pertains the following job description, write up to {targetLength} characters and {numberOfBullets} bullet points (written with itemize, no dashes) - stick to what you know, don't make things up for the following job description: {jd};;; and the following resume (in LaTeX): {resume}"),
+            ];
+
+            ChatOptions options = new()
+            {
+                MaxOutputTokens = maxTokens,
+                Temperature = 1f,
+                TopP = 1,
+                FrequencyPenalty = 0,
+                PresencePenalty = 0,
+
+            };
+
+            var resp = await thisServer.AsSamplingChatClient().GetResponseAsync(messages, options, cancellationToken);
+            return resp.Messages.FirstOrDefault()?.Text;
+        }
+    }
+    [McpServerToolType]
+    public sealed class ExtractCompanyNameTool
+    {
+        [McpServerTool(Name = "extractCompanyName"), Description("Extract Company Name")]
+        public static async Task<string?> GenerateCoverLetter(
+        IMcpServer thisServer,
+        [Description("Job Description")] string jd,
+        [Description("Maximum number of tokens to generate")] int maxTokens = 2048,
+        CancellationToken cancellationToken = default)
+        {
+            ChatMessage[] messages =
+            [
+                new(ChatRole.User,$"Extract output the company name, just the company name no extraneous details, the user is applying to given this job description: {jd}"),
+            ];
+
+            ChatOptions options = new()
+            {
+                MaxOutputTokens = maxTokens,
+                Temperature = 1f,
+                TopP = 1,
+                FrequencyPenalty = 0,
+                PresencePenalty = 0,
+
+            };
+
+            var resp = await thisServer.AsSamplingChatClient().GetResponseAsync(messages, options, cancellationToken);
+            return resp.Messages.FirstOrDefault()?.Text;
+        }
+    }
+    [McpServerToolType]
+    public sealed class ResearchCompanyTool
+    {
+        [McpServerTool(Name = "researchCompany"), Description("Research Company")]
+        public static async Task<string?> GenerateCoverLetter(
+        IMcpServer thisServer,
+        [Description("Company")] string company,
+        [Description("Maximum number of tokens to generate")] int maxTokens = 2048,
+        CancellationToken cancellationToken = default)
+        {
+            ChatMessage[] messages =
+            [
+                new(ChatRole.User,$"Build a research profile for the following company and output in markdown: {company}"),
             ];
 
             ChatOptions options = new()
