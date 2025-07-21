@@ -16,6 +16,8 @@ public interface IPosting : IEntity<Guid>, IUserPartionedEntity, INamedEntity
     string? ResumeMarkdown { get; set; }
     string? CompanyName { get; set; }
     string? CompanyResearch { get; set; }
+    string? InterviewQuestions { get; set; }
+    string? QuestionsToAsk { get; set; }
 }
 public partial class Posting : Entity<Guid>, IPosting
 {
@@ -41,4 +43,6 @@ public partial class Posting : Entity<Guid>, IPosting
     public string? ResumeMarkdown { get; set; }
     public string? CompanyName { get; set; }
     public string? CompanyResearch { get; set; }
+    public string? InterviewQuestions { get; set; }
+    public string? QuestionsToAsk { get; set; }
 }

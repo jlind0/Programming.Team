@@ -24,7 +24,10 @@
         <MudTextField Lines="10" @bind-Value="ViewModel.RenderedLaTex" Label="Resume LaTeX" Variant="Variant.Outlined" />
         @{
             var str = $"/api/resumes/{ViewModel.Id}";
+            string resumeUri = System.Web.HttpUtility.UrlEncode($"https://jobme.today/api/resumes/{ViewModel.Id}.tex");
+            string strResumeUri = $"https://www.overleaf.com/docs?snip_uri={resumeUri}";
             <MudLink Href="@str" Target="_blank">Download Resume</MudLink>
+            <MudLink Href="@strResumeUri" Target="_blank">Edit Resume in Overleaf</MudLink>
         }
         @if(!string.IsNullOrWhiteSpace(ViewModel.CompanyResearch))
         {
@@ -34,8 +37,11 @@
         @if (!string.IsNullOrWhiteSpace(ViewModel.CoverLetterLaTeX))
         {
             var strCover = $"/api/coverletters/{ViewModel.Id}";
+            string coverUri = System.Web.HttpUtility.UrlEncode($"https://jobme.today/api/coverletters/{ViewModel.Id}.tex");
+            string strCoverUri = $"https://www.overleaf.com/docs?snip_uri={coverUri}";
             <MudTextField Lines="10" @bind-Value="ViewModel.CoverLetterLaTeX" Label="Cover Letter LaTeX" Variant="Variant.Outlined" />
             <MudLink Href="@strCover" Target="_blank">Download Cover Letter</MudLink>
+            <MudLink Href="@strCoverUri" Target="_blank">Edit Cover Letter in Overleaf</MudLink>
         }
         <MudStack Row="true">
             <MudSelect Label="Text Template" T="DocumentTemplate" @bind-Value="ViewModel.SelectedMarkdownTemplate" ToStringFunc="e => e?.Name">
@@ -67,8 +73,25 @@
             <MudButton OnClick="ViewModel.Render.BindCommand<MouseEventArgs>()">Render Resume</MudButton>
             <MudButton OnClick="ViewModel.GenerateCoverLetter.BindCommand<MouseEventArgs>()">Generate Cover Letter</MudButton>
             <MudButton OnClick="ViewModel.RenderCoverLetter.BindCommand<MouseEventArgs>()">Render Cover Letter</MudButton>
+            @if(ViewModel.CanGenerateInterviewQuestions)
+            {
+                <MudButton OnClick="ViewModel.GenerateInterviewQuestions.BindCommand<MouseEventArgs>()">Generate Interview Questions</MudButton>
+            }
+            @if(ViewModel.CanGenerateEmployeerQuestions)
+            {
+                <MudButton OnClick="ViewModel.GenerateEmployeerQuestions.BindCommand<MouseEventArgs>()">Generate Employeer Questions</MudButton>
+            }
             <MudButton OnClick="ViewModel.Delete.BindCommand<MouseEventArgs>()">Delete</MudButton>
         </MudStack>
+        @if(!string.IsNullOrWhiteSpace(ViewModel.InterviewQuestions))
+        {
+            <Markdown>@ViewModel.InterviewQuestions</Markdown>
+        }
+        @if(!string.IsNullOrWhiteSpace(ViewModel.QuestionsToAsk))
+        {
+            <Markdown>@ViewModel.QuestionsToAsk</Markdown>
+        }
+    )
     </MudStack>
     <MudOverlay @bind-Visible="ViewModel.IsOverlayOpen" DarkBackground="true" AutoClose="false">
         <MudProgressCircular Color="Color.Secondary" Size="Size.Large" Indeterminate="true"/>
