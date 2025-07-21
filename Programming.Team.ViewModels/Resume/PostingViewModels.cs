@@ -84,6 +84,7 @@ namespace Programming.Team.ViewModels.Resume
         public ReactiveCommand<Unit, Unit> ExtractCompanyName { get; }
         public ReactiveCommand<Unit, Unit> ResearchCompany { get; }
         public ReactiveCommand<Unit, Unit> GenerateInterviewQuestions { get; }
+        public ReactiveCommand<Unit, Unit> GenerateEmployeerQuestions { get; }
         ~PostingViewModel()
         {
             disposables.Dispose();
@@ -104,6 +105,7 @@ namespace Programming.Team.ViewModels.Resume
             ExtractCompanyName = ReactiveCommand.CreateFromTask(DoExtractCompanyName);
             ResearchCompany = ReactiveCommand.CreateFromTask(DoResearchCompany);
             GenerateInterviewQuestions = ReactiveCommand.CreateFromTask(DoGenerateInterviewQuestions);
+            GenerateEmployeerQuestions = ReactiveCommand.CreateFromTask(DoGeneratEmployeerQuestions);
             CoverLetterConfigurationViewModel = coverConfig;
             WireUpEvents();
         }
@@ -123,6 +125,7 @@ namespace Programming.Team.ViewModels.Resume
             ExtractCompanyName = ReactiveCommand.CreateFromTask(DoExtractCompanyName);
             ResearchCompany = ReactiveCommand.CreateFromTask(DoResearchCompany);
             GenerateInterviewQuestions = ReactiveCommand.CreateFromTask(DoGenerateInterviewQuestions);
+            GenerateEmployeerQuestions = ReactiveCommand.CreateFromTask(DoGeneratEmployeerQuestions);
             WireUpEvents();
         }
         private bool isProcessing = false;
@@ -138,6 +141,10 @@ namespace Programming.Team.ViewModels.Resume
         public bool CanGenerateInterviewQuestions
         {
             get => !string.IsNullOrWhiteSpace(Details) && !string.IsNullOrWhiteSpace(RenderedLaTex);
+        }
+        public bool CanGenerateEmployeerQuestions
+        {
+            get => !string.IsNullOrWhiteSpace(Details);
         }
         protected async Task DoExtractCompanyName(CancellationToken token)
         {
@@ -185,6 +192,26 @@ namespace Programming.Team.ViewModels.Resume
                     return;
                 IsProcessing = true;
                 InterviewQuestions = await Enricher.GenerateInterviewQuestions(Details, RenderedLaTex ?? throw new InvalidDataException("Must have a resume to generate interview questions."), token: token);
+                await Update.Execute().GetAwaiter();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
+                await Alert.Handle(ex.Message).GetAwaiter();
+            }
+            finally
+            {
+                IsProcessing = false;
+            }
+        }
+        protected async Task DoGeneratEmployeerQuestions(CancellationToken token)
+        {
+            try
+            {
+                if (!CanGenerateEmployeerQuestions)
+                    return;
+                IsProcessing = true;
+                QuestionsToAsk = await Enricher.GenerateEmployeerQuestions(Details, CompanyResearch, token: token);
                 await Update.Execute().GetAwaiter();
             }
             catch (Exception ex)
@@ -460,6 +487,12 @@ namespace Programming.Team.ViewModels.Resume
             get => interviewQuestions;
             set => this.RaiseAndSetIfChanged(ref interviewQuestions, value);
         }
+        private string? questionsToAsk;
+        public string? QuestionsToAsk
+        {
+            get => questionsToAsk;
+            set => this.RaiseAndSetIfChanged(ref questionsToAsk, value);
+        }
 
         protected override async Task<Posting?> DoLoad(CancellationToken token)
         {
@@ -502,7 +535,8 @@ namespace Programming.Team.ViewModels.Resume
                 UserId = UserId,
                 CompanyName = CompanyName,
                 CompanyResearch = CompanyResearch,
-                InterviewQuestions = InterviewQuestions
+                InterviewQuestions = InterviewQuestions,
+                QuestionsToAsk = QuestionsToAsk,
             });
         }
 
@@ -521,6 +555,7 @@ namespace Programming.Team.ViewModels.Resume
             CompanyName = entity.CompanyName;
             CompanyResearch = entity.CompanyResearch;
             InterviewQuestions = entity.InterviewQuestions;
+            QuestionsToAsk = entity.QuestionsToAsk;
             await ConfigurationViewModel.Load(entity.Configuration);
             await CoverLetterConfigurationViewModel.Load(entity.CoverLetterConfiguration);
         }

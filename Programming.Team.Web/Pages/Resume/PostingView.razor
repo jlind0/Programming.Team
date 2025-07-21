@@ -77,11 +77,19 @@
             {
                 <MudButton OnClick="ViewModel.GenerateInterviewQuestions.BindCommand<MouseEventArgs>()">Generate Interview Questions</MudButton>
             }
+            @if(ViewModel.CanGenerateEmployeerQuestions)
+            {
+                <MudButton OnClick="ViewModel.GenerateEmployeerQuestions.BindCommand<MouseEventArgs>()">Generate Employeer Questions</MudButton>
+            }
             <MudButton OnClick="ViewModel.Delete.BindCommand<MouseEventArgs>()">Delete</MudButton>
         </MudStack>
         @if(!string.IsNullOrWhiteSpace(ViewModel.InterviewQuestions))
         {
             <Markdown>@ViewModel.InterviewQuestions</Markdown>
+        }
+        @if(!string.IsNullOrWhiteSpace(ViewModel.QuestionsToAsk))
+        {
+            <Markdown>@ViewModel.QuestionsToAsk</Markdown>
         }
     )
     </MudStack>

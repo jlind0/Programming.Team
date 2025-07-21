@@ -318,4 +318,37 @@ namespace Programming.Team.AI.MCP
             return resp.Messages.FirstOrDefault()?.Text;
         }
     }
+    [McpServerToolType]
+    public sealed class GenerateEmployerQuestionsTool
+    {
+        [McpServerTool(Name = "generateEmployerQuestions"), Description("Generate Employer Questions")]
+        public static async Task<string?> GenerateCoverLetter(
+        IMcpServer thisServer,
+        [Description("Job Description")] string jd,
+        [Description("Company Research")] string? companyResearch = null,
+        [Description("Maximum number of tokens to generate")] int maxTokens = 2048,
+        CancellationToken cancellationToken = default)
+        {
+            string userMessage = $"Suggest questions to ask during the interview, outputted in markdown based on the following job description: {jd};;;";
+            if (!string.IsNullOrWhiteSpace(companyResearch))
+                userMessage += $" and the following company research: {companyResearch}";
+            ChatMessage[] messages =
+            [
+                new(ChatRole.User, userMessage),
+            ];
+
+            ChatOptions options = new()
+            {
+                MaxOutputTokens = maxTokens,
+                Temperature = 1f,
+                TopP = 1,
+                FrequencyPenalty = 0,
+                PresencePenalty = 0,
+
+            };
+
+            var resp = await thisServer.AsSamplingChatClient().GetResponseAsync(messages, options, cancellationToken);
+            return resp.Messages.FirstOrDefault()?.Text;
+        }
+    }
 }
