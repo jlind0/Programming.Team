@@ -7,7 +7,7 @@
         OnClick="ViewModel.Edit.BindCommand<MouseEventArgs>()">@ViewModel.Skill.Name</MudChip>
     <MudPopover Open="ViewModel.IsOpen">
         <div class="d-flex flex-column">
-            <MudStack Fixed="true" Class="px-4 pt-4">
+            <MudStack Fixed="true" Class="px-4 pt-4 ownSkillsDiv">
                 <MudText>@ViewModel.Skill.Name</MudText>
                 <MudTextField Lines="10" @bind-Value="ViewModel.Description" Label="Description"
                     Variant="Variant.Outlined" />

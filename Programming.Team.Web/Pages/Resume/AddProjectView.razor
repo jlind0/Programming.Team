@@ -66,15 +66,7 @@
 @inherits ReactiveComponentBase<AddProjectViewModel>
 
 <style>
-    .custom-dim {
-        z-index: 10000 !important; /* under autocomplete and popover */
-        position: fixed;
-    }
 
-    .popover-z {
-        z-index: 99999999 !important; /* above overlay, below autocomplete dropdown */
-        position: fixed !important;
-    }
 </style>
 
 @if (ViewModel != null)

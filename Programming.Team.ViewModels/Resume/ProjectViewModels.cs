@@ -135,7 +135,8 @@ namespace Programming.Team.ViewModels.Resume
         }
         protected override Func<IQueryable<Project>, IOrderedQueryable<Project>>? OrderBy()
         {
-            return e => e.OrderByDescending(c => c.SortOrder);
+            // return e => e.OrderByDescending(c => c.SortOrder);
+            return e => e.OrderBy(c => c.SortOrder);
         }
         protected override async Task<Expression<Func<Project, bool>>?> FilterCondition()
         {
@@ -272,6 +273,9 @@ namespace Programming.Team.ViewModels.Resume
             SkillsViewModel.InitialEntities = entity.ProjectSkills;
             SkillsViewModel.Description = entity.Description ?? "";
             Position = entity.Position;
+
+       
+
             await SkillsViewModel.Load.Execute().GetAwaiter();
         }
     }

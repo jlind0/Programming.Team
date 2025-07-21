@@ -6,7 +6,7 @@
     <MudButton OnClick="ViewModel.StartAdd.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
                Color="Color.Primary">Add Skill</MudButton>
     <AddProjectSkillView ViewModel="ViewModel.AddViewModel" />
-    <MudStack Row="true" Wrap="Wrap.Wrap">
+    <MudStack Row="true" Wrap="Wrap.Wrap" Class="ownSkillsDiv">
         @foreach (var e in ViewModel.Entities)
         {
          
@@ -22,7 +22,7 @@
     </div>
     @if (ViewModel.RawSkills.Count > 0)
     {
-        <MudStack Row="true" Wrap="Wrap.Wrap">
+        <MudStack Row="true" Wrap="Wrap.Wrap" Class="rawSkillsDivs">
             @foreach (var e in ViewModel.RawSkills)
             {
                 <RawSkillView ViewModel="e" />
