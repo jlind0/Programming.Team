@@ -50,25 +50,25 @@
                                  SearchFunc="ViewModel.Search.BindCommand()"
                                   />
         }
-        @if (ViewModel.CanAdd)
+        @if(SupportAdd)
         {
-            if (!ViewModel.AddViewModel.IsOpen)
+            @if (ViewModel.CanAdd)
             {
-                <MudButton OnClick="ViewModel.StartAdd.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
-                           Color="Color.Primary">Add @typeof(TEntity).Name</MudButton>
+                if (!ViewModel.AddViewModel.IsOpen)
+                {
+                    <MudButton OnClick="ViewModel.StartAdd.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
+                               Color="Color.Primary">Add @typeof(TEntity).Name</MudButton>
+                }
+               <DynamicComponent Type="typeof(TAddView)" Parameters="@(new Dictionary<string, object> { { "ViewModel", ViewModel.AddViewModel },  })" />
             }
-           <DynamicComponent Type="typeof(TAddView)" Parameters="@(new Dictionary<string, object> { { "ViewModel", ViewModel.AddViewModel },  })" />
-   
-
-       
-       
-  
         }
     </MudStack>
 }
 
 @code{
     private readonly CompositeDisposable disposables = new CompositeDisposable();
+    [Parameter]
+    public bool SupportAdd { get; set; } = true;
     protected override void OnInitialized()
     {
         if(ViewModel != null)
