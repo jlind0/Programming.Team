@@ -2608,14 +2608,7 @@ include-drop-zone {
  
 
 }
-.mud-stepper-button-previous {
-    margin-top:5% !important;
-    margin-left:20% !important;
-}
-.mud-stepper-button-next {
-    margin-top:5% !important;
-    margin-right: 25% !important;
-}
+
 
 .mud-steppe1r-button-next:disabled, .mud-stepper-button-previous:disabled {
     background-color: rgba(0,0,0,.1) !important;
@@ -2628,12 +2621,11 @@ include-drop-zone {
     background-color: rgb(0,0,0) !important;
     color: white !important;
     position: absolute !important;
-    top: 92% !important;
-    margin-top:0.25%;
-    left: 55% !important;
+    top:94.25% !important;
+    left: 70% !important;
 }
 
-/* Hover state */
+/* Hover st1ate */
 .popover-z .mud-button.completeButtonPosition:hover {
     background-color: rgb(5, 190, 140) !important;
     border-color: rgb(5, 190, 140) !important;
@@ -2706,6 +2698,60 @@ include-drop-zone {
 .searchData{
     width:10%;
     position:absolute;
-    top:5%;
+
+    margin-top:-2.5% !important;
     left:80%;
+}
+
+/* extract skills result */
+.rawSkillsDivs {
+    display: flex !important;
+    justify-content: center;
+  
+    padding:2%;
+}
+.d-flex .skillDiv {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    background-color:lightgray;
+    padding: 2%;
+    margin: 1%;
+    width: 30%;
+    border-radius: 10%;
+
+}
+.d-flex .skillView{
+
+    margin-top:5%;
+    
+}
+.d-flex .mud-input-control .mud-typography, .d-flex .skillView {
+    font-size: 1em;
+    font-weight: bold !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+
+}
+
+/* own skills */
+
+.ownSkillsDiv {
+
+    display:flex;
+    flex-direction:row;
+    justify-content:center;
+    align-items:center;
+    flex-wrap:wrap;
+    padding:1%;
+    gap:2%;
+}
+
+/* add project button */
+.addProjectButton{
+    margin-left:5% !important;
+    margin-top:1% !important;
 }
