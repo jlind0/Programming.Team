@@ -30,7 +30,6 @@
         padding: 16px;
     }
 
-
 </style>
 @if (ViewModel != null)
 {
@@ -39,8 +38,8 @@
         @if(!ViewModel.AddViewModel.IsOpen)
         {
 
-                <MudAutocomplete Class="autocomplete-left"  
-                                 Modal="false"
+                <MudAutocomplete  
+                                 Modal="true"
                                  T="TEntity"
                                  CoerceText="false"
                                  Label="@typeof(TEntity).Name"

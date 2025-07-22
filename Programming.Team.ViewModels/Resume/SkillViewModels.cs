@@ -435,7 +435,7 @@ namespace Programming.Team.ViewModels.Resume
             var result = await Facade.Get(page: new Pager() { Page = 1, Size = 5 },
                 filter: q => q.Name.StartsWith(text), token: token);
             if (result != null)
-                return result.Entities;
+                return result.Entities.ToArray();
             return [];
         }
     }
