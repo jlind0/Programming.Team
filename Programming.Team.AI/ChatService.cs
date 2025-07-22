@@ -109,7 +109,9 @@ namespace Programming.Team.AI
                 ["company"] = companyName,
                 ["maxTokens"] = maxTokens
             };
-            return await CallTool<string?>(msg => msg?.Text, "researchCompany", args, token);
+            var str = await CallTool<string?>(msg => msg?.Text, "researchCompany", args, token);
+            str = str?.Replace("```markdown", "").Replace("```", "").Trim().ReplaceLineEndings();
+            return str;
         }
         public async Task<string?> GenerateInterviewQuestions(string jd, string resume, int maxTokens = 2048, CancellationToken token = default)
         {
@@ -119,7 +121,9 @@ namespace Programming.Team.AI
                 ["resume"] = resume,
                 ["maxTokens"] = maxTokens
             };
-            return await CallTool<string?>(msg => msg?.Text, "generateInterviewQuestions", args, token);
+            var str = await CallTool<string?>(msg => msg?.Text, "generateInterviewQuestions", args, token);
+            str = str?.Replace("```markdown", "").Replace("```", "").Trim().ReplaceLineEndings();
+            return str;
         }
         public async Task<string?> GenerateEmployeerQuestions(string jd, string? companyResearch = null, int maxTokens = 2048, CancellationToken token = default)
         {
@@ -129,7 +133,9 @@ namespace Programming.Team.AI
                 ["companyResearch"] = companyResearch,
                 ["maxTokens"] = maxTokens
             };
-            return await CallTool<string?>(msg => msg?.Text, "generateEmployerQuestions", args, token);
+            var str = await CallTool<string?>(msg => msg?.Text, "generateEmployerQuestions", args, token);
+            str = str?.Replace("```markdown", "").Replace("```", "").Trim().ReplaceLineEndings();
+            return str;
         }
         protected async Task<T> CallTool<T>(Func<Content?, T> readValue, string toolName, IReadOnlyDictionary<string, object?> args, CancellationToken token)
         {

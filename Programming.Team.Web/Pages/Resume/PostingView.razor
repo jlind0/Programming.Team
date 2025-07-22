@@ -1,5 +1,20 @@
 ﻿@inherits ReactiveComponentBase<PostingViewModel>
+<style>
+        .scroll-wrapper {
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 6px;
+    background-color: white;
+}
 
+.markdown-content {
+    word-wrap: break-word;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+    </style>
 @if(ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
@@ -31,7 +46,11 @@
         }
         @if(!string.IsNullOrWhiteSpace(ViewModel.CompanyResearch))
         {
-            <Markdown>@ViewModel.CompanyResearch</Markdown>
+            <MudPaper Class="scroll-wrapper p-4" Elevation="1">
+                <div class="markdown-content">
+                    <Markdown>@ViewModel.CompanyResearch</Markdown>
+                </div>
+            </MudPaper>
         }
         <CoverLetterConfigurationView ViewModel="ViewModel.CoverLetterConfigurationViewModel"/>
         @if (!string.IsNullOrWhiteSpace(ViewModel.CoverLetterLaTeX))
@@ -85,11 +104,15 @@
         </MudStack>
         @if(!string.IsNullOrWhiteSpace(ViewModel.InterviewQuestions))
         {
-            <Markdown>@ViewModel.InterviewQuestions</Markdown>
+            <MudPaper Class="scroll-wrapper p-4" Elevation="1">
+               <div class="markdown-content"> <Markdown>@ViewModel.InterviewQuestions</Markdown></div>
+            </MudPaper>
         }
         @if(!string.IsNullOrWhiteSpace(ViewModel.QuestionsToAsk))
         {
-            <Markdown>@ViewModel.QuestionsToAsk</Markdown>
+            <MudPaper Class="scroll-wrapper p-4" Elevation="1">
+                <div class="markdown-content"><Markdown>@ViewModel.QuestionsToAsk</Markdown></div>
+            </MudPaper>
         }
     )
     </MudStack>
@@ -100,6 +123,7 @@
     <MudOverlay @bind-Visible="ViewModel.IsProcessing" DarkBackground="true" AutoClose="false">
         <MudProgressCircular Color="Color.Secondary" Size="Size.Large" Indeterminate="true" />
     </MudOverlay>
+    
 }
 
 @code {
