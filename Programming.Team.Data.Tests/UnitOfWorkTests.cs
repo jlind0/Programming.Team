@@ -7,9 +7,9 @@ namespace Programming.Team.Data.Tests;
 [TestClass]
 public class UnitOfWorkTests
 {
-    private Mock<IContextFactory> _contextFactoryMock;
-    private Mock<DbContext> _dbContextMock;
-    private UnitOfWork _unitOfWork;
+    private Mock<IContextFactory>? _contextFactoryMock;
+    private Mock<DbContext>? _dbContextMock;
+    private UnitOfWork? _unitOfWork;
 
     [TestInitialize]
     public void Setup()

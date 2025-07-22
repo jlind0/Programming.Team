@@ -73,17 +73,7 @@
             
             <!-- Body -->
             <MudItem xs="12">
-                <MudTextField Lines="5" 
-                             @bind-Value="ViewModel.Body" 
-                             Label="Recommendation Text" 
-                             Variant="Variant.Outlined"
-                             Class="fancy-input"
-                             InputStyle="padding-left: 8px;"
-                             LabelClass="font-weight-bold">
-                    <Adornment StartAdornment>
-                        <MudIcon Icon="@Icons.Material.Filled.FormatQuote" Class="mr-2" />
-                    </Adornment>
-                </MudTextField>
+                <SmartTextEditor TViewModel="RecommendationViewModel" ViewModel="ViewModel.SmartText" />
             </MudItem>
             
             <!-- Action Buttons -->

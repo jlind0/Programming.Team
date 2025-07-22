@@ -51,7 +51,7 @@
                 <MudStep Title="Recomendation Details" Disabled="step1Error">
                     <MudStack Spacing="3">
                         <MudTextField @bind-Value="ViewModel.Name" For="() => ViewModel.Name" Label="Name" Variant="Variant.Outlined"/>
-                        <MudTextField @bind-Value="ViewModel.Body" For="() => ViewModel.Body" Label="Body" Lines="10" Variant="Variant.Outlined" />
+                        <SmartTextEditor TViewModel="AddRecommendationViewModel" ViewModel="ViewModel.SmartTextEditor" />
                         <MudTextField @bind-Value="ViewModel.Title" For="() => ViewModel.Title" Label="Title" Variant="Variant.Outlined" />
                         <MudTextField @bind-Value="ViewModel.SortOrder" For="() => ViewModel.SortOrder" Label="Sort Order" Variant="Variant.Outlined" />
                         <div class="step-actions">

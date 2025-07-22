@@ -65,17 +65,7 @@
         
         <!-- Description -->
         <MudItem xs="12">
-            <MudTextField Lines="10" 
-                         @bind-Value="ViewModel.Description" 
-                         Label="Description" 
-                         Variant="Variant.Outlined"
-                         Class="fancy-input"
-                         InputStyle="padding-left: 8px;"
-                         LabelClass="font-weight-bold">
-                <Adornment StartAdornment>
-                    <MudIcon Icon="@Icons.Material.Filled.Description" Class="mr-2" />
-                </Adornment>
-            </MudTextField>
+                <SmartTextEditor TViewModel="PublicationViewModel" ViewModel="ViewModel.SmartText" />
         </MudItem>
         
         <!-- Action Buttons -->

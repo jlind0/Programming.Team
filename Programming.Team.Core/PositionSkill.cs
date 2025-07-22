@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Programming.Team.Core;
 
-public interface IPositionSkill : IEntity<Guid>
+public interface IPositionSkill : IEntity<Guid>, IHasTextType
 {
     Guid PositionId { get; set; }
 
@@ -25,4 +25,5 @@ public partial class PositionSkill : Entity<Guid>, IPositionSkill
     public virtual Position Position { get; set; } = null!;
 
     public virtual Skill Skill { get; set; } = null!;
+    public TextType TextTypeId { get; set; }
 }

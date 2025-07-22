@@ -61,6 +61,7 @@ public partial class ResumesContext : DbContext
         modelBuilder.Entity<Certificate>(entity =>
         {
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.TextTypeId).HasConversion<short>();
             entity.Property(e => e.CreateDate)
                 .HasDefaultValueSql("(getutcdate())")
                 .HasColumnType("datetime");
@@ -96,6 +97,7 @@ public partial class ResumesContext : DbContext
         modelBuilder.Entity<CertificateIssuer>(entity =>
         {
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.TextTypeId).HasConversion<short>();
             entity.Property(e => e.CreateDate)
                 .HasDefaultValueSql("(getutcdate())")
                 .HasColumnType("datetime");
@@ -119,7 +121,7 @@ public partial class ResumesContext : DbContext
         modelBuilder.Entity<Company>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK_Table_1");
-
+            entity.Property(e => e.TextTypeId).HasConversion<short>();
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
             entity.Property(e => e.City).HasMaxLength(500);
             entity.Property(e => e.Country).HasMaxLength(500);
@@ -204,7 +206,7 @@ public partial class ResumesContext : DbContext
         modelBuilder.Entity<Education>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK_Table_1_1");
-
+            entity.Property(e => e.TextTypeId).HasConversion<short>();
             entity.ToTable("Education");
 
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
@@ -239,6 +241,7 @@ public partial class ResumesContext : DbContext
         modelBuilder.Entity<Institution>(entity =>
         {
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.TextTypeId).HasConversion<short>();
             entity.Property(e => e.City).HasMaxLength(500);
             entity.Property(e => e.Country).HasMaxLength(500);
             entity.Property(e => e.CreateDate)
@@ -265,6 +268,7 @@ public partial class ResumesContext : DbContext
         {
             entity.Ignore(e => e.Name);
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.TextTypeId).HasConversion<short>();
             entity.Property(e => e.CreateDate)
                 .HasDefaultValueSql("(getutcdate())")
                 .HasColumnType("datetime");
@@ -298,6 +302,7 @@ public partial class ResumesContext : DbContext
         modelBuilder.Entity<Project>(entity =>
         {
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.TextTypeId).HasConversion<short>();
             entity.Property(e => e.CreateDate)
                 .HasDefaultValueSql("(getutcdate())")
                 .HasColumnType("datetime");
@@ -330,6 +335,7 @@ public partial class ResumesContext : DbContext
         modelBuilder.Entity<PositionSkill>(entity =>
         {
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.TextTypeId).HasConversion<short>();
             entity.Property(e => e.CreateDate)
                 .HasDefaultValueSql("(getutcdate())")
                 .HasColumnType("datetime");
@@ -359,6 +365,7 @@ public partial class ResumesContext : DbContext
         modelBuilder.Entity<ProjectSkill>(entity =>
         {
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.TextTypeId).HasConversion<short>();
             entity.Property(e => e.CreateDate)
                 .HasDefaultValueSql("(getutcdate())")
                 .HasColumnType("datetime");
@@ -546,6 +553,7 @@ public partial class ResumesContext : DbContext
         modelBuilder.Entity<Publication>(entity =>
         {
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.TextTypeId).HasConversion<short>();
             entity.Property(e => e.CreateDate)
                 .HasDefaultValueSql("(getutcdate())")
                 .HasColumnType("datetime");
@@ -575,6 +583,7 @@ public partial class ResumesContext : DbContext
         modelBuilder.Entity<Recommendation>(entity =>
         {
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.TextTypeId).HasConversion<short>();
             entity.Property(e => e.CreateDate)
                 .HasDefaultValueSql("(getutcdate())")
                 .HasColumnType("datetime");

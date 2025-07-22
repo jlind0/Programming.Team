@@ -8,7 +8,9 @@
 
   <ItemGroup>
     <PackageReference Include="CloudConvert.API" Version="1.4.0" />
+    <PackageReference Include="Markdig" Version="0.41.3" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.5" />
+    <PackageReference Include="ReverseMarkdown" Version="4.7.0" />
     <PackageReference Include="Scriban" Version="6.2.1" />
   </ItemGroup>
 

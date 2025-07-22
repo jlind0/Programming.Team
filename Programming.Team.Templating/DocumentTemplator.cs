@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Markdig;
+using Microsoft.Extensions.Logging;
 using Programming.Team.Core;
 using Programming.Team.Templating.Core;
 using Scriban;
@@ -18,9 +19,13 @@ namespace Programming.Team.Templating
     public class DocumentTemplator : IDocumentTemplator
     {
         protected ILogger Logger { get; }
-        public DocumentTemplator(ILogger<DocumentTemplator> logger)
+        protected MarkdownPipeline Pipeline { get; }
+        protected ReverseMarkdown.Converter Converter { get; }
+        public DocumentTemplator(ILogger<DocumentTemplator> logger, MarkdownPipeline pipeline, ReverseMarkdown.Converter converter)
         {
             Logger = logger;
+            Pipeline = pipeline;
+            Converter = converter;
         }
         public async Task<string> ApplyTemplate<TObject>(string template, TObject obj, CancellationToken token = default)
             where TObject : class, new()
@@ -79,5 +84,32 @@ namespace Programming.Team.Templating
             }
         }
 
+        public Task<string?> RenderHtmlFromMarkdown(string markdown, CancellationToken token = default)
+        {
+            try
+            {
+                
+                return Task.FromResult<string?>(Markdown.ToHtml(markdown, Pipeline));
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
+                throw;
+            }
+        }
+
+        public Task<string?> RenderMarkdownFromHtml(string html, CancellationToken token = default)
+        {
+            try
+            {
+
+                return Task.FromResult<string?>(Converter.Convert(html));
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
+                throw;
+            }
+        }
     }
 }

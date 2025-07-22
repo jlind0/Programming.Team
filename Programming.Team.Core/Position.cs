@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace Programming.Team.Core;
-public interface IPosition : IEntity<Guid>, IUserPartionedEntity
+public interface IPosition : IEntity<Guid>, IUserPartionedEntity, IHasTextType
 {
 
     Guid CompanyId { get; set; }
@@ -48,4 +48,5 @@ public partial class Position : Entity<Guid>, IPosition, INamedEntity
     public virtual User User { get; set; } = null!;
     public virtual ICollection<Recommendation> Recommendations { get; set; } = new List<Recommendation>();
     public virtual ICollection<Project> Projects { get; set; } = [];
+    public TextType TextTypeId { get; set; }
 }

@@ -9,10 +9,10 @@ namespace Programming.Team.Data.Tests;
 [TestClass]
 public class ContextFactoryTests
 {
-    private Mock<IServiceProvider> _serviceProviderMock;
-    private Mock<IHttpContextAccessor> _httpContextAccessorMock;
-    private Mock<AuthenticationStateProvider> _authStateProviderMock;
-    private DbContextOptions<ResumesContext> _dbContextOptions;
+    private Mock<IServiceProvider>? _serviceProviderMock;
+    private Mock<IHttpContextAccessor>? _httpContextAccessorMock;
+    private Mock<AuthenticationStateProvider>? _authStateProviderMock;
+    private DbContextOptions<ResumesContext>? _dbContextOptions;
 
     [TestInitialize]
     public void Setup()

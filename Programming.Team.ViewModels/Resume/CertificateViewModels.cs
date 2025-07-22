@@ -1,8 +1,10 @@
 ﻿using DynamicData.Binding;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Programming.Team.Business.Core;
 using Programming.Team.Core;
+using Programming.Team.Templating.Core;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -14,10 +16,13 @@ using System.Threading.Tasks;
 
 namespace Programming.Team.ViewModels.Resume
 {
-    public class AddCertificateIssuerViewModel : AddEntityViewModel<Guid, CertificateIssuer>, ICertificateIssuer
+    public class AddCertificateIssuerViewModel : AddEntityViewModel<Guid, CertificateIssuer>, ICertificateIssuer, ITextual
     {
-        public AddCertificateIssuerViewModel(IBusinessRepositoryFacade<CertificateIssuer, Guid> facade, ILogger<AddEntityViewModel<Guid, CertificateIssuer, IBusinessRepositoryFacade<CertificateIssuer, Guid>>> logger) : base(facade, logger)
+        public SmartTextEditorViewModel<AddCertificateIssuerViewModel> SmartText { get; }
+        public AddCertificateIssuerViewModel(IBusinessRepositoryFacade<CertificateIssuer, Guid> facade, IDocumentTemplator templator, IConfiguration config,
+            ILogger<AddEntityViewModel<Guid, CertificateIssuer, IBusinessRepositoryFacade<CertificateIssuer, Guid>>> logger) : base(facade, logger)
         {
+            SmartText = new SmartTextEditorViewModel<AddCertificateIssuerViewModel>(this, logger, templator, config);
         }
 
         private string name = string.Empty;
@@ -40,13 +45,24 @@ namespace Programming.Team.ViewModels.Resume
             get => url;
             set => this.RaiseAndSetIfChanged(ref url, value);
         }
-
+        private TextType textTypeId = TextType.Text;
+        public TextType TextTypeId
+        {
+            get => textTypeId;
+            set => this.RaiseAndSetIfChanged(ref textTypeId, value);
+        }
+        public string? Text
+        {
+            get => Description;
+            set => Description = value;
+        }
 
         protected override Task Clear()
         {
             Name = string.Empty;
             Description = null;
             Url = null;
+            TextTypeId = TextType.Text;
             return Task.CompletedTask;
         }
         public override void SetText(string text)
@@ -60,7 +76,8 @@ namespace Programming.Team.ViewModels.Resume
                 Id = Id,
                 Name = Name,
                 Description = Description,
-                Url = Url
+                Url = Url,
+                TextTypeId = TextTypeId
 
             });
         }
@@ -83,14 +100,17 @@ namespace Programming.Team.ViewModels.Resume
             return [];
         }
     }
-    public class CertificateIssuerViewModel : EntityViewModel<Guid, CertificateIssuer>, ICertificateIssuer
+    public class CertificateIssuerViewModel : EntityViewModel<Guid, CertificateIssuer>, ICertificateIssuer, ITextual
     {
-        public CertificateIssuerViewModel(ILogger logger, IBusinessRepositoryFacade<CertificateIssuer, Guid> facade, Guid id) : base(logger, facade, id)
+        public SmartTextEditorViewModel<CertificateIssuerViewModel> SmartText { get; }
+        public CertificateIssuerViewModel(ILogger logger, IDocumentTemplator templator, IConfiguration config, IBusinessRepositoryFacade<CertificateIssuer, Guid> facade, Guid id) : base(logger, facade, id)
         {
+            SmartText = new SmartTextEditorViewModel<CertificateIssuerViewModel>(this, logger, templator, config);
         }
 
-        public CertificateIssuerViewModel(ILogger logger, IBusinessRepositoryFacade<CertificateIssuer, Guid> facade, CertificateIssuer entity) : base(logger, facade, entity)
+        public CertificateIssuerViewModel(ILogger logger, IDocumentTemplator templator, IConfiguration config, IBusinessRepositoryFacade<CertificateIssuer, Guid> facade, CertificateIssuer entity) : base(logger, facade, entity)
         {
+            SmartText = new SmartTextEditorViewModel<CertificateIssuerViewModel>(this, logger, templator, config);
         }
 
         private string name = string.Empty;
@@ -104,7 +124,13 @@ namespace Programming.Team.ViewModels.Resume
         public string? Description
         {
             get => description;
-            set => this.RaiseAndSetIfChanged(ref description, value);
+            set
+            {
+                bool isChanged = description != value;
+                this.RaiseAndSetIfChanged(ref description, value);
+                if (isChanged)
+                    this.RaisePropertyChanged(nameof(Text));
+            }
         }
 
         private string? url;
@@ -113,7 +139,20 @@ namespace Programming.Team.ViewModels.Resume
             get => url;
             set => this.RaiseAndSetIfChanged(ref url, value);
         }
-
+        private TextType textTypeId = TextType.Text;
+        public TextType TextTypeId
+        {
+            get => textTypeId;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref textTypeId, value);
+            }
+        }
+        public string? Text
+        {
+            get => Description;
+            set => Description = value;
+        }
         internal override Task<CertificateIssuer> Populate()
         {
             return Task.FromResult(new CertificateIssuer()
@@ -122,6 +161,7 @@ namespace Programming.Team.ViewModels.Resume
                 Name = Name,
                 Description = Description,
                 Url = Url,
+                TextTypeId = TextTypeId
             });
         }
 
@@ -131,19 +171,22 @@ namespace Programming.Team.ViewModels.Resume
             Url = entity.Url;
             Name = entity.Name;
             Id = entity.Id;
+            TextTypeId = entity.TextTypeId;
             return Task.CompletedTask;
         }
     }
-    public class AddCertificateViewModel : AddUserPartionedEntity<Guid, Certificate>, ICertificate
+    public class AddCertificateViewModel : AddUserPartionedEntity<Guid, Certificate>, ICertificate, ITextual
     {
+        public SmartTextEditorViewModel<AddCertificateViewModel> SmartText { get; }
         public SearchSelectCertificateIssuerViewModel CertificateIssuer { get; }
         protected readonly CompositeDisposable disposable = new CompositeDisposable();
         ~AddCertificateViewModel()
         {
             disposable.Dispose();
         }
-        public AddCertificateViewModel(SearchSelectCertificateIssuerViewModel certificateIssuer, IBusinessRepositoryFacade<Certificate, Guid> facade, ILogger<AddEntityViewModel<Guid, Certificate, IBusinessRepositoryFacade<Certificate, Guid>>> logger) : base(facade, logger)
+        public AddCertificateViewModel(SearchSelectCertificateIssuerViewModel certificateIssuer, IDocumentTemplator templator, IConfiguration config, IBusinessRepositoryFacade<Certificate, Guid> facade, ILogger<AddEntityViewModel<Guid, Certificate, IBusinessRepositoryFacade<Certificate, Guid>>> logger) : base(facade, logger)
         {
+            SmartText = new SmartTextEditorViewModel<AddCertificateViewModel>(this, logger, templator, config);
             CertificateIssuer = certificateIssuer;
             CertificateIssuer.WhenPropertyChanged(p => p.Selected).Subscribe(p =>
             {
@@ -213,7 +256,17 @@ namespace Programming.Team.ViewModels.Resume
             get => description;
             set => this.RaiseAndSetIfChanged(ref description, value);
         }
-
+        private TextType textTypeId = TextType.Text;
+        public TextType TextTypeId
+        {
+            get => textTypeId;
+            set => this.RaiseAndSetIfChanged(ref textTypeId, value);
+        }
+        public string? Text
+        {
+            get => Description;
+            set => Description = value;
+        }
 
         protected override Task Clear()
         {
@@ -224,6 +277,7 @@ namespace Programming.Team.ViewModels.Resume
             ValidFromDate = DateOnly.FromDateTime(DateTime.UtcNow);
             ValidToDate = null;
             CertificateIssuer.Selected = null;
+            TextTypeId = TextType.Text;
             return Task.CompletedTask;
         }
 
@@ -238,18 +292,22 @@ namespace Programming.Team.ViewModels.Resume
                 ValidFromDate = ValidFromDate,
                 ValidToDate = ValidToDate,
                 IssuerId = IssuerId,
-                UserId = UserId
+                UserId = UserId,
+                TextTypeId = TextTypeId
             });
         }
     }
-    public class CertificateViewModel : EntityViewModel<Guid, Certificate>, ICertificate
+    public class CertificateViewModel : EntityViewModel<Guid, Certificate>, ICertificate, ITextual
     {
-        public CertificateViewModel(ILogger logger, IBusinessRepositoryFacade<Certificate, Guid> facade, Guid id) : base(logger, facade, id)
+        public SmartTextEditorViewModel<CertificateViewModel> SmartText { get; }
+        public CertificateViewModel(ILogger logger, IDocumentTemplator templator, IConfiguration config, IBusinessRepositoryFacade<Certificate, Guid> facade, Guid id) : base(logger, facade, id)
         {
+            SmartText = new SmartTextEditorViewModel<CertificateViewModel>(this, logger, templator, config);
         }
 
-        public CertificateViewModel(ILogger logger, IBusinessRepositoryFacade<Certificate, Guid> facade, Certificate entity) : base(logger, facade, entity)
+        public CertificateViewModel(ILogger logger, IDocumentTemplator templator, IConfiguration config, IBusinessRepositoryFacade<Certificate, Guid> facade, Certificate entity) : base(logger, facade, entity)
         {
+            SmartText = new SmartTextEditorViewModel<CertificateViewModel>(this, logger, templator, config);
         }
 
         private Guid issuerId;
@@ -305,9 +363,28 @@ namespace Programming.Team.ViewModels.Resume
         public string? Description
         {
             get => description;
-            set => this.RaiseAndSetIfChanged(ref description, value);
+            set
+            {
+                bool isChanged = description != value;
+                this.RaiseAndSetIfChanged(ref description, value);
+                if (isChanged)
+                    this.RaisePropertyChanged(nameof(Text));
+            }
         }
-
+        private TextType textTypeId = TextType.Text;
+        public TextType TextTypeId
+        {
+            get => textTypeId;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref textTypeId, value);
+            }
+        }
+        public string? Text
+        {
+            get => Description;
+            set => Description = value;
+        }
         public Guid UserId { get; set; }
         private CertificateIssuer? issuer;
         public CertificateIssuer? Issuer
@@ -328,6 +405,7 @@ namespace Programming.Team.ViewModels.Resume
                 ValidFromDate = ValidFromDate,
                 ValidToDate = ValidToDate,
                 UserId = UserId,
+                TextTypeId = TextTypeId,
             });
         }
 
@@ -342,6 +420,7 @@ namespace Programming.Team.ViewModels.Resume
             UserId = entity.UserId;
             Id = entity.Id;
             Issuer = entity.Issuer;
+            TextTypeId = entity.TextTypeId;
             return Task.CompletedTask;
         }
         protected override Func<IQueryable<Certificate>, IQueryable<Certificate>>? PropertiesToLoad()
@@ -351,8 +430,12 @@ namespace Programming.Team.ViewModels.Resume
     }
     public class CertificatesViewModel : EntitiesDefaultViewModel<Guid, Certificate, CertificateViewModel, AddCertificateViewModel>
     {
-        public CertificatesViewModel(AddCertificateViewModel addViewModel, IBusinessRepositoryFacade<Certificate, Guid> facade, ILogger<EntitiesViewModel<Guid, Certificate, CertificateViewModel, IBusinessRepositoryFacade<Certificate, Guid>>> logger) : base(addViewModel, facade, logger)
+        protected IDocumentTemplator Templator { get; }
+        protected IConfiguration Config { get; }
+        public CertificatesViewModel(AddCertificateViewModel addViewModel, IDocumentTemplator templator, IConfiguration config, IBusinessRepositoryFacade<Certificate, Guid> facade, ILogger<EntitiesViewModel<Guid, Certificate, CertificateViewModel, IBusinessRepositoryFacade<Certificate, Guid>>> logger) : base(addViewModel, facade, logger)
         {
+            Config = config;
+            Templator = templator;
         }
         protected override async Task<Expression<Func<Certificate, bool>>?> FilterCondition()
         {
@@ -369,7 +452,7 @@ namespace Programming.Team.ViewModels.Resume
         }
         protected override Task<CertificateViewModel> Construct(Certificate entity, CancellationToken token)
         {
-            return Task.FromResult(new CertificateViewModel(Logger, Facade, entity));
+            return Task.FromResult(new CertificateViewModel(Logger, Templator, Config, Facade, entity));
         }
     }
 }

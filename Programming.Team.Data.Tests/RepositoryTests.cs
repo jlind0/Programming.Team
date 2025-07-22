@@ -17,10 +17,10 @@ using Programming.Team.Data.Core;
 [TestClass]
 public class RepositoryTests
 {
-    private Mock<IContextFactory> _contextFactoryMock;
-    private Mock<IMemoryCache> _cacheMock;
-    private Repository<Position, Guid> _repository;
-    private Mock<ResumesContext> _contextMock;
+    private Mock<IContextFactory>? _contextFactoryMock;
+    private Mock<IMemoryCache>? _cacheMock;
+    private Repository<Position, Guid>? _repository;
+    private Mock<ResumesContext>? _contextMock;
 
     [TestInitialize]
     public void TestInitialize()

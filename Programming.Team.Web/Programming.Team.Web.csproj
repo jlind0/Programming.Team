@@ -24,6 +24,7 @@
     <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.12.0" />
     <PackageReference Include="ReactiveUI.Blazor" Version="20.4.1" />
     <PackageReference Include="Stripe.net" Version="47.1.0" />
+    <PackageReference Include="TinyMCE.Blazor" Version="2.1.0" />
     <PackageReference Include="Yarp.ReverseProxy" Version="2.3.0" />
   </ItemGroup>
 

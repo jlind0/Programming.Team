@@ -1,0 +1,38 @@
+﻿@typeparam TViewModel where TViewModel: ReactiveObject, ITextual
+@inherits ReactiveComponentBase<SmartTextEditorViewModel<TViewModel>>
+@if(ViewModel != null)
+{
+    <AlertView Alert="ViewModel.Alert" />
+    <MudStack Row="true">
+        <MudSwitch @bind-Value="ViewModel.IsHtmlEditorOpen" Label="HTML Mode" />
+        <MudButton OnClick="ViewModel.ToggleMarkdownEditor.BindCommand<MouseEventArgs>()">Paste Markdown</MudButton>
+    </MudStack>
+    <MudDialog Visible="ViewModel.IsMarkdownEditorOpen">
+        <DialogContent>
+            <div class="d-flex flex-column">
+                <div class="d-flex justify-end">
+                    <MudIconButton Icon="@Icons.Material.Filled.Close"
+                                   OnClick="ViewModel.ToggleMarkdownEditor.BindCommand<MouseEventArgs>()"
+                                   Color="Color.Default"
+                                   Class="ml-auto" />
+                </div>
+                <MudTextField @bind-Value="ViewModel.Markdown" Lines="10" Label="Markdown Content" Variant="Variant.Outlined" />
+                <MudStack Row="true">
+                    <MudButton OnClick="ViewModel.RenderMarkdownToHtmlCommand.BindCommand<MouseEventArgs>()" Color="Color.Primary">Save</MudButton>
+                </MudStack>
+            </div>
+        </DialogContent>
+    </MudDialog>
+
+    @if(ViewModel.IsHtmlEditorOpen)
+    {
+        <Editor @bind-Value="ViewModel.Html" ApiKey="@ViewModel.ApiKey" />
+    }
+    else
+    {
+        <MudTextField @bind-Value="ViewModel.Text" Lines="10" Label="Text Content" Variant="Variant.Outlined" />
+    }
+}
+@code {
+
+}

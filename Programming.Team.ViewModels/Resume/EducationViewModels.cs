@@ -1,8 +1,10 @@
 ﻿using DynamicData.Binding;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Programming.Team.Business.Core;
 using Programming.Team.Core;
+using Programming.Team.Templating.Core;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -16,10 +18,12 @@ using System.Threading.Tasks;
 
 namespace Programming.Team.ViewModels.Resume
 {
-    public class AddInstitutionViewModel : AddEntityViewModel<Guid, Institution>, IInstitution
+    public class AddInstitutionViewModel : AddEntityViewModel<Guid, Institution>, IInstitution, ITextual
     {
-        public AddInstitutionViewModel(IBusinessRepositoryFacade<Institution, Guid> facade, ILogger<AddEntityViewModel<Guid, Institution, IBusinessRepositoryFacade<Institution, Guid>>> logger) : base(facade, logger)
+        public SmartTextEditorViewModel<AddInstitutionViewModel> SmartTextEditor { get; }
+        public AddInstitutionViewModel(IBusinessRepositoryFacade<Institution, Guid> facade, IDocumentTemplator templator, IConfiguration config, ILogger<AddEntityViewModel<Guid, Institution, IBusinessRepositoryFacade<Institution, Guid>>> logger) : base(facade, logger)
         {
+            SmartTextEditor = new SmartTextEditorViewModel<AddInstitutionViewModel>(this, logger, templator, config);
         }
 
         private string name = null!;
@@ -66,7 +70,17 @@ namespace Programming.Team.ViewModels.Resume
             get => url;
             set => this.RaiseAndSetIfChanged(ref url, value);
         }
-
+        private TextType textTypeId = TextType.Text;
+        public TextType TextTypeId
+        {
+            get => textTypeId;
+            set => this.RaiseAndSetIfChanged(ref textTypeId, value);
+        }
+        public string? Text
+        {
+            get => Description;
+            set => Description = value;
+        }
 
         protected override Task Clear()
         {
@@ -76,6 +90,7 @@ namespace Programming.Team.ViewModels.Resume
             State = null;
             Country = null;
             Url = null;
+            TextTypeId = TextType.Text;
             return Task.CompletedTask;
         }
 
@@ -88,7 +103,8 @@ namespace Programming.Team.ViewModels.Resume
                 City = City,
                 State = State,
                 Country = Country,
-                Url = Url
+                Url = Url,
+                TextTypeId = TextTypeId
             });
         }
         public override void SetText(string text)
@@ -114,7 +130,7 @@ namespace Programming.Team.ViewModels.Resume
             return [];
         }
     }
-    public class AddEducationViewModel : AddUserPartionedEntity<Guid, Education>, IEducation
+    public class AddEducationViewModel : AddUserPartionedEntity<Guid, Education>, IEducation, ITextual
     {
         private Guid institutionId;
         public Guid InstitutionId
@@ -171,15 +187,26 @@ namespace Programming.Team.ViewModels.Resume
             get => description;
             set => this.RaiseAndSetIfChanged(ref description, value);
         }
+        private TextType textTypeId = TextType.Text;
+        public TextType TextTypeId
+        {
+            get => textTypeId;
+            set => this.RaiseAndSetIfChanged(ref textTypeId, value);
+        }
+        public string? Text
+        {
+            get => Description;
+            set => Description = value;
+        }
 
-        
         public SearchSelectInstiutionViewModel SelectInstiutionViewModel { get; }
         protected readonly CompositeDisposable disposable = new CompositeDisposable();
         ~AddEducationViewModel()
         {
             disposable.Dispose();
         }
-        public AddEducationViewModel(SearchSelectInstiutionViewModel selectInstiutionViewModel, IBusinessRepositoryFacade<Education, Guid> facade, ILogger<AddEntityViewModel<Guid, Education, IBusinessRepositoryFacade<Education, Guid>>> logger) : base(facade, logger)
+        public SmartTextEditorViewModel<AddEducationViewModel> SmartTextEditor { get; }
+        public AddEducationViewModel(SearchSelectInstiutionViewModel selectInstiutionViewModel, IDocumentTemplator templator, IConfiguration config, IBusinessRepositoryFacade<Education, Guid> facade, ILogger<AddEntityViewModel<Guid, Education, IBusinessRepositoryFacade<Education, Guid>>> logger) : base(facade, logger)
         {
             SelectInstiutionViewModel = selectInstiutionViewModel;
             SelectInstiutionViewModel.WhenPropertyChanged(p => p.Selected).Subscribe(p =>
@@ -189,6 +216,7 @@ namespace Programming.Team.ViewModels.Resume
                 else
                     InstitutionId = Guid.Empty;
             }).DisposeWith(disposable);
+            SmartTextEditor = new SmartTextEditorViewModel<AddEducationViewModel>(this, logger, templator, config);
         }
         private bool graduated;
         public bool Graduated
@@ -207,7 +235,8 @@ namespace Programming.Team.ViewModels.Resume
                 Major = Major,
                 StartDate = StartDate,
                 EndDate = EndDate,
-                UserId = UserId
+                UserId = UserId,
+                TextTypeId = TextTypeId
             });
         }
 
@@ -220,10 +249,11 @@ namespace Programming.Team.ViewModels.Resume
             StartDate = DateOnly.FromDateTime(DateTime.Today);
             Major = null;
             Graduated = false;
+            TextTypeId = TextType.Text;
             return Task.CompletedTask;
         }
     }
-    public class EducationViewModel : EntityViewModel<Guid, Education>, IEducation
+    public class EducationViewModel : EntityViewModel<Guid, Education>, IEducation, ITextual
     {
         private Institution institution = null!;
         public Institution Institution
@@ -280,16 +310,38 @@ namespace Programming.Team.ViewModels.Resume
         public string? Description
         {
             get => description;
-            set => this.RaiseAndSetIfChanged(ref description, value);
+            set
+            {
+                bool isChanged = description != value;
+                this.RaiseAndSetIfChanged(ref description, value);
+                if (isChanged)
+                    this.RaisePropertyChanged(nameof(Text));
+            }
         }
         private bool graduated;
-
-        public EducationViewModel(ILogger logger, IBusinessRepositoryFacade<Education, Guid> facade, Guid id) : base(logger, facade, id)
+        private TextType textTypeId = TextType.Text;
+        public TextType TextTypeId
         {
+            get => textTypeId;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref textTypeId, value);
+            }
+        }
+        public string? Text
+        {
+            get => Description;
+            set => Description = value;
+        }
+        public SmartTextEditorViewModel<EducationViewModel> SmartText { get; }
+        public EducationViewModel(ILogger logger, IDocumentTemplator templator, IConfiguration config, IBusinessRepositoryFacade<Education, Guid> facade, Guid id) : base(logger, facade, id)
+        {
+            SmartText = new SmartTextEditorViewModel<EducationViewModel>(this, logger, templator, config);
         }
 
-        public EducationViewModel(ILogger logger, IBusinessRepositoryFacade<Education, Guid> facade, Education entity) : base(logger, facade, entity)
+        public EducationViewModel(ILogger logger, IDocumentTemplator templator, IConfiguration config, IBusinessRepositoryFacade<Education, Guid> facade, Education entity) : base(logger, facade, entity)
         {
+            SmartText = new SmartTextEditorViewModel<EducationViewModel>(this, logger, templator, config);
         }
 
         public bool Graduated
@@ -313,7 +365,8 @@ namespace Programming.Team.ViewModels.Resume
                 Major = Major,
                 EndDate = EndDate,
                 StartDate = StartDate,
-                InstitutionId = InstitutionId
+                InstitutionId = InstitutionId,
+                TextTypeId = TextTypeId,
             });
         }
 
@@ -328,13 +381,18 @@ namespace Programming.Team.ViewModels.Resume
             Graduated = entity.Graduated;
             Institution = entity.Institution;
             UserId = entity.UserId;
+            TextTypeId = entity.TextTypeId;
             return Task.CompletedTask;
         }
     }
     public class EducationsViewModel : EntitiesDefaultViewModel<Guid, Education, EducationViewModel, AddEducationViewModel>
     {
-        public EducationsViewModel(AddEducationViewModel addViewModel, IBusinessRepositoryFacade<Education, Guid> facade, ILogger<EntitiesViewModel<Guid, Education, EducationViewModel, IBusinessRepositoryFacade<Education, Guid>>> logger) : base(addViewModel, facade, logger)
+        protected IDocumentTemplator Templator { get; }
+        protected IConfiguration Config { get; }    
+        public EducationsViewModel(AddEducationViewModel addViewModel, IDocumentTemplator templator, IConfiguration config, IBusinessRepositoryFacade<Education, Guid> facade, ILogger<EntitiesViewModel<Guid, Education, EducationViewModel, IBusinessRepositoryFacade<Education, Guid>>> logger) : base(addViewModel, facade, logger)
         {
+            Templator = templator;
+            Config = config;
         }
 
         protected override async Task<Expression<Func<Education, bool>>?> FilterCondition()
@@ -352,7 +410,7 @@ namespace Programming.Team.ViewModels.Resume
         }
         protected override Task<EducationViewModel> Construct(Education entity, CancellationToken token)
         {
-            return Task.FromResult(new EducationViewModel(Logger, Facade, entity));
+            return Task.FromResult(new EducationViewModel(Logger, Templator, Config, Facade, entity));
         }
     }
 }

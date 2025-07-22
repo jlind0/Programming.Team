@@ -9,8 +9,7 @@
         <div class="d-flex flex-column">
             <MudStack Fixed="true" Class="px-4 pt-4 ownSkillsDiv">
                 <MudText>@ViewModel.Skill.Name</MudText>
-                <MudTextField Lines="10" @bind-Value="ViewModel.Description" Label="Description"
-                    Variant="Variant.Outlined" />
+                <SmartTextEditor TViewModel="PositionSkillViewModel" ViewModel="ViewModel.SmartText" />
                 <MudStack Row="true">
                     <MudButton OnClick="ViewModel.Update.BindCommand<MouseEventArgs>()" Class="fw-bold"
                         Variant="Variant.Filled" Color="Color.Primary">Update Skill</MudButton>

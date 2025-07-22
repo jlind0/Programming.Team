@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Programming.Team.Core;
 
-public interface IRecommendation : IEntity<Guid>, IUserPartionedEntity, INamedEntity
+public interface IRecommendation : IEntity<Guid>, IUserPartionedEntity, INamedEntity, IHasTextType
 {
 
     Guid PositionId { get; set; }
@@ -32,4 +32,5 @@ public partial class Recommendation : Entity<Guid>, IRecommendation
 
 
     public virtual User User { get; set; } = null!;
+    public TextType TextTypeId { get; set; }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Programming.Team.Core;
 
-public interface IEducation : IEntity<Guid>, IUserPartionedEntity
+public interface IEducation : IEntity<Guid>, IUserPartionedEntity, IHasTextType
 {
     Guid InstitutionId { get; set; }
 
@@ -47,4 +47,5 @@ public partial class Education : Entity<Guid>, IEducation
     public virtual Institution Institution { get; set; } = null!;
 
     public virtual User User { get; set; } = null!;
+    public TextType TextTypeId { get; set; }
 }

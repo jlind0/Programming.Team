@@ -25,8 +25,7 @@
             </div>
             <MudStack>
                 <MudTextField @bind-Value="ViewModel.Title" Label="Title" Variant="Variant.Outlined" />
-                <MudTextField @bind-Value="ViewModel.Description" Label="Description" Variant="Variant.Outlined"
-                                Lines="10" />
+                    <SmartTextEditor TViewModel="AddPublicationViewModel" ViewModel="ViewModel.SmartTextEditor" />
                 <MudTextField @bind-Value="ViewModel.Url" Label="URL" Variant="Variant.Outlined" />
                 <MudDatePicker @bind-Date="ViewModel.PublishDateTime" Label="Publish Date"
                                 MinDate="new DateTime(1950, 1, 1)" />

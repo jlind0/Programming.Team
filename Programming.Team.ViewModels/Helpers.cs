@@ -22,6 +22,10 @@ using System.Xml.Serialization;
 
 namespace Programming.Team.ViewModels
 {
+    public interface ITextual : IHasTextType
+    {
+        string? Text { get; set; }
+    }
     public class DataGridRequest<TKey, TEntity>
         where TKey : struct
         where TEntity : Entity<TKey>, new()

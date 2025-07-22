@@ -1,60 +1,4 @@
-﻿@*@inherits ReactiveComponentBase<AddEducationViewModel>
-
-@if (ViewModel != null)
-{
-    <AlertView Alert="ViewModel.Alert" />
-
-    <MudOverlay ZIndex="5" Visible="@ViewModel.IsOpen"
-                Style="background-color: rgba(255,255,255,.3); padding: 20px"
-                AutoClose="false" />
-
-    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4">
-        <div class="d-flex flex-column">
-
-            <div class="d-flex justify-end">
-                <MudIconButton Icon="@Icons.Material.Filled.Close"
-                               OnClick="() => ViewModel.IsOpen = false"
-                               Color="Color.Default"
-                               Class="ml-auto" />
-            </div>
-            <MudStack>
-                <SearchSelectEntityView TAddView="AddInstitutionView"
-                                        TEntity="Institution" TKey="Guid" TAddViewModel="AddInstitutionViewModel"
-                                        TSearchSelectViewModel="SearchSelectInstiutionViewModel" 
-                                        ViewModel="ViewModel.SelectInstiutionViewModel" />
-                <MudTextField @bind-Value="ViewModel.Major" Label="Major" Variant="Variant.Outlined" />
-                <MudCheckBox @bind-Value="ViewModel.Graduated" Label="Graduated?" />
-                <MudDatePicker @bind-Date="ViewModel.StartDateTime" Label="Start Date" MinDate="new DateTime(1950, 1, 1)" />
-                <MudDatePicker @bind-Date="ViewModel.EndDateTime" Label="End Date" MinDate="new DateTime(1950, 1, 1)" />
-                <MudTextField Lines="10" @bind-Value="ViewModel.Description" Label="Description"
-                    Variant="Variant.Outlined" />
-                <MudStack Row="true">
-                    <MudButton OnClick="ViewModel.Add.BindCommand<MouseEventArgs>()" Class="fw-bold"
-                        Variant="Variant.Filled" Color="Color.Primary">
-                        Add Education</MudButton>
-                    <MudButton OnClick="ViewModel.Cancel.BindCommand<MouseEventArgs>()" Class="fw-bold"
-                        Variant="Variant.Filled" Color="Color.Primary">
-                        Cancel</MudButton>
-                </MudStack>
-            </MudStack>
-
-        </div>
-    </MudPopover>
-
-}
-
-@code {
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender && ViewModel != null)
-        {
-            await ViewModel.Init.Execute().GetAwaiter();
-        }
-        await base.OnAfterRenderAsync(firstRender);
-    }
-}*@
-
-@inherits ReactiveComponentBase<AddEducationViewModel>
+﻿@inherits ReactiveComponentBase<AddEducationViewModel>
 @using System.ComponentModel.DataAnnotations
 <style>
     .custom-dim {
@@ -211,11 +155,7 @@
                                        MinDate="new DateTime(1950, 1, 1)"
                                        Variant="Variant.Outlined" />
 
-                        <MudTextField T="string"
-                                      Lines="5"
-                                      Label="Description"
-                                      @bind-Value="ViewModel.Description"
-                                      Variant="Variant.Outlined" />
+                            <SmartTextEditor TViewModel="AddEducationViewModel" ViewModel="ViewModel.SmartTextEditor" />
 
                         <div class="step-actions">
                      

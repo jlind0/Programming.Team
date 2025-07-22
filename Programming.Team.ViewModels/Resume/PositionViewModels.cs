@@ -1,9 +1,11 @@
 ﻿using DynamicData.Binding;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Programming.Team.Business.Core;
 using Programming.Team.Core;
+using Programming.Team.Templating.Core;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -17,15 +19,17 @@ using System.Threading.Tasks;
 
 namespace Programming.Team.ViewModels.Resume
 {
-    public class AddPositionViewModel : AddUserPartionedEntity<Guid, Position>, IPosition
+    public class AddPositionViewModel : AddUserPartionedEntity<Guid, Position>, IPosition, ITextual
     {
         public SearchSelectCompanyViewModel CompanyViewModel { get; }
+        public SmartTextEditorViewModel<AddPositionViewModel> SmartText { get; }
         protected readonly CompositeDisposable disposable = new CompositeDisposable();
-        public AddPositionViewModel(IBusinessRepositoryFacade<Position, Guid> facade,
+        public AddPositionViewModel(IBusinessRepositoryFacade<Position, Guid> facade, IDocumentTemplator templator, IConfiguration config,
             ILogger<AddEntityViewModel<Guid, Position, IBusinessRepositoryFacade<Position, Guid>>> logger,
             SearchSelectCompanyViewModel companyViewModel) : base(facade, logger)
         {
             CompanyViewModel = companyViewModel;
+            SmartText = new SmartTextEditorViewModel<AddPositionViewModel>(this, logger, templator, config);
             CompanyViewModel.WhenPropertyChanged(p => p.Selected).Subscribe(p =>
             {
                 if (p.Sender != null && p.Sender.Selected != null)
@@ -34,7 +38,17 @@ namespace Programming.Team.ViewModels.Resume
                     CompanyId = Guid.Empty;
             }).DisposeWith(disposable);
         }
-
+        private TextType textTypeId = TextType.Text;
+        public TextType TextTypeId
+        {
+            get => textTypeId;
+            set => this.RaiseAndSetIfChanged(ref textTypeId, value);
+        }
+        public string? Text
+        {
+            get => Description;
+            set => Description = value;
+        }
         private Guid companyId;
         [Required]
         public Guid CompanyId
@@ -118,6 +132,7 @@ namespace Programming.Team.ViewModels.Resume
             Description = null;
             SortOrder = null;
             CompanyViewModel.Selected = null;
+            TextTypeId = TextType.Text;
             return Task.CompletedTask;
         }
 
@@ -131,7 +146,8 @@ namespace Programming.Team.ViewModels.Resume
                 Title = Title,
                 Description = Description,
                 SortOrder = SortOrder,
-                UserId = UserId
+                UserId = UserId,
+                TextTypeId = TextTypeId
             });
         }
         ~AddPositionViewModel()
@@ -142,12 +158,16 @@ namespace Programming.Team.ViewModels.Resume
     public class PositionsViewModel : EntitiesDefaultViewModel<Guid, Position, PositionViewModel, AddPositionViewModel>
     {
         protected IServiceProvider ServiceProvider { get; }
-        public PositionsViewModel(AddPositionViewModel addViewModel,
+        protected IDocumentTemplator Templator { get; }
+        protected IConfiguration Config { get; }
+        public PositionsViewModel(AddPositionViewModel addViewModel, IDocumentTemplator templator, IConfiguration config,
                 IBusinessRepositoryFacade<Position, Guid> facade,
                 ILogger<EntitiesViewModel<Guid, Position, PositionViewModel, IBusinessRepositoryFacade<Position, Guid>>> logger,
                 IServiceProvider serviceProvider) : base(addViewModel, facade, logger)
         {
+            Config= config;
             ServiceProvider = serviceProvider;
+            Templator = templator;
         }
         protected override Func<IQueryable<Position>, IQueryable<Position>>? PropertiesToLoad()
         {
@@ -164,14 +184,28 @@ namespace Programming.Team.ViewModels.Resume
         }
         protected override Task<PositionViewModel> Construct(Position entity, CancellationToken token)
         {
-            var vm = new PositionViewModel(Logger, Facade,
+            var vm = new PositionViewModel(Logger, Templator, Config, Facade,
                 ServiceProvider.GetRequiredService<PositionSkillsViewModel>(), entity);
 
             return Task.FromResult(vm);
         }
     }
-    public class PositionViewModel : EntityViewModel<Guid, Position>, IPosition
+    public class PositionViewModel : EntityViewModel<Guid, Position>, IPosition, ITextual
     {
+        private TextType textTypeId = TextType.Text;
+        public TextType TextTypeId
+        {
+            get => textTypeId;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref textTypeId, value);
+            }
+        }
+        public string? Text
+        {
+            get => Description;
+            set => Description = value;
+        }
         private Company? company;
         public Company? Company
         {
@@ -237,7 +271,13 @@ namespace Programming.Team.ViewModels.Resume
         public string? Description
         {
             get => description;
-            set => this.RaiseAndSetIfChanged(ref description, value);
+            set
+            {
+                bool isChanged = description != value;
+                this.RaiseAndSetIfChanged(ref description, value);
+                if(isChanged)
+                    this.RaisePropertyChanged(nameof(Text));
+            }
         }
 
         private string? sortOrder;
@@ -254,16 +294,18 @@ namespace Programming.Team.ViewModels.Resume
         }
         protected readonly CompositeDisposable disposable = new CompositeDisposable();
         public PositionSkillsViewModel SkillsViewModel { get; }
-        public PositionViewModel(ILogger logger, IBusinessRepositoryFacade<Position, Guid> facade, PositionSkillsViewModel skillsViewModel, Guid id) : base(logger, facade, id)
+        public SmartTextEditorViewModel<PositionViewModel> SmartText { get; }
+        public PositionViewModel(ILogger logger, IDocumentTemplator templator, IConfiguration config, IBusinessRepositoryFacade<Position, Guid> facade, PositionSkillsViewModel skillsViewModel, Guid id) : base(logger, facade, id)
         {
             SkillsViewModel = skillsViewModel;
+            SmartText = new SmartTextEditorViewModel<PositionViewModel>(this, logger, templator, config);
             WireupSkillsVM();
         }
 
-        public PositionViewModel(ILogger logger, IBusinessRepositoryFacade<Position, Guid> facade, PositionSkillsViewModel skillsViewModel, Position entity) : base(logger, facade, entity)
+        public PositionViewModel(ILogger logger, IDocumentTemplator templator, IConfiguration config, IBusinessRepositoryFacade<Position, Guid> facade, PositionSkillsViewModel skillsViewModel, Position entity) : base(logger, facade, entity)
         {
             SkillsViewModel = skillsViewModel;
-            
+            SmartText = new SmartTextEditorViewModel<PositionViewModel>(this, logger, templator, config);
             WireupSkillsVM();
         }
         protected void WireupSkillsVM()
@@ -299,7 +341,7 @@ namespace Programming.Team.ViewModels.Resume
                 Title = Title,
                 StartDate = StartDate,
                 EndDate = EndDate,
-
+                TextTypeId = TextTypeId,
             });
         }
 
@@ -315,6 +357,7 @@ namespace Programming.Team.ViewModels.Resume
             StartDate = entity.StartDate;
             EndDate = entity.EndDate;
             Company = entity.Company;
+            TextTypeId = entity.TextTypeId;
             SkillsViewModel.PositionId = entity.Id;
             SkillsViewModel.InitialEntities = entity.PositionSkills;
             SkillsViewModel.Description = entity.Description ?? "";

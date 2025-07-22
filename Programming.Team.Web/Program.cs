@@ -1,6 +1,7 @@
 using Azure.Communication.Email;
 using Azure.Storage.Blobs;
 using Invio.Extensions.Authentication.JwtBearer;
+using Markdig;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -391,6 +392,23 @@ builder.Services.AddTransient<ProjectSkillsViewModel>();
 builder.Services.AddTransient<LayoutViewModel>();
 builder.Services.AddTransient<AddPageViewModel>();
 builder.Services.AddTransient<PagesViewModel>();
+builder.Services.AddSingleton(provider =>
+{
+    return new MarkdownPipelineBuilder()
+                    .UseAdvancedExtensions()
+                    .Build();
+});
+builder.Services.AddSingleton(provider =>
+{
+    var config = new ReverseMarkdown.Config
+    {
+        GithubFlavored = true,
+        RemoveComments = true,
+        CleanupUnnecessarySpaces = true,
+    };
+
+    return new ReverseMarkdown.Converter(config);
+});
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession(options =>
 {

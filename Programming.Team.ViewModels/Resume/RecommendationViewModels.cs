@@ -1,8 +1,10 @@
 ﻿using DynamicData.Binding;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Programming.Team.Business.Core;
 using Programming.Team.Core;
+using Programming.Team.Templating.Core;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -16,16 +18,18 @@ using System.Threading.Tasks;
 
 namespace Programming.Team.ViewModels.Resume
 {
-    public class AddRecommendationViewModel : AddUserPartionedEntity<Guid, Recommendation>, IRecommendation
+    public class AddRecommendationViewModel : AddUserPartionedEntity<Guid, Recommendation>, IRecommendation, ITextual
     {
         public SearchSelectPositionViewModel SelectPosition { get; }
         protected readonly CompositeDisposable disposable = new CompositeDisposable();
+        public SmartTextEditorViewModel<AddRecommendationViewModel> SmartTextEditor { get; }
         ~AddRecommendationViewModel()
         {
             disposable.Dispose();
         }
-        public AddRecommendationViewModel(SearchSelectPositionViewModel selectPosition, IBusinessRepositoryFacade<Recommendation, Guid> facade, ILogger<AddEntityViewModel<Guid, Recommendation, IBusinessRepositoryFacade<Recommendation, Guid>>> logger) : base(facade, logger)
+        public AddRecommendationViewModel(SearchSelectPositionViewModel selectPosition,IDocumentTemplator templator, IConfiguration config, IBusinessRepositoryFacade<Recommendation, Guid> facade, ILogger<AddEntityViewModel<Guid, Recommendation, IBusinessRepositoryFacade<Recommendation, Guid>>> logger) : base(facade, logger)
         {
+            SmartTextEditor = new SmartTextEditorViewModel<AddRecommendationViewModel>(this, logger, templator, config);
             SelectPosition = selectPosition;
             SelectPosition.WhenPropertyChanged(p => p.Selected).Subscribe(p =>
             {
@@ -35,7 +39,17 @@ namespace Programming.Team.ViewModels.Resume
                     PositionId = Guid.Empty;
             }).DisposeWith(disposable);
         }
-
+        private TextType textTypeId = TextType.Text;
+        public TextType TextTypeId
+        {
+            get => textTypeId;
+            set => this.RaiseAndSetIfChanged(ref textTypeId, value);
+        }
+        public string? Text
+        {
+            get => Body;
+            set => Body = value ?? string.Empty;
+        }
         private Guid positionId;
         public Guid PositionId
         {
@@ -85,6 +99,7 @@ namespace Programming.Team.ViewModels.Resume
             SortOrder = null;
             SelectPosition.Selected = null;
             Title = null;
+            TextTypeId = TextType.Text;
             return Task.CompletedTask;
         }
         public override bool CanAdd => SelectPosition.Selected != null;
@@ -97,11 +112,12 @@ namespace Programming.Team.ViewModels.Resume
                 Body = Body,
                 SortOrder = SortOrder,
                 UserId = UserId,
-                Title = Title
+                Title = Title,
+                TextTypeId = TextTypeId
             });
         }
     }
-    public class RecommendationViewModel : EntityViewModel<Guid, Recommendation>, IRecommendation
+    public class RecommendationViewModel : EntityViewModel<Guid, Recommendation>, IRecommendation, ITextual
     {
         private Guid positionId;
         public Guid PositionId
@@ -123,7 +139,13 @@ namespace Programming.Team.ViewModels.Resume
         public string Body
         {
             get => body;
-            set => this.RaiseAndSetIfChanged(ref body, value);
+            set
+            {
+                bool isChanged = body != value;
+                this.RaiseAndSetIfChanged(ref body, value);
+                if (isChanged)
+                    this.RaisePropertyChanged(nameof(Text));
+            }
         }
 
         private string? sortOrder;
@@ -145,12 +167,29 @@ namespace Programming.Team.ViewModels.Resume
             get => position;
             set => this.RaiseAndSetIfChanged(ref position, value);
         }
-        public RecommendationViewModel(ILogger logger, IBusinessRepositoryFacade<Recommendation, Guid> facade, Guid id) : base(logger, facade, id)
+        private TextType textTypeId = TextType.Text;
+        public TextType TextTypeId
         {
+            get => textTypeId;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref textTypeId, value);
+            }
+        }
+        public string? Text
+        {
+            get => Body;
+            set => Body = value ?? string.Empty;
+        }
+        public SmartTextEditorViewModel<RecommendationViewModel> SmartText { get; }
+        public RecommendationViewModel(ILogger logger, IDocumentTemplator templator, IConfiguration config, IBusinessRepositoryFacade<Recommendation, Guid> facade, Guid id) : base(logger, facade, id)
+        {
+            SmartText = new SmartTextEditorViewModel<RecommendationViewModel>(this, logger, templator, config);
         }
 
-        public RecommendationViewModel(ILogger logger, IBusinessRepositoryFacade<Recommendation, Guid> facade, Recommendation entity) : base(logger, facade, entity)
+        public RecommendationViewModel(ILogger logger, IDocumentTemplator templator, IConfiguration config, IBusinessRepositoryFacade<Recommendation, Guid> facade, Recommendation entity) : base(logger, facade, entity)
         {
+            SmartText = new SmartTextEditorViewModel<RecommendationViewModel>(this, logger, templator, config);
         }
         
         protected override Func<IQueryable<Recommendation>, IQueryable<Recommendation>>? PropertiesToLoad()
@@ -168,7 +207,8 @@ namespace Programming.Team.ViewModels.Resume
                 SortOrder = sortOrder,
                 PositionId = PositionId,
                 UserId = UserId,
-                Title = Title
+                Title = Title,
+                TextTypeId = TextTypeId
             });
         }
 
@@ -182,13 +222,18 @@ namespace Programming.Team.ViewModels.Resume
             PositionId = entity.PositionId;
             Position = entity.Position;
             Title = entity.Title;
+            TextTypeId = entity.TextTypeId;
             return Task.CompletedTask;
         }
     }
     public class RecommendationsViewModel : EntitiesDefaultViewModel<Guid, Recommendation, RecommendationViewModel, AddRecommendationViewModel>
     {
-        public RecommendationsViewModel(AddRecommendationViewModel addViewModel, IBusinessRepositoryFacade<Recommendation, Guid> facade, ILogger<EntitiesViewModel<Guid, Recommendation, RecommendationViewModel, IBusinessRepositoryFacade<Recommendation, Guid>>> logger) : base(addViewModel, facade, logger)
+        protected IDocumentTemplator Templator { get; }
+        protected IConfiguration Config { get; }
+        public RecommendationsViewModel(AddRecommendationViewModel addViewModel, IDocumentTemplator templator, IConfiguration config, IBusinessRepositoryFacade<Recommendation, Guid> facade, ILogger<EntitiesViewModel<Guid, Recommendation, RecommendationViewModel, IBusinessRepositoryFacade<Recommendation, Guid>>> logger) : base(addViewModel, facade, logger)
         {
+            Templator = templator;
+            Config = config;
         }
         protected override Func<IQueryable<Recommendation>, IQueryable<Recommendation>>? PropertiesToLoad()
         {
@@ -205,7 +250,7 @@ namespace Programming.Team.ViewModels.Resume
         }
         protected override Task<RecommendationViewModel> Construct(Recommendation entity, CancellationToken token)
         {
-            return Task.FromResult(new RecommendationViewModel(Logger, Facade, entity));
+            return Task.FromResult(new RecommendationViewModel(Logger, Templator,Config,Facade, entity));
         }
     }
 }

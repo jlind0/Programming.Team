@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace Programming.Team.Core;
-public interface ICompany : IEntity<Guid>, INamedEntity
+public interface ICompany : IEntity<Guid>, INamedEntity, IHasTextType
 {
 
     string? Description { get; set; }
@@ -31,4 +31,5 @@ public partial class Company : Entity<Guid>, ICompany
     public string? Url { get; set; }
 
     public virtual ICollection<Position> Positions { get; set; } = new List<Position>();
+    public TextType TextTypeId { get; set; }
 }

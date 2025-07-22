@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace Programming.Team.Core;
-public interface ICertificate : IEntity<Guid>, IUserPartionedEntity, INamedEntity
+public interface ICertificate : IEntity<Guid>, IUserPartionedEntity, INamedEntity, IHasTextType
 {
     Guid IssuerId { get; set; }
 
@@ -45,4 +45,5 @@ public partial class Certificate : Entity<Guid>, ICertificate
     public virtual CertificateIssuer Issuer { get; set; } = null!;
 
     public virtual User User { get; set; } = null!;
+    public TextType TextTypeId { get; set; }
 }

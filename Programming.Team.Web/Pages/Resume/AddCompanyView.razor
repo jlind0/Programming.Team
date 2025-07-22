@@ -6,8 +6,7 @@
         <div class="d-flex flex-column">
             <MudStack>
                 <MudTextField @bind-Value="ViewModel.Name" Label="Name" Variant="Variant.Outlined" />
-                <MudTextField @bind-Value="ViewModel.Description" Label="Description" Variant="Variant.Outlined"
-                    Lines="10" />
+                <SmartTextEditor TViewModel="AddCompanyViewModel" ViewModel="ViewModel.SmartText" />
                 <MudTextField @bind-Value="ViewModel.City" Label="City" Variant="Variant.Outlined" />
                 <MudTextField @bind-Value="ViewModel.State" Label="State" Variant="Variant.Outlined" />
                 <MudTextField @bind-Value="ViewModel.Country" Label="Country" Variant="Variant.Outlined" />

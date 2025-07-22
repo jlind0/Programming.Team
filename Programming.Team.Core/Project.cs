@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Programming.Team.Core
 {
-    public interface IProject : IEntity<Guid>, INamedEntity, IUserPartionedEntity
+    public interface IProject : IEntity<Guid>, INamedEntity, IUserPartionedEntity, IHasTextType
     {
         Guid PositionId { get; set; }
         string? Description { get; set; }
@@ -29,8 +29,9 @@ namespace Programming.Team.Core
         public virtual User User { get; set; } = null!;
         public virtual ICollection<ProjectSkill> ProjectSkills { get; set; } = [];
         public string? SortOrder { get; set; }
+        public TextType TextTypeId { get; set; }
     }
-    public interface IProjectSkill : IEntity<Guid>
+    public interface IProjectSkill : IEntity<Guid>, IHasTextType
     {
         Guid ProjectId { get; set; }
         Guid SkillId { get; set; }
@@ -43,5 +44,6 @@ namespace Programming.Team.Core
         public Guid SkillId { get; set; }
         public virtual Skill Skill { get; set; } = null!;
         public string? Description { get; set; }
+        public TextType TextTypeId { get; set; }
     }
 }

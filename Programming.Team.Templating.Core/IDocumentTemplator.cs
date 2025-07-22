@@ -12,6 +12,8 @@ namespace Programming.Team.Templating.Core
         Task<string> ApplyTemplate<TObject>(string template, TObject obj, CancellationToken token = default)
             where TObject : class, new();
         Task<byte[]> RenderLatex(string latex, CancellationToken token = default);
+        Task<string?> RenderHtmlFromMarkdown(string markdown, CancellationToken token = default);
+        Task<string?> RenderMarkdownFromHtml(string html, CancellationToken token = default);
     }
     
 }

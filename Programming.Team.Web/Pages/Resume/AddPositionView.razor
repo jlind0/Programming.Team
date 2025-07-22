@@ -1,5 +1,4 @@
-﻿
-@inherits ReactiveComponentBase<AddPositionViewModel>
+﻿@inherits ReactiveComponentBase<AddPositionViewModel>
 
 <style>
     .custom-dim {
@@ -59,11 +58,7 @@
                                             Class="flex-grow-1" />
                         </div>
 
-                        <MudTextField Lines="10"
-                                      T="string"
-                                      @bind-Value="ViewModel.Description"
-                                      Label="Description"
-                                      Variant="Variant.Outlined" />
+                            <SmartTextEditor TViewModel="AddPositionViewModel" ViewModel="ViewModel.SmartText" />
 
                         <MudTextField @bind-Value="ViewModel.SortOrder"
                                       Label="Sort Order"

@@ -1,23 +1,25 @@
-﻿using DynamicData.Binding;
+﻿using DynamicData;
+using DynamicData.Binding;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Programming.Team.AI.Core;
 using Programming.Team.Business.Core;
 using Programming.Team.Core;
+using Programming.Team.Templating.Core;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Programming.Team.AI.Core;
-using System.Collections.ObjectModel;
-using DynamicData;
 using System.Windows.Input;
-using System.Diagnostics;
 
 namespace Programming.Team.ViewModels.Resume
 {
@@ -83,13 +85,15 @@ namespace Programming.Team.ViewModels.Resume
             return Task.CompletedTask;
         }
     }
-    public class AddPositionSkillViewModel : AddEntityViewModel<Guid, PositionSkill>, IPositionSkill
+    public class AddPositionSkillViewModel : AddEntityViewModel<Guid, PositionSkill>, IPositionSkill, ITextual
     {
         public SearchSelectSkillViewModel SkillSelectorViewModel { get; }
         private readonly CompositeDisposable disposables = new CompositeDisposable();
-        public AddPositionSkillViewModel(SearchSelectSkillViewModel skillViewModel, IBusinessRepositoryFacade<PositionSkill, Guid> facade, ILogger<AddEntityViewModel<Guid, PositionSkill, IBusinessRepositoryFacade<PositionSkill, Guid>>> logger) : base(facade, logger)
+        public SmartTextEditorViewModel<AddPositionSkillViewModel> SmartTextEditor { get; }
+        public AddPositionSkillViewModel(SearchSelectSkillViewModel skillViewModel, IDocumentTemplator templator, IConfiguration config, IBusinessRepositoryFacade<PositionSkill, Guid> facade, ILogger<AddEntityViewModel<Guid, PositionSkill, IBusinessRepositoryFacade<PositionSkill, Guid>>> logger) : base(facade, logger)
         {
             SkillSelectorViewModel = skillViewModel;
+            SmartTextEditor = new SmartTextEditorViewModel<AddPositionSkillViewModel>(this, logger, templator, config);
             skillViewModel.WhenPropertyChanged(p => p.Selected).Subscribe(p =>
             {
                 if (p.Sender.Selected == null)
@@ -97,6 +101,17 @@ namespace Programming.Team.ViewModels.Resume
                 else
                     SkillId = p.Sender.Selected.Id;
             }).DisposeWith(disposables);
+        }
+        private TextType textTypeId = TextType.Text;
+        public TextType TextTypeId
+        {
+            get => textTypeId;
+            set => this.RaiseAndSetIfChanged(ref textTypeId, value);
+        }
+        public string? Text
+        {
+            get => Description;
+            set => Description = value;
         }
         public override bool CanAdd => SkillSelectorViewModel.Selected != null;
         private Guid positionId;
@@ -130,6 +145,7 @@ namespace Programming.Team.ViewModels.Resume
             SkillId = Guid.Empty;
             Description = null;
             SkillSelectorViewModel.Selected = null;
+            TextTypeId = TextType.Text;
             return Task.CompletedTask;
         }
 
@@ -140,7 +156,8 @@ namespace Programming.Team.ViewModels.Resume
                 Id = Id,
                 PositionId = PositionId,
                 SkillId = SkillId,
-                Description = Description
+                Description = Description,
+                TextTypeId = TextTypeId
             });
         }
         ~AddPositionSkillViewModel()
@@ -148,7 +165,7 @@ namespace Programming.Team.ViewModels.Resume
             disposables.Dispose();
         }
     }
-    public class PositionSkillViewModel : EntityViewModel<Guid, PositionSkill>, IPositionSkill
+    public class PositionSkillViewModel : EntityViewModel<Guid, PositionSkill>, IPositionSkill, ITextual
     {
         private bool isOpen;
         public bool IsOpen
@@ -174,20 +191,41 @@ namespace Programming.Team.ViewModels.Resume
         public string? Description
         {
             get => description;
-            set => this.RaiseAndSetIfChanged(ref description, value);
+            set
+            {
+                bool isChanged = description != value;
+                this.RaiseAndSetIfChanged(ref description, value);
+                if (isChanged)
+                    this.RaisePropertyChanged(nameof(Text));
+            }
         }
-
+        private TextType textTypeId = TextType.Text;
+        public TextType TextTypeId
+        {
+            get => textTypeId;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref textTypeId, value);
+            }
+        }
+        public string? Text
+        {
+            get => Description;
+            set => Description = value;
+        }
         public ReactiveCommand<Unit, Unit> Cancel { get; }
         public ReactiveCommand<Unit, Unit> Edit { get; }
-
-        public PositionSkillViewModel(ILogger logger, IBusinessRepositoryFacade<PositionSkill, Guid> facade, Guid id) : base(logger, facade, id)
+        public SmartTextEditorViewModel<PositionSkillViewModel> SmartText { get; }
+        public PositionSkillViewModel(ILogger logger, IDocumentTemplator templator, IConfiguration config, IBusinessRepositoryFacade<PositionSkill, Guid> facade, Guid id) : base(logger, facade, id)
         {
+            SmartText = new SmartTextEditorViewModel<PositionSkillViewModel>(this, logger, templator, config);
             Cancel = ReactiveCommand.CreateFromTask(DoCancel);
             Edit = ReactiveCommand.Create(() => { IsOpen = true; });
         }
 
-        public PositionSkillViewModel(ILogger logger, IBusinessRepositoryFacade<PositionSkill, Guid> facade, PositionSkill entity) : base(logger, facade, entity)
+        public PositionSkillViewModel(ILogger logger, IDocumentTemplator templator, IConfiguration config, IBusinessRepositoryFacade<PositionSkill, Guid> facade, PositionSkill entity) : base(logger, facade, entity)
         {
+            SmartText = new SmartTextEditorViewModel<PositionSkillViewModel>(this, logger, templator, config);
             Cancel = ReactiveCommand.CreateFromTask(DoCancel);
             Edit = ReactiveCommand.Create(() => { IsOpen = true; });
         }
@@ -215,7 +253,8 @@ namespace Programming.Team.ViewModels.Resume
                 Id = Id,
                 PositionId = PositionId,
                 SkillId = SkillId,
-                Description = Description
+                Description = Description,
+                TextTypeId = TextTypeId,
             });
         }
 
@@ -226,6 +265,7 @@ namespace Programming.Team.ViewModels.Resume
             SkillId = entity.SkillId;
             Description = entity.Description;
             Skill = entity.Skill;
+            TextTypeId = entity.TextTypeId;
             return Task.CompletedTask;
         }
     }
@@ -322,11 +362,16 @@ namespace Programming.Team.ViewModels.Resume
             set => this.RaiseAndSetIfChanged(ref isLoading, value);
         }
         public SuggestAddSkillsForPositionViewModel SuggestAddSkillsVM { get; }
-        public PositionSkillsViewModel(AddPositionSkillViewModel addViewModel, SuggestAddSkillsForPositionViewModel suggestAddSkillsVM, 
+        protected IDocumentTemplator Templator { get; }
+        protected IConfiguration Config { get; }
+        public PositionSkillsViewModel(AddPositionSkillViewModel addViewModel, IDocumentTemplator templator, IConfiguration config,
+            SuggestAddSkillsForPositionViewModel suggestAddSkillsVM, 
             IBusinessRepositoryFacade<PositionSkill, Guid> facade, IBusinessRepositoryFacade<Skill, Guid> skillFacade, 
             ILogger<EntitiesViewModel<Guid, PositionSkill, PositionSkillViewModel, IBusinessRepositoryFacade<PositionSkill, Guid>>> logger, 
             IResumeEnricher enricher) : base(addViewModel, facade, logger)
         {
+            Templator = templator;
+            Config = config;
             ExtractSkills = ReactiveCommand.CreateFromTask(DoExtractSkills);
             Enricher = enricher;
             SkillFacade = skillFacade;
@@ -401,7 +446,7 @@ namespace Programming.Team.ViewModels.Resume
         }
         protected override async Task<PositionSkillViewModel> Construct(PositionSkill entity, CancellationToken token)
         {
-            var vm = new PositionSkillViewModel(Logger, Facade, entity);
+            var vm = new PositionSkillViewModel(Logger, Templator, Config, Facade, entity);
            
             return vm;
         }

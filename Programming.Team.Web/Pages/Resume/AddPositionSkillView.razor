@@ -11,8 +11,7 @@
                                             TEntity="Skill" TKey="Guid" TAddViewModel="AddSkillViewModel"
                                             TSearchSelectViewModel="SearchSelectSkillViewModel"
                                             ViewModel="ViewModel.SkillSelectorViewModel" />
-                    <MudTextField Lines="10" @bind-Value="ViewModel.Description" Label="Description"
-                                  Variant="Variant.Outlined" />
+                    <SmartTextEditor TViewModel="AddPositionSkillViewModel" ViewModel="ViewModel.SmartTextEditor" />
                     <MudStack Row="true">
                         <MudButton OnClick="ViewModel.Add.BindCommand<MouseEventArgs>()" Class="fw-bold"
                                    Variant="Variant.Filled" Color="Color.Primary">

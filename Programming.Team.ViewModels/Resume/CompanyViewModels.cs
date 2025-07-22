@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Programming.Team.Business.Core;
 using Programming.Team.Core;
+using Programming.Team.Templating.Core;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -29,10 +31,12 @@ namespace Programming.Team.ViewModels.Resume
             return [];
         }
     }
-    public class AddCompanyViewModel : AddEntityViewModel<Guid, Company>, ICompany
+    public class AddCompanyViewModel : AddEntityViewModel<Guid, Company>, ICompany, ITextual
     {
-        public AddCompanyViewModel(IBusinessRepositoryFacade<Company, Guid> facade, ILogger<AddEntityViewModel<Guid, Company, IBusinessRepositoryFacade<Company, Guid>>> logger) : base(facade, logger)
+        public SmartTextEditorViewModel<AddCompanyViewModel> SmartText { get; }
+        public AddCompanyViewModel(IBusinessRepositoryFacade<Company, Guid> facade, IDocumentTemplator templator, IConfiguration config, ILogger<AddEntityViewModel<Guid, Company, IBusinessRepositoryFacade<Company, Guid>>> logger) : base(facade, logger)
         {
+            SmartText = new SmartTextEditorViewModel<AddCompanyViewModel>(this, logger, templator, config);
         }
         private string name = null!;
         public string Name
@@ -76,7 +80,17 @@ namespace Programming.Team.ViewModels.Resume
             get => url;
             set => this.RaiseAndSetIfChanged(ref url, value);
         }
-
+        private TextType textTypeId = TextType.Text;
+        public TextType TextTypeId
+        {
+            get => textTypeId;
+            set => this.RaiseAndSetIfChanged(ref textTypeId, value);
+        }
+        public string? Text
+        {
+            get => Description;
+            set => Description = value;
+        }
 
         protected override Task Clear()
         {
@@ -86,6 +100,7 @@ namespace Programming.Team.ViewModels.Resume
             State = null;
             Country = null;
             Url = null;
+            TextTypeId = TextType.Text;
             return Task.CompletedTask;
         }
 
@@ -98,7 +113,8 @@ namespace Programming.Team.ViewModels.Resume
                 City = City,
                 State = State,
                 Country = Country,
-                Url = Url
+                Url = Url,
+                TextTypeId = TextTypeId
             });
         }
         public override void SetText(string text)

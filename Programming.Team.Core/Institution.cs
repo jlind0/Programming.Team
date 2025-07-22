@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Programming.Team.Core;
 
-public interface IInstitution : IEntity<Guid>, INamedEntity
+public interface IInstitution : IEntity<Guid>, INamedEntity, IHasTextType
 {
     string? Description { get; set; }
 
@@ -30,4 +30,5 @@ public partial class Institution : Entity<Guid>, IInstitution
     public string? Url { get; set; }
 
     public virtual ICollection<Education> Educations { get; set; } = new List<Education>();
+    public TextType TextTypeId { get; set; }
 }

@@ -38,8 +38,7 @@
                     <MudStack Spacing="3">
                             <MudTextField @bind-Value="ViewModel.Name" For="() => ViewModel.Name"
                                           Label="Name" Variant="Variant.Outlined" />
-                            <MudTextField @bind-Value="ViewModel.Description" For="() => ViewModel.Description" 
-                                Label="Description" Variant="Variant.Outlined" Lines="10" />
+                            <SmartTextEditor TViewModel="AddProjectViewModel" ViewModel="ViewModel.SmartTextEditor" />
                             <MudTextField @bind-Value="ViewModel.ProjectUrl" For="() => ViewModel.ProjectUrl"
                                           Label="Project URL" Variant="Variant.Outlined" />
                             <MudTextField @bind-Value="ViewModel.SourceUrl" For="() => ViewModel.SourceUrl"

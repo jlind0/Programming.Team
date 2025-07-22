@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Programming.Team.Business.Core;
 using Programming.Team.Core;
+using Programming.Team.Templating.Core;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -13,12 +15,24 @@ using System.Threading.Tasks;
 
 namespace Programming.Team.ViewModels.Resume
 {
-    public class AddPublicationViewModel : AddUserPartionedEntity<Guid, Publication>, IPublication
+    public class AddPublicationViewModel : AddUserPartionedEntity<Guid, Publication>, IPublication, ITextual
     {
-        public AddPublicationViewModel(IBusinessRepositoryFacade<Publication, Guid> facade, ILogger<AddEntityViewModel<Guid, Publication, IBusinessRepositoryFacade<Publication, Guid>>> logger) : base(facade, logger)
+        public SmartTextEditorViewModel<AddPublicationViewModel> SmartTextEditor { get; }
+        public AddPublicationViewModel(IBusinessRepositoryFacade<Publication, Guid> facade, IDocumentTemplator templator, IConfiguration config, ILogger<AddEntityViewModel<Guid, Publication, IBusinessRepositoryFacade<Publication, Guid>>> logger) : base(facade, logger)
         {
+            SmartTextEditor = new SmartTextEditorViewModel<AddPublicationViewModel>(this, logger, templator, config);
         }
-
+        private TextType textTypeId = TextType.Text;
+        public TextType TextTypeId
+        {
+            get => textTypeId;
+            set => this.RaiseAndSetIfChanged(ref textTypeId, value);
+        }
+        public string? Text
+        {
+            get => Description;
+            set => Description = value;
+        }
         private string title = string.Empty;
         public string Title
         {
@@ -62,6 +76,7 @@ namespace Programming.Team.ViewModels.Resume
             Description = null;
             Url = string.Empty;
             PublishDate = null;
+            TextTypeId = TextType.Text;
             return Task.CompletedTask;
         }
 
@@ -74,20 +89,37 @@ namespace Programming.Team.ViewModels.Resume
                 Url = Url,
                 PublishDate = PublishDate,
                 UserId = UserId,
-                Id = Id
+                Id = Id,
+                TextTypeId = TextTypeId
             });
         }
     }
-    public class PublicationViewModel : EntityViewModel<Guid, Publication>, IPublication
+    public class PublicationViewModel : EntityViewModel<Guid, Publication>, IPublication, ITextual
     {
-        public PublicationViewModel(ILogger logger, IBusinessRepositoryFacade<Publication, Guid> facade, Guid id) : base(logger, facade, id)
+        public SmartTextEditorViewModel<PublicationViewModel> SmartText { get; }
+        public PublicationViewModel(ILogger logger, IDocumentTemplator templator, IConfiguration config, IBusinessRepositoryFacade<Publication, Guid> facade, Guid id) : base(logger, facade, id)
         {
+            SmartText = new SmartTextEditorViewModel<PublicationViewModel>(this, logger, templator, config);
         }
 
-        public PublicationViewModel(ILogger logger, IBusinessRepositoryFacade<Publication, Guid> facade, Publication entity) : base(logger, facade, entity)
+        public PublicationViewModel(ILogger logger, IDocumentTemplator templator, IConfiguration config, IBusinessRepositoryFacade<Publication, Guid> facade, Publication entity) : base(logger, facade, entity)
         {
+            SmartText = new SmartTextEditorViewModel<PublicationViewModel>(this, logger, templator, config);
         }
-
+        private TextType textTypeId = TextType.Text;
+        public TextType TextTypeId
+        {
+            get => textTypeId;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref textTypeId, value);
+            }
+        }
+        public string? Text
+        {
+            get => Description;
+            set => Description = value;
+        }
         private string title = string.Empty;
         public string Title
         {
@@ -99,7 +131,13 @@ namespace Programming.Team.ViewModels.Resume
         public string? Description
         {
             get => description;
-            set => this.RaiseAndSetIfChanged(ref description, value);
+            set
+            {
+                bool isChanged = description != value;
+                this.RaiseAndSetIfChanged(ref description, value);
+                if (isChanged)
+                    this.RaisePropertyChanged(nameof(Text));
+            }
         }
 
         private string url = string.Empty;
@@ -135,7 +173,8 @@ namespace Programming.Team.ViewModels.Resume
                 Url = Url,
                 PublishDate = PublishDate,
                 UserId = UserId,
-                Id = Id
+                Id = Id,
+                TextTypeId = TextTypeId
             });
         }
 
@@ -147,14 +186,19 @@ namespace Programming.Team.ViewModels.Resume
             PublishDate = entity.PublishDate;
             UserId = entity.UserId;
             Id = entity.Id;
+            TextTypeId = entity.TextTypeId;
             return Task.CompletedTask;
 
         }
     }
     public class PublicationsViewModel : EntitiesDefaultViewModel<Guid, Publication, PublicationViewModel, AddPublicationViewModel>
     {
-        public PublicationsViewModel(AddPublicationViewModel addViewModel, IBusinessRepositoryFacade<Publication, Guid> facade, ILogger<EntitiesViewModel<Guid, Publication, PublicationViewModel, IBusinessRepositoryFacade<Publication, Guid>>> logger) : base(addViewModel, facade, logger)
+        protected IDocumentTemplator Templator { get; }
+        protected IConfiguration Config { get; }
+        public PublicationsViewModel(AddPublicationViewModel addViewModel, IDocumentTemplator templator, IConfiguration config, IBusinessRepositoryFacade<Publication, Guid> facade, ILogger<EntitiesViewModel<Guid, Publication, PublicationViewModel, IBusinessRepositoryFacade<Publication, Guid>>> logger) : base(addViewModel, facade, logger)
         {
+            Config = config;
+            Templator = templator;
         }
         protected override Func<IQueryable<Publication>, IOrderedQueryable<Publication>>? OrderBy()
         {
@@ -162,7 +206,7 @@ namespace Programming.Team.ViewModels.Resume
         }
         protected override Task<PublicationViewModel> Construct(Publication entity, CancellationToken token)
         {
-            return Task.FromResult(new PublicationViewModel(Logger, Facade, entity));
+            return Task.FromResult(new PublicationViewModel(Logger, Templator, Config, Facade, entity));
         }
         protected override async Task<Expression<Func<Publication, bool>>?> FilterCondition()
         {

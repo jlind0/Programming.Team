@@ -19,6 +19,16 @@ namespace Programming.Team.Core
     {
         string Name { get; set; }
     }
+    public interface IHasTextType
+    {
+        TextType TextTypeId { get; set; }
+    }
+    public enum TextType : short
+    {
+        Text = 1,
+        Html = 2,
+        Markdown = 3
+    }
     public abstract class Entity<TKey> : IEntity<TKey>
         where TKey : struct
     {
