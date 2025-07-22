@@ -309,6 +309,18 @@ namespace Programming.Team.ViewModels.Resume
             get => description;
             set => this.RaiseAndSetIfChanged(ref description, value);
         }
+        private bool canExtractSkills;
+        public bool CanExtractSkills
+        {
+            get => canExtractSkills;
+            set => this.RaiseAndSetIfChanged(ref canExtractSkills, value);
+        }
+        private bool isLoading;
+        public bool IsLoading
+        {
+            get => isLoading;
+            set => this.RaiseAndSetIfChanged(ref isLoading, value);
+        }
         public SuggestAddSkillsForPositionViewModel SuggestAddSkillsVM { get; }
         public PositionSkillsViewModel(AddPositionSkillViewModel addViewModel, SuggestAddSkillsForPositionViewModel suggestAddSkillsVM, 
             IBusinessRepositoryFacade<PositionSkill, Guid> facade, IBusinessRepositoryFacade<Skill, Guid> skillFacade, 
@@ -360,9 +372,15 @@ namespace Programming.Team.ViewModels.Resume
         }
         protected async Task DoExtractSkills(CancellationToken token)
         {
-            RawSkills.Clear();
             try
             {
+                IsLoading = true;
+                if (!CanExtractSkills)
+                {
+                    throw new InvalidOperationException();
+                }
+                RawSkills.Clear();
+                CanExtractSkills = false;
                 var skills = await Enricher.ExtractSkills(Description, token);
                 if (skills?.Length > 0)
                 {
@@ -375,6 +393,10 @@ namespace Programming.Team.ViewModels.Resume
             {
                 Logger.LogError(ex, ex.Message);
                 await Alert.Handle(ex.Message);
+            }
+            finally
+            {
+                IsLoading = false;
             }
         }
         protected override async Task<PositionSkillViewModel> Construct(PositionSkill entity, CancellationToken token)

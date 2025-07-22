@@ -15,8 +15,8 @@
         }
     </MudStack>
     <div class="hover-wrapper">
-        <MudButton OnClick="ViewModel.ExtractSkills.BindCommand<MouseEventArgs>()" Class="fw-bold hover-button" Variant="Variant.Filled"
-                   Color="Color.Primary">Extract Skills</MudButton>
+        <MudButton OnClick="ViewModel.ExtractSkills.BindCommand<MouseEventArgs>()" Disabled="!ViewModel.CanExtractSkills" Class="fw-bold hover-button" Variant="Variant.Filled"
+                   Color="Color.Primary" >Extract Skills</MudButton>
         <span class="hover-tooltip">Extract skills is for extracting additional skills using AI.</span>
     </div>
     @if (ViewModel.RawSkills.Count > 0)
@@ -28,9 +28,14 @@
             }
         </MudStack>
     }
+    <MudOverlay @bind-Visible="ViewModel.IsLoading" DarkBackground="true" AutoClose="false">
+        <MudProgressCircular Color="Color.Secondary" Size="Size.Large" Indeterminate="true" />
+    </MudOverlay>
 }
 
 @code {
+
+   
     protected override void OnInitialized()
     {
         if (ViewModel != null)

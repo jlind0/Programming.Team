@@ -100,6 +100,7 @@ namespace Programming.Team.ViewModels.Resume
             get => liscence;
             set => this.RaiseAndSetIfChanged(ref liscence, value);
         }
+  
 
         protected override Task Clear()
         {
@@ -130,6 +131,7 @@ namespace Programming.Team.ViewModels.Resume
     }
     public class ProjectsViewModel : EntitiesDefaultViewModel<Guid, Project, ProjectViewModel, AddProjectViewModel>
     {
+
         protected IServiceProvider ServiceProvider { get; }
         public ProjectsViewModel(AddProjectViewModel addViewModel,
                 IBusinessRepositoryFacade<Project, Guid> facade,
@@ -162,6 +164,12 @@ namespace Programming.Team.ViewModels.Resume
     }
     public class ProjectViewModel : EntityViewModel<Guid, Project>, IProject
     {
+        private Boolean canExtractSkills;
+        public Boolean CanExtractSkills
+        {
+            get => canExtractSkills;
+            set => this.RaiseAndSetIfChanged(ref canExtractSkills, value);
+        }
         public ProjectSkillsViewModel SkillsViewModel { get; }
         public ProjectViewModel(ProjectSkillsViewModel skillsViewModel, ILogger logger, IBusinessRepositoryFacade<Project, Guid> facade, Guid id) : base(logger, facade, id)
         {
@@ -181,6 +189,12 @@ namespace Programming.Team.ViewModels.Resume
                 if (p.Sender != null)
                     SkillsViewModel.Description = p.Sender.Description ?? "";
             }).DisposeWith(disposable);
+
+            this.WhenPropertyChanged(p => p.Description).Subscribe(p => {
+                SkillsViewModel.CanExtractSkills =
+                !string.IsNullOrWhiteSpace(p.Sender.Description);
+            }).DisposeWith(disposable);
+
         }
         private Guid positionId;
         public Guid PositionId
@@ -317,6 +331,7 @@ namespace Programming.Team.ViewModels.Resume
             get => description;
             set => this.RaiseAndSetIfChanged(ref description, value);
         }
+    
 
         public ReactiveCommand<Unit, Unit> Cancel { get; }
         public ReactiveCommand<Unit, Unit> Edit { get; }
@@ -529,6 +544,12 @@ namespace Programming.Team.ViewModels.Resume
         public ICommand ToggleOpen => ReactiveCommand.Create(() => IsOpen = !IsOpen);
         protected IResumeEnricher Enricher { get; }
         protected IBusinessRepositoryFacade<Skill, Guid> SkillFacade { get; }
+        private bool isLoading;
+        public bool IsLoading
+        {
+            get => isLoading;
+            set => this.RaiseAndSetIfChanged(ref isLoading, value);
+        }
         public Guid ProjectId
         {
             get => AddViewModel.ProjectId;
@@ -551,6 +572,12 @@ namespace Programming.Team.ViewModels.Resume
         {
             get => description;
             set => this.RaiseAndSetIfChanged(ref description, value);
+        }
+        private bool canExtractSkills;
+        public bool CanExtractSkills
+        {
+            get => canExtractSkills;
+            set => this.RaiseAndSetIfChanged(ref canExtractSkills, value);
         }
         public SuggestAddSkillsForProjectViewModel SuggestAddSkillsVM { get; }
         protected IBusinessRepositoryFacade<PositionSkill, Guid> PositionSkillFacade { get; }
@@ -609,9 +636,16 @@ namespace Programming.Team.ViewModels.Resume
         public ObservableCollection<RawSkillViewModel> RawSkills { get; } = new ObservableCollection<RawSkillViewModel>();
         protected async Task DoExtractSkills(CancellationToken token)
         {
-            RawSkills.Clear();
+           
             try
             {
+                IsLoading = true;
+                if (!CanExtractSkills)
+                {
+                    throw new InvalidOperationException();
+                }
+                RawSkills.Clear();
+                CanExtractSkills = false;
                 var skills = await Enricher.ExtractSkills(Description, token);
                 if (skills?.Length > 0)
                 {
@@ -619,11 +653,18 @@ namespace Programming.Team.ViewModels.Resume
                     sks.RemoveAll(s => Entities.Any(e => string.Compare(e.Skill.Name, s, StringComparison.OrdinalIgnoreCase) == 0));
                     RawSkills.AddRange(sks.Select(s => new RawSkillViewModel(Logger, ProjectId, s, AddRawSkill)));
                 }
+            
+
             }
             catch (Exception ex)
             {
+
                 Logger.LogError(ex, ex.Message);
                 await Alert.Handle(ex.Message);
+            }
+            finally
+            {
+                IsLoading = false;
             }
         }
         protected override async Task<ProjectSkillViewModel> Construct(ProjectSkill entity, CancellationToken token)
