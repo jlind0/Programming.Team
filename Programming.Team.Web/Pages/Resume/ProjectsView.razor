@@ -11,13 +11,6 @@
         <AddProjectView ViewModel="ViewModel.AddViewModel" />
         @if (ViewModel.Entities.Any())
         {
-        <MudTextField @bind-Value="searchString"
-                      Label="Search projects"
-                      Adornment="Adornment.Start"
-                      AdornmentIcon="@Icons.Material.Filled.Search"
-                      Immediate="true"
-                      Class="searchData" />
-
             <div class="panels">
             <MudExpansionPanels MultiExpansion="true" >
                 @foreach (var position in ViewModel.Entities)

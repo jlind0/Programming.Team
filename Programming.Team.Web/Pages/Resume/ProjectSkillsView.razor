@@ -28,6 +28,9 @@
             }
         </MudStack>
     }
+    <MudOverlay @bind-Visible="ViewModel.IsLoading" DarkBackground="true" AutoClose="false">
+        <MudProgressCircular Color="Color.Secondary" Size="Size.Large" Indeterminate="true" />
+    </MudOverlay>
 }
 
 @code {

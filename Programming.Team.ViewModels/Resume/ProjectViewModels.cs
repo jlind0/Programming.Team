@@ -544,6 +544,12 @@ namespace Programming.Team.ViewModels.Resume
         public ICommand ToggleOpen => ReactiveCommand.Create(() => IsOpen = !IsOpen);
         protected IResumeEnricher Enricher { get; }
         protected IBusinessRepositoryFacade<Skill, Guid> SkillFacade { get; }
+        private bool isLoading;
+        public bool IsLoading
+        {
+            get => isLoading;
+            set => this.RaiseAndSetIfChanged(ref isLoading, value);
+        }
         public Guid ProjectId
         {
             get => AddViewModel.ProjectId;
@@ -567,8 +573,8 @@ namespace Programming.Team.ViewModels.Resume
             get => description;
             set => this.RaiseAndSetIfChanged(ref description, value);
         }
-        private Boolean canExtractSkills;
-        public Boolean CanExtractSkills
+        private bool canExtractSkills;
+        public bool CanExtractSkills
         {
             get => canExtractSkills;
             set => this.RaiseAndSetIfChanged(ref canExtractSkills, value);
@@ -633,6 +639,7 @@ namespace Programming.Team.ViewModels.Resume
            
             try
             {
+                IsLoading = true;
                 if (!CanExtractSkills)
                 {
                     throw new InvalidOperationException();
@@ -654,6 +661,10 @@ namespace Programming.Team.ViewModels.Resume
 
                 Logger.LogError(ex, ex.Message);
                 await Alert.Handle(ex.Message);
+            }
+            finally
+            {
+                IsLoading = false;
             }
         }
         protected override async Task<ProjectSkillViewModel> Construct(ProjectSkill entity, CancellationToken token)

@@ -273,6 +273,11 @@ namespace Programming.Team.ViewModels.Resume
                 if (p.Sender != null)
                     SkillsViewModel.Description = p.Sender.Description ?? "";
             }).DisposeWith(disposable);
+
+            this.WhenPropertyChanged(p => p.Description).Subscribe(p => {
+                SkillsViewModel.CanExtractSkills =
+                !string.IsNullOrWhiteSpace(p.Sender.Description);
+            }).DisposeWith(disposable);
         }
         ~PositionViewModel()
         {
