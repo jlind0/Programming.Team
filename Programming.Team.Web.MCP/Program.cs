@@ -12,7 +12,7 @@ builder.Services.AddMcpServer().WithHttpTransport().
     WithTools<PercentMatchTool>().WithTools<SkillExtractionTool>().
     WithTools<TailorBioTool>().WithTools<TailorPositionTool>().WithTools<GenerateCoverLetterTool>().
     WithTools<ExtractCompanyNameTool>().WithTools<ResearchCompanyTool>().WithTools<ExtractPostingTitleTool>().
-    WithTools<GenerateInterviewQuestionsTool>().WithTools<GenerateEmployerQuestionsTool>();
+    WithTools<GenerateInterviewQuestionsTool>().WithTools<GenerateEmployerQuestionsTool>().WithTools<SummarizeResumeTool>();
 builder.Services.AddOpenTelemetry()
     .WithTracing(b => b.AddSource("*")
         .AddAspNetCoreInstrumentation()

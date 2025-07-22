@@ -351,4 +351,35 @@ namespace Programming.Team.AI.MCP
             return resp.Messages.FirstOrDefault()?.Text;
         }
     }
+    [McpServerToolType]
+    public sealed class SummarizeResumeTool
+    {
+        [McpServerTool(Name = "summarizeResume"), Description("Generate Employer Questions")]
+        public static async Task<string?> GenerateCoverLetter(
+        IMcpServer thisServer,
+        [Description("Resume LaTeX")] string resume,
+        [Description("Pages")] int pages = 3,
+        [Description("Maximum number of tokens to generate")] int maxTokens = 2048,
+        CancellationToken cancellationToken = default)
+        {
+            string userMessage = $"Summarize the following resume, provided in LaTeX, to {pages} pages: {resume};;; and output in LaTeX - just output the LaTeX document: DO NOT ADD ANY EXTRANEOUS DATA";
+            ChatMessage[] messages =
+            [
+                new(ChatRole.User, userMessage),
+            ];
+
+            ChatOptions options = new()
+            {
+                MaxOutputTokens = maxTokens,
+                Temperature = 1f,
+                TopP = 1,
+                FrequencyPenalty = 0,
+                PresencePenalty = 0,
+
+            };
+
+            var resp = await thisServer.AsSamplingChatClient().GetResponseAsync(messages, options, cancellationToken);
+            return resp.Messages.FirstOrDefault()?.Text;
+        }
+    }
 }

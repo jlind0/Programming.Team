@@ -102,6 +102,18 @@ namespace Programming.Team.AI
             };
             return await CallTool<string?>(msg => msg?.Text, "extractPostingTitle", args, token);
         }
+        public async Task<string?> SummarizeResume(string resume, int pages = 3, int maxTokens = 2048, CancellationToken token = default)
+        {
+            var args = new Dictionary<string, object?>
+            {
+                ["resume"] = resume,
+                ["pages"] = pages,
+                ["maxTokens"] = maxTokens
+            };
+            var str = await CallTool<string?>(msg => msg?.Text, "summarizeResume", args, token);
+            str = str?.Replace("```latex", "").Replace("```", "").Trim().ReplaceLineEndings();
+            return str;
+        }
         public async Task<string?> ResearchCompany(string companyName, int maxTokens = 2048, CancellationToken token = default)
         {
             var args = new Dictionary<string, object?>

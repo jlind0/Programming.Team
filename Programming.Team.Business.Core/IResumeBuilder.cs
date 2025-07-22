@@ -56,6 +56,7 @@ namespace Programming.Team.Business.Core
         Task BuildCoverLetter(Posting posting, Guid documentTemplateId, IProgress<string>? progress = null, bool renderPDF = true, CancellationToken token = default);
         Task RenderCoverLetter(Posting posting, CancellationToken token = default);
         Task RenderMarkdown(Posting posting, Guid templateId, CancellationToken token = default);
+        Task RenderResumeSummary(Posting posting, int pages = 3, CancellationToken token = default);
     }
     /// <summary>
     /// Facade to working with storage for Resumes
@@ -79,5 +80,7 @@ namespace Programming.Team.Business.Core
         Task<byte[]?> GetResume(Guid postingId, CancellationToken token = default);
         Task UploadCoverLetter(Guid postingId, byte[] pdfData, CancellationToken token = default);
         Task<byte[]?> GetCoverLetter(Guid postingId, CancellationToken token = default);
+        Task UploadResumeSummary(Guid postingId, byte[] pdfData, CancellationToken token = default);
+        Task<byte[]?> GetResumeSummary(Guid postingId, CancellationToken token = default);
     }
 }

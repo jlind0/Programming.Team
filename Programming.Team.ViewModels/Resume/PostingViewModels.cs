@@ -85,6 +85,7 @@ namespace Programming.Team.ViewModels.Resume
         public ReactiveCommand<Unit, Unit> ResearchCompany { get; }
         public ReactiveCommand<Unit, Unit> GenerateInterviewQuestions { get; }
         public ReactiveCommand<Unit, Unit> GenerateEmployeerQuestions { get; }
+        public ReactiveCommand<Unit, Unit> SummarizeResume { get; }
         ~PostingViewModel()
         {
             disposables.Dispose();
@@ -107,6 +108,7 @@ namespace Programming.Team.ViewModels.Resume
             GenerateInterviewQuestions = ReactiveCommand.CreateFromTask(DoGenerateInterviewQuestions);
             GenerateEmployeerQuestions = ReactiveCommand.CreateFromTask(DoGeneratEmployeerQuestions);
             CoverLetterConfigurationViewModel = coverConfig;
+            SummarizeResume = ReactiveCommand.CreateFromTask(DoSummarizeResume);
             WireUpEvents();
         }
 
@@ -126,6 +128,7 @@ namespace Programming.Team.ViewModels.Resume
             ResearchCompany = ReactiveCommand.CreateFromTask(DoResearchCompany);
             GenerateInterviewQuestions = ReactiveCommand.CreateFromTask(DoGenerateInterviewQuestions);
             GenerateEmployeerQuestions = ReactiveCommand.CreateFromTask(DoGeneratEmployeerQuestions);
+            SummarizeResume = ReactiveCommand.CreateFromTask(DoSummarizeResume);
             WireUpEvents();
         }
         private bool isProcessing = false;
@@ -145,6 +148,10 @@ namespace Programming.Team.ViewModels.Resume
         public bool CanGenerateEmployeerQuestions
         {
             get => !string.IsNullOrWhiteSpace(Details);
+        }
+        public bool CanSummarizeResume
+        {
+            get => !string.IsNullOrWhiteSpace(RenderedLaTex);
         }
         protected async Task DoExtractCompanyName(CancellationToken token)
         {
@@ -213,6 +220,26 @@ namespace Programming.Team.ViewModels.Resume
                 IsProcessing = true;
                 QuestionsToAsk = await Enricher.GenerateEmployeerQuestions(Details, CompanyResearch, token: token);
                 await Update.Execute().GetAwaiter();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
+                await Alert.Handle(ex.Message).GetAwaiter();
+            }
+            finally
+            {
+                IsProcessing = false;
+            }
+        }
+        protected async Task DoSummarizeResume(CancellationToken token)
+        {
+            try
+            {
+                if (!CanSummarizeResume)
+                    return;
+                IsProcessing = true;
+                await Builder.RenderResumeSummary(await Populate(), ConfigurationViewModel.SummaryPageLength ?? 3, token);
+                await Load.Execute().GetAwaiter();
             }
             catch (Exception ex)
             {
@@ -407,6 +434,7 @@ namespace Programming.Team.ViewModels.Resume
             {
                 this.RaiseAndSetIfChanged(ref renderedLaTex, value);
                 this.RaisePropertyChanged(nameof(CanGenerateInterviewQuestions));
+                this.RaisePropertyChanged(nameof(CanSummarizeResume));
             }
         }
 
@@ -493,6 +521,12 @@ namespace Programming.Team.ViewModels.Resume
             get => questionsToAsk;
             set => this.RaiseAndSetIfChanged(ref questionsToAsk, value);
         }
+        private string? resumeSummaryLatex;
+        public string? ResumeSummaryLatex
+        {
+            get => resumeSummaryLatex;
+            set => this.RaiseAndSetIfChanged(ref resumeSummaryLatex, value);
+        }
 
         protected override async Task<Posting?> DoLoad(CancellationToken token)
         {
@@ -537,6 +571,7 @@ namespace Programming.Team.ViewModels.Resume
                 CompanyResearch = CompanyResearch,
                 InterviewQuestions = InterviewQuestions,
                 QuestionsToAsk = QuestionsToAsk,
+                ResumeSummaryLatex = ResumeSummaryLatex,
             });
         }
 
@@ -556,6 +591,7 @@ namespace Programming.Team.ViewModels.Resume
             CompanyResearch = entity.CompanyResearch;
             InterviewQuestions = entity.InterviewQuestions;
             QuestionsToAsk = entity.QuestionsToAsk;
+            ResumeSummaryLatex = entity.ResumeSummaryLatex;
             await ConfigurationViewModel.Load(entity.Configuration);
             await CoverLetterConfigurationViewModel.Load(entity.CoverLetterConfiguration);
         }
@@ -730,6 +766,7 @@ namespace Programming.Team.ViewModels.Resume
             SkillsPer20Percent = config.SkillsPer20Percent;
             BioBullets = config.BioBullets;
             BioParagraphs = config.BioParagraphs;
+            SummaryPageLength = config.SummaryPageLength;
             Parts = config.Parts;
             SectionTemplates = config.SectionTemplates;
             DocumentTemplates.Clear();
@@ -751,7 +788,8 @@ namespace Programming.Team.ViewModels.Resume
                 SkillsPer20Percent = SkillsPer20Percent,
                 DefaultDocumentTemplateId = DefaultDocumentTemplateId,
                 BioBullets = BioBullets,
-                BioParagraphs = BioParagraphs
+                BioParagraphs = BioParagraphs,
+                SummaryPageLength = SummaryPageLength
             };
             return config;
         }
@@ -823,6 +861,12 @@ namespace Programming.Team.ViewModels.Resume
         {
             get => bioBullets;
             set => this.RaiseAndSetIfChanged(ref bioBullets, value);
+        }
+        private int? summaryPageLength;
+        public int? SummaryPageLength
+        {
+            get => summaryPageLength;
+            set => this.RaiseAndSetIfChanged(ref summaryPageLength, value);
         }
     }
 }

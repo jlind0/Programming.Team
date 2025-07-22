@@ -32,6 +32,7 @@ namespace Programming.Team.Business
         protected IResumeEnricher Enricher { get; }
         protected ILogger Logger { get; }
         protected IResumeBlob ResumeBlob { get; }
+        protected IChatService ChatService { get; }
         public ResumeBuilder(ILogger<ResumeBuilder> logger, 
             IUserBusinessFacade userFacade,
             IBusinessRepositoryFacade<Position, Guid> positionFacade,
@@ -43,7 +44,8 @@ namespace Programming.Team.Business
             IDocumentTemplator templator,
             IResumeEnricher enricher,
             IResumeBlob resumeBlob,
-            ISectionTemplateBusinessFacade sectionFacade
+            ISectionTemplateBusinessFacade sectionFacade,
+            IChatService chatService
             )
         {
             Logger = logger;
@@ -58,6 +60,7 @@ namespace Programming.Team.Business
             PostingFacade = postingFacade;
             ResumeBlob = resumeBlob;
             SectionFacade = sectionFacade;
+            ChatService = chatService;
         }
         public async Task<Resume> BuildResume(Guid userId, IProgress<string>? progress = null, CancellationToken token = default)
         {
@@ -265,6 +268,29 @@ namespace Programming.Team.Business
                     if(template == null)
                         throw new InvalidDataException();
                     posting.ResumeMarkdown = await Templator.ApplyTemplate(template.Template, res, token);
+                    await PostingFacade.Update(posting, token: token);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
+                throw;
+            }
+        }
+
+        public async Task RenderResumeSummary(Posting posting, int pages = 3, CancellationToken token = default)
+        {
+            try
+            {
+
+                if (!string.IsNullOrWhiteSpace(posting.RenderedLaTex))
+                {
+                    posting.ResumeSummaryLatex = await ChatService.SummarizeResume(posting.RenderedLaTex, pages, maxTokens: 2048*pages, token: token);
+                    if (!string.IsNullOrWhiteSpace(posting.ResumeSummaryLatex))
+                    {
+                        var data = await Templator.RenderLatex(posting.ResumeSummaryLatex, token);
+                        await ResumeBlob.UploadResumeSummary(posting.Id, data, token);
+                    }
                     await PostingFacade.Update(posting, token: token);
                 }
             }

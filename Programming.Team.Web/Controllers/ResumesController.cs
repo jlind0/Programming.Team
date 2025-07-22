@@ -24,6 +24,11 @@ namespace Programming.Team.Web.Controllers
         {
             return RS.Bytes(await ResumeBlob.GetResume(postingId, token) ?? throw new InvalidDataException(), "application/pdf");
         }
+        [HttpGet("summary/{postingId}")]
+        public async Task<IResult> GetSummary(Guid postingId, CancellationToken token = default)
+        {
+            return RS.Bytes(await ResumeBlob.GetResumeSummary(postingId, token) ?? throw new InvalidDataException(), "application/pdf");
+        }
         [HttpGet("{postingId}.txt")]
         public async Task<IActionResult> GetMarkdown(Guid postingId , CancellationToken token = default)
         {
@@ -49,6 +54,21 @@ namespace Programming.Team.Web.Controllers
                 if (posting?.RenderedLaTex == null)
                     return BadRequest();
                 return Content(posting.RenderedLaTex, "application/x-tex", System.Text.Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+        [HttpGet("summmary/{postingId}.tex")]
+        public async Task<IActionResult> GetSummaryLaTeX(Guid postingId, CancellationToken token = default)
+        {
+            try
+            {
+                var posting = await Facade.GetByID(postingId, token: token);
+                if (posting?.ResumeSummaryLatex == null)
+                    return BadRequest();
+                return Content(posting.ResumeSummaryLatex, "application/x-tex", System.Text.Encoding.UTF8);
             }
             catch (Exception ex)
             {

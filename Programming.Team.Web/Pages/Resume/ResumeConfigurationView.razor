@@ -13,6 +13,7 @@
         <MudNumericField Class="config-field" @bind-Value="ViewModel.SkillsPer20Percent" Label="Skills Per 20%" Variant="Variant.Outlined" />
         <MudCheckBox Class="config-checkbox" @bind-Value="ViewModel.HideSkillsNotInJD" Label="Hide Skills not in JD"/>
         <MudCheckBox Class="config-checkbox" @bind-Value="ViewModel.HidePositionsNotInJD" Label="Hide Positions not in JD" />
+        <MudNumericField Class="config-field" @bind-Value="ViewModel.SummaryPageLength" Label="Resume Summary Page Length" Variant="Variant.Outlined"/>
         </div>
         <MudSelect Class="template-select" Label="Document Template" T="DocumentTemplate" @bind-Value="ViewModel.SelectedTemplate" ToStringFunc="e => e?.Name">
             @foreach (var template in ViewModel.DocumentTemplates)

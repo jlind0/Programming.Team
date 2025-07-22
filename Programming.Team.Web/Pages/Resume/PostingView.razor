@@ -62,6 +62,15 @@
             <MudLink Href="@strCover" Target="_blank">Download Cover Letter</MudLink>
             <MudLink Href="@strCoverUri" Target="_blank">Edit Cover Letter in Overleaf</MudLink>
         }
+        @if(!string.IsNullOrWhiteSpace(ViewModel.ResumeSummaryLatex))
+        {
+            var strSummary = $"/api/resumes/summary/{ViewModel.Id}";
+            string resumeSummaryUri = System.Web.HttpUtility.UrlEncode($"https://jobme.today/api/resumes/summary/{ViewModel.Id}.tex");
+            string strResumeSummaryUri = $"https://www.overleaf.com/docs?snip_uri={resumeUri}";
+            <MudTextField Lines="10" @bind-Value="ViewModel.ResumeSummaryLatex" Label="Resume Summary LaTeX" Variant="Variant.Outlined"/>
+            <MudLink Href="@strSummary" Target="_blank">Download Resume Summary</MudLink>
+            <MudLink Href="@strResumeSummaryUri" Target="_blank">Edit Summary in Overleaf</MudLink>
+        }
         <MudStack Row="true">
             <MudSelect Label="Text Template" T="DocumentTemplate" @bind-Value="ViewModel.SelectedMarkdownTemplate" ToStringFunc="e => e?.Name">
                 @foreach (var doctype in ViewModel.MarkdownTemplates)
@@ -92,6 +101,10 @@
             <MudButton OnClick="ViewModel.Render.BindCommand<MouseEventArgs>()">Render Resume</MudButton>
             <MudButton OnClick="ViewModel.GenerateCoverLetter.BindCommand<MouseEventArgs>()">Generate Cover Letter</MudButton>
             <MudButton OnClick="ViewModel.RenderCoverLetter.BindCommand<MouseEventArgs>()">Render Cover Letter</MudButton>
+            @if (ViewModel.CanSummarizeResume)
+            {
+                <MudButton OnClick="ViewModel.SummarizeResume.BindCommand<MouseEventArgs>()">Summarize Resume</MudButton>
+            }
             @if(ViewModel.CanGenerateInterviewQuestions)
             {
                 <MudButton OnClick="ViewModel.GenerateInterviewQuestions.BindCommand<MouseEventArgs>()">Generate Interview Questions</MudButton>

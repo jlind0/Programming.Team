@@ -2,6 +2,7 @@
 using Programming.Team.Business.Core;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace Programming.Team.Business
         {
             public const string resumes = nameof(resumes);
             public const string coverletters = nameof(coverletters);
+            public const string summaries = nameof(summaries);
         }
         protected BlobServiceClient Client { get; }
         protected BlobClient GetClient(string container, Guid id)
@@ -62,6 +64,18 @@ namespace Programming.Team.Business
         public Task<byte[]?> GetCoverLetter(Guid postingId, CancellationToken token = default)
         {
             var client = GetClient(Containers.coverletters, postingId);
+            return GetBytes(client, token);
+        }
+
+        public Task UploadResumeSummary(Guid postingId, byte[] pdfData, CancellationToken token = default)
+        {
+            var client = GetClient(Containers.summaries, postingId);
+            return UploadBytes(client, pdfData, token);
+        }
+
+        public Task<byte[]?> GetResumeSummary(Guid postingId, CancellationToken token = default)
+        {
+            var client = GetClient(Containers.summaries, postingId);
             return GetBytes(client, token);
         }
     }

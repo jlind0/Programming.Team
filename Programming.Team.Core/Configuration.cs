@@ -43,6 +43,7 @@ namespace Programming.Team.Core
         Guid? DefaultDocumentTemplateId { get; set; }
         int? BioParagraphs { get; set; }
         int? BioBullets { get; set; }
+        int? SummaryPageLength { get; set; }
     }
     public class ResumeConfiguration : IResumeConfiguration
     {
@@ -57,5 +58,6 @@ namespace Programming.Team.Core
         public double? SkillsPer20Percent { get; set; }
         public int? BioParagraphs { get; set; } = 3;
         public int? BioBullets { get; set; } = 6;
+        public int? SummaryPageLength { get; set; } = 3;
     }
 }

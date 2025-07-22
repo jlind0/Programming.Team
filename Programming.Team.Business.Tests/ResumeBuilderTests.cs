@@ -57,10 +57,11 @@ public class ResumeBuilderTests
         var documentTemplator = new Mock<IDocumentTemplator>();
         var resumeEnricher = new Mock<IResumeEnricher>();
         var sectionTemplateFacade = new Mock<ISectionTemplateBusinessFacade>();
+        var chatService = new Mock<IChatService>();
         var resumeBuilder = new ResumeBuilder(logger.Object, userFacade.Object,
             positionFacade.Object, educationFacade.Object, publicationFacade.Object, certificationFacade.Object,
             documentTemplateFacade.Object, postingFacade.Object, documentTemplator.Object, resumeEnricher.Object,
-            resumeBlob.Object, sectionTemplateFacade.Object);
+            resumeBlob.Object, sectionTemplateFacade.Object, chatService.Object);
         var token = new CancellationToken();
         var progress = new Mock<IProgress<string>>();
         progress.Setup(p => p.Report(It.IsAny<string>())).Verifiable(Times.AtLeastOnce());
@@ -121,10 +122,11 @@ public class ResumeBuilderTests
                     SectionId = ResumePart.Positions,
                     Template = "some template"
                 });
+        var chatService = new Mock<IChatService>();
         var resumeBuilder = new ResumeBuilder(logger.Object, userFacade.Object,
             positionFacade.Object, educationFacade.Object, publicationFacade.Object, certificationFacade.Object,
             documentTemplateFacade.Object, postingFacade.Object, documentTemplator.Object, resumeEnricher.Object,
-            resumeBlob.Object, sectionTemplateFacade.Object);
+            resumeBlob.Object, sectionTemplateFacade.Object, chatService.Object);
 
         var token = new CancellationToken();
         var progress = new Mock<IProgress<string>>();
@@ -195,10 +197,11 @@ public class ResumeBuilderTests
                     SectionId = ResumePart.Positions,
                     Template = "some template"
                 });
+        var chatService = new Mock<IChatService>();
         var resumeBuilder = new ResumeBuilder(logger.Object, userFacade.Object,
             positionFacade.Object, educationFacade.Object, publicationFacade.Object, certificationFacade.Object,
             documentTemplateFacade.Object, postingFacade.Object, documentTemplator.Object, resumeEnricher.Object,
-            resumeBlob.Object, sectionTemplateFacade.Object);
+            resumeBlob.Object, sectionTemplateFacade.Object, chatService.Object);
 
         var token = new CancellationToken();
         var progress = new Mock<IProgress<string>>();
@@ -269,10 +272,11 @@ public class ResumeBuilderTests
                     SectionId = ResumePart.Positions,
                     Template = "some template"
                 });
+        var chatService = new Mock<IChatService>();
         var resumeBuilder = new ResumeBuilder(logger.Object, userFacade.Object,
             positionFacade.Object, educationFacade.Object, publicationFacade.Object, certificationFacade.Object,
             documentTemplateFacade.Object, postingFacade.Object, documentTemplator.Object, resumeEnricher.Object,
-            resumeBlob.Object, sectionTemplateFacade.Object);
+            resumeBlob.Object, sectionTemplateFacade.Object, chatService.Object);
 
         var token = new CancellationToken();
         var progress = new Mock<IProgress<string>>();
@@ -345,10 +349,11 @@ public class ResumeBuilderTests
                     SectionId = ResumePart.Positions,
                     Template = "some template"
                 });
+        var chatService = new Mock<IChatService>();
         var resumeBuilder = new ResumeBuilder(logger.Object, userFacade.Object,
             positionFacade.Object, educationFacade.Object, publicationFacade.Object, certificationFacade.Object,
             documentTemplateFacade.Object, postingFacade.Object, documentTemplator.Object, resumeEnricher.Object,
-            resumeBlob.Object, sectionTemplateFacade.Object);
+            resumeBlob.Object, sectionTemplateFacade.Object, chatService.Object);
 
         var token = new CancellationToken();
         var progress = new Mock<IProgress<string>>();
@@ -392,10 +397,11 @@ public class ResumeBuilderTests
 
         var resumeEnricher = new Mock<IResumeEnricher>();
         var sectionTemplateFacade = new Mock<ISectionTemplateBusinessFacade>();
+        var chatService = new Mock<IChatService>();
         var resumeBuilder = new ResumeBuilder(logger.Object, userFacade.Object,
             positionFacade.Object, educationFacade.Object, publicationFacade.Object, certificationFacade.Object,
             documentTemplateFacade.Object, postingFacade.Object, documentTemplator.Object, resumeEnricher.Object,
-            resumeBlob.Object, sectionTemplateFacade.Object);
+            resumeBlob.Object, sectionTemplateFacade.Object, chatService.Object);
         await resumeBuilder.RenderResume(posting, CancellationToken.None);
         resumeBlob.Verify(resumeBlob => resumeBlob.UploadResume(It.IsAny<Guid>(), It.IsAny<byte[]>(), It.IsAny<CancellationToken>()), Times.Once());
         documentTemplator.Verify(documentTemplator => documentTemplator.RenderLatex(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once());
@@ -456,10 +462,11 @@ public class ResumeBuilderTests
                     SectionId = ResumePart.Positions,
                     Template = "some template"
                 });
+        var chatService = new Mock<IChatService>();
         var resumeBuilder = new ResumeBuilder(logger.Object, userFacade.Object,
             positionFacade.Object, educationFacade.Object, publicationFacade.Object, certificationFacade.Object,
             documentTemplateFacade.Object, postingFacade.Object, documentTemplator.Object, resumeEnricher.Object,
-            resumeBlob.Object, sectionTemplateFacade.Object);
+            resumeBlob.Object, sectionTemplateFacade.Object, chatService.Object);
         var strResume = await File.ReadAllTextAsync("resume.json");
         var resume = JsonSerializer.Deserialize<Resume>(strResume) ?? throw new InvalidDataException();
         var progress = new Mock<IProgress<string>>();
