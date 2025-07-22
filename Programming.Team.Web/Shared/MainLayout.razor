@@ -1,5 +1,7 @@
-﻿@inherits LayoutComponentBase
+﻿@using System.Reflection
+@inherits ReactiveLayoutComponentBase<LayoutViewModel>
 @inject NavigationManager NavMan
+@inject IServiceProvider ServiceProvider
 
 <PageTitle>Jobeme.Today - The Resume Tailor</PageTitle>
 
@@ -50,6 +52,18 @@
                 <MudText Inline="true" Typo="Typo.h5" Class="secondary-logo-text" Color="Color.Primary">Today</MudText>
             </MudText>
             <MudSpacer />
+            @if(ViewModel != null)
+            {
+                <AlertView Alert="ViewModel.Alert" />
+                @if(!string.IsNullOrWhiteSpace(ViewModel.Page.Markdown) || !string.IsNullOrWhiteSpace(ViewModel.Page.VideoEmbed))
+                {
+                    <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Inherit"
+                                   OnClick="ViewModel.Page.ToggleOpen.BindCommand<MouseEventArgs>()"/>
+                    <RenderPageHeader ViewModel="ViewModel.Page" />
+                    <MudSpacer />
+                }
+                
+            }
             <LoginDisplay />
         </MudAppBar>
 
@@ -80,12 +94,12 @@
     private Breakpoint mobileBreakPoint = Breakpoint.SmAndDown;
     private Breakpoint mainBreakPoint = Breakpoint.MdAndUp;
     private bool _isDarkMode = false;
-
+    [CascadingParameter] private RouteData? RouteData { get; set; }
 /*    MudTheme CustomTheme = new MudTheme
         {
             PaletteLight = new PaletteLight()
-            {
-                Primary = Colors.Blue.Default,       // Primary brand color
+    {
+        Primary = Colors.Blue.Default,       // Primary brand color
                 Secondary = Colors.Teal.Default,     // Secondary accent color
                 Tertiary = Colors.Orange.Default,    // Additional accent color
                 Background = Colors.Gray.Lighten5,   // Page background
@@ -100,8 +114,8 @@
                 Info = Colors.Blue.Default,          // Info states
             },
             PaletteDark = new PaletteDark()
-            {
-                Primary = Colors.Blue.Darken2,            // Strong but not too bright blue
+    {
+        Primary = Colors.Blue.Darken2,            // Strong but not too bright blue
                 Secondary = Colors.Cyan.Darken2,           // Cool secondary color
                 Tertiary = Colors.Amber.Darken2,           // Warm tertiary accent
                 Background = "#121212",                     // Very dark background for body
@@ -115,24 +129,48 @@
                 Error = Colors.Red.Accent2,                  // Vibrant error color
                 Info = Colors.LightBlue.Accent2,             // Informational color
             }
-        };
+    };
 
   */
 
-
+    private readonly CompositeDisposable disposables = new CompositeDisposable();
     protected override void OnInitialized()
     {
-        base.OnInitialized();
+    base.OnInitialized();
 
-        _theme = LightGlassTheme;
-        var relativePath = NavMan.ToBaseRelativePath(NavMan.Uri);
-        if(relativePath == "/" || relativePath == "")
-        {
-            mobileBreakPoint = Breakpoint.None;
-            mainBreakPoint = Breakpoint.Always;
-        }
+    _theme = LightGlassTheme;
+    var relativePath = NavMan.ToBaseRelativePath(NavMan.Uri);
+
+    if(relativePath == "/" || relativePath == "")
+    {
+        mobileBreakPoint = Breakpoint.None;
+        mainBreakPoint = Breakpoint.Always;
     }
-
+    ViewModel ??= ServiceProvider.GetRequiredService<LayoutViewModel>();
+    ViewModel.Page.WhenAnyPropertyChanged().Subscribe(_ =>
+        {
+            StateHasChanged();
+            }).DisposeWith(disposables);
+    }
+    
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                disposables.Dispose();
+        }
+            base.Dispose(disposing);
+        }
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        if (ViewModel == null)
+            return;
+        ViewModel.RouteTemplate = RouteData?.PageType
+            .GetCustomAttributes<RouteAttribute>(false)
+            .Select(r => r.Template)
+            .FirstOrDefault();
+    }
     private void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;

@@ -1,0 +1,16 @@
+﻿@inherits ReactiveComponentBase<PageViewModel>
+@if (ViewModel != null)
+{
+    <AlertView Alert="ViewModel.Alert"></AlertView>
+    <MudTextField Label="Name" @bind-Value="ViewModel.Name" Variant="Variant.Outlined" />
+    <MudTextField Label="Route" @bind-Value="ViewModel.Route" Variant="Variant.Outlined" />
+    <MudTextField Label="Markdown" Lines="10" @bind-Value="ViewModel.Markdown" Variant="Variant.Outlined" />
+    <MudTextField Label="Video Embed" @bind-Value="ViewModel.VideoEmbed" Lines="10" Variant="Variant.Outlined" />
+    <MudStack Row="true">
+        <MudButton OnClick="ViewModel.Update.BindCommand<MouseEventArgs>()" Color="Color.Primary">Update</MudButton>
+        <MudButton OnClick="ViewModel.Delete.BindCommand<MouseEventArgs>()" Color="Color.Warning">Delete</MudButton>
+    </MudStack>
+}
+@code {
+
+}

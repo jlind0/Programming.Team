@@ -35,4 +35,8 @@ namespace Programming.Team.Data.Core
     {
         Task<DocumentTemplate[]> GetForUser(Guid userId, DocumentTypes type = DocumentTypes.Resume, IUnitOfWork? work = null, CancellationToken token = default);
     }
+    public interface IPageRepository : IRepository<Page, Guid>
+    {
+        Task<Page?> GetByRoute(string route, IUnitOfWork? work = null, CancellationToken token = default);
+    }
 }

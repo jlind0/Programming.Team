@@ -52,6 +52,7 @@ public partial class ResumesContext : DbContext
     public virtual DbSet<FAQ> FAQs { get; set; }
     public virtual DbSet<Project> Projects { get; set; }
     public virtual DbSet<ProjectSkill> ProjectSkills { get; set; }
+    public virtual DbSet<Page> Pages { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Name=Resumes");
 
@@ -437,7 +438,27 @@ public partial class ResumesContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull);
              entity.HasQueryFilter(d => !d.IsDeleted);
         });
+        modelBuilder.Entity<Page>(entity =>
+        {
+            entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.CreateDate)
+                .HasDefaultValueSql("(getutcdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Name)
+                .HasMaxLength(100);
+            entity.Property(e => e.UpdateDate)
+                .HasDefaultValueSql("(getutcdate())")
+                .HasColumnType("datetime");
 
+            entity.HasOne(d => d.CreatedByUser).WithMany(p => p.PageCreatedByUsers)
+                .HasForeignKey(d => d.CreatedByUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            entity.HasOne(d => d.UpdatedByUser).WithMany(p => p.PageUpdatedByUsers)
+                .HasForeignKey(d => d.UpdatedByUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+            entity.HasQueryFilter(d => !d.IsDeleted);
+        });
         modelBuilder.Entity<User>(entity =>
         {
             entity.HasIndex(e => e.ObjectId, "IX_Users").IsUnique();

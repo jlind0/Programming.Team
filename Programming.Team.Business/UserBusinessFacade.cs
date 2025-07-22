@@ -167,4 +167,14 @@ namespace Programming.Team.Business
             return Repository.GetForUser(userId, type, work, token);
         }
     }
+    public class PageBusinessFacade : BusinessRepositoryFacade<Page, Guid, IPageRepository>, IPageBusinessFacade
+    {
+        public PageBusinessFacade(IPageRepository repository, ILogger<Page> logger) : base(repository, logger)
+        {
+        }
+        public Task<Page?> GetByRoute(string route, IUnitOfWork? work = null, CancellationToken token = default)
+        {
+            return Repository.GetByRoute(route, work, token);
+        }
+    }
 }

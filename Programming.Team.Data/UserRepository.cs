@@ -285,4 +285,24 @@ namespace Programming.Team.Data
             return Encoding.UTF8.GetString(output.ToArray());
         }
     }
+    public class PageRepository : Repository<Page, Guid>, IPageRepository
+    {
+        public PageRepository(IContextFactory contextFactory, IMemoryCache cache) : base(contextFactory, cache)
+        {
+        }
+        public async Task<Page?> GetByRoute(string route, IUnitOfWork? work = null, CancellationToken token = default)
+        {
+            if(Cache.TryGetValue<Page>($"page-{route}", out var page))
+                return page;
+            await Use(async (w, t) =>
+            {
+                page = await w.ResumesContext.Pages.SingleOrDefaultAsync(p => p.Route == route, t);
+                Cache.Set($"page-{route}", page, new MemoryCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(20) // Cache for 1 hour
+                });
+            }, work, token);
+            return page;
+        }
+    }
 }

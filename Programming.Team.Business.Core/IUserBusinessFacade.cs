@@ -103,4 +103,8 @@ namespace Programming.Team.Business.Core
     {
         Task<DocumentTemplate[]> GetForUser(Guid userId, DocumentTypes type = DocumentTypes.Resume, IUnitOfWork? work = null, CancellationToken token = default);
     }
+    public interface IPageBusinessFacade : IBusinessRepositoryFacade<Page, Guid>
+    {
+        Task<Page?> GetByRoute(string route, IUnitOfWork? work = null, CancellationToken token = default);
+    }
 }

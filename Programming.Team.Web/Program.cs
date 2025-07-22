@@ -274,6 +274,7 @@ builder.Services.AddScoped<IRepository<Education, Guid>, Repository<Education, G
 builder.Services.AddScoped<IRepository<DocumentTemplate, Guid>, DocumentTemplateRepository>();
 builder.Services.AddScoped<IRepository<DocumentTemplatePurchase, Guid>, Repository<DocumentTemplatePurchase, Guid>>();
 builder.Services.AddScoped<IDocumentTemplateRepository, DocumentTemplateRepository>();
+builder.Services.AddScoped<IPageRepository, PageRepository>();
 builder.Services.AddScoped<IRepository<DocumentSectionTemplate, Guid>, Repository<DocumentSectionTemplate, Guid>>();
 builder.Services.AddScoped<IRepository<Institution, Guid>, Repository<Institution, Guid>>();
 builder.Services.AddScoped<IRepository<Certificate, Guid>, Repository<Certificate, Guid>>();
@@ -295,6 +296,7 @@ builder.Services.AddScoped<IBusinessRepositoryFacade<Recommendation, Guid>, Busi
 builder.Services.AddScoped<IBusinessRepositoryFacade<FAQ, Guid>, BusinessRepositoryFacade<FAQ, Guid, IRepository<FAQ, Guid>>>();
 builder.Services.AddScoped<IUserBusinessFacade, UserBusinessFacade>();
 builder.Services.AddScoped<IRoleBusinessFacade, RoleBusinessFacade>();
+builder.Services.AddScoped<IPageBusinessFacade, PageBusinessFacade>();
 builder.Services.AddScoped<IRepository<Posting, Guid>, PostingRepository>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<PositionSkill, Guid>, BusinessRepositoryFacade<PositionSkill, Guid, IRepository<PositionSkill, Guid>>>();
 builder.Services.AddScoped<IBusinessRepositoryFacade<Skill, Guid>, SkillsBusinessFacade>();
@@ -386,6 +388,9 @@ builder.Services.AddTransient<ProjectsViewModel>();
 builder.Services.AddTransient<AddProjectSkillViewModel>();
 builder.Services.AddTransient<SuggestAddSkillsForProjectViewModel>();
 builder.Services.AddTransient<ProjectSkillsViewModel>();
+builder.Services.AddTransient<LayoutViewModel>();
+builder.Services.AddTransient<AddPageViewModel>();
+builder.Services.AddTransient<PagesViewModel>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession(options =>
 {

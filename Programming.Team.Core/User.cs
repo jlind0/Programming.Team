@@ -128,6 +128,9 @@ public partial class User : Entity<Guid>, IUser
     public virtual ICollection<Skill> SkillCreatedByUsers { get; set; } = new List<Skill>();
 
     public virtual ICollection<Skill> SkillUpdatedByUsers { get; set; } = new List<Skill>();
+    public virtual ICollection<Page> PageCreatedByUsers { get; set; } = new List<Page>();
+
+    public virtual ICollection<Page> PageUpdatedByUsers { get; set; } = new List<Page>();
 
     public virtual ICollection<Role> Roles { get; set; } = new List<Role>();
     public virtual ICollection<Publication> PublicationCreatedByUsers { get; set; } = new List<Publication>();

@@ -1,4 +1,4 @@
-﻿@inherits ReactiveComponentBase<AddFAQViewModel>
+﻿@inherits ReactiveComponentBase<AddPageViewModel>
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
@@ -11,9 +11,10 @@
                                    Color="Color.Default"
                                    Class="ml-auto" />
                 </div>
-                <MudTextField Label="Question" @bind-Value="ViewModel.Question" Lines="10" Variant="Variant.Outlined" />
-                <MudTextField Label="Answer" @bind-Value="ViewModel.Answer" Lines="10" Variant="Variant.Outlined" />
-                <MudTextField Label="SortOrder" @bind-Value="ViewModel.SortOrder" Variant="Variant.Outlined" />
+                <MudTextField Label="Name" @bind-Value="ViewModel.Name" Variant="Variant.Outlined" />
+                <MudTextField Label="Route" @bind-Value="ViewModel.Route" Variant="Variant.Outlined" />
+                <MudTextField Label="Markdown" Lines="10" @bind-Value="ViewModel.Markdown" Variant="Variant.Outlined" />
+                <MudTextField Label="Video Embed" @bind-Value="ViewModel.VideoEmbed" Lines="10" Variant="Variant.Outlined" />
                 <MudStack Row="true">
 
                     <MudIconButton OnClick="ViewModel.Add.BindCommand<MouseEventArgs>()" Icon="@Icons.Material.Filled.AddBox"

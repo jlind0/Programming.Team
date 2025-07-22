@@ -1,0 +1,34 @@
+﻿@inherits ReactiveComponentBase<PageViewModel>
+
+@if(ViewModel != null)
+{
+    <AlertView Alert="ViewModel.Alert"/> 
+    <MudDialog Visible="ViewModel.IsOpen">
+        <TitleContent>
+            <MudStack Row="true">
+                <MudText>@ViewModel.Name Help</MudText>
+                <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="ViewModel.ToggleOpen.BindCommand<MouseEventArgs>()" />
+            </MudStack>
+           
+        </TitleContent>
+        <DialogContent>
+            <MudStack>
+                @if (!string.IsNullOrWhiteSpace(ViewModel.Markdown))
+                {
+                    <Markdown>@ViewModel.Markdown</Markdown>
+                }
+                <MudSpacer />
+                @if(!string.IsNullOrWhiteSpace(ViewModel.VideoEmbed))
+                {
+
+                    <div>@((MarkupString)ViewModel.VideoEmbed)</div>
+                }
+            </MudStack>
+            
+        </DialogContent>
+    </MudDialog>
+}
+
+@code {
+
+}
