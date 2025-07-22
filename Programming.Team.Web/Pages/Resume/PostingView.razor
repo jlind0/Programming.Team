@@ -66,7 +66,7 @@
         {
             var strSummary = $"/api/resumes/summary/{ViewModel.Id}";
             string resumeSummaryUri = System.Web.HttpUtility.UrlEncode($"https://jobme.today/api/resumes/summary/{ViewModel.Id}.tex");
-            string strResumeSummaryUri = $"https://www.overleaf.com/docs?snip_uri={resumeUri}";
+            string strResumeSummaryUri = $"https://www.overleaf.com/docs?snip_uri={resumeSummaryUri}";
             <MudTextField Lines="10" @bind-Value="ViewModel.ResumeSummaryLatex" Label="Resume Summary LaTeX" Variant="Variant.Outlined"/>
             <MudLink Href="@strSummary" Target="_blank">Download Resume Summary</MudLink>
             <MudLink Href="@strResumeSummaryUri" Target="_blank">Edit Summary in Overleaf</MudLink>

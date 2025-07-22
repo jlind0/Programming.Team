@@ -60,7 +60,7 @@ namespace Programming.Team.Web.Controllers
                 return BadRequest(ex);
             }
         }
-        [HttpGet("summmary/{postingId}.tex")]
+        [HttpGet("summary/{postingId}.tex")]
         public async Task<IActionResult> GetSummaryLaTeX(Guid postingId, CancellationToken token = default)
         {
             try
