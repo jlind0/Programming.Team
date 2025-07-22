@@ -525,7 +525,7 @@ namespace Programming.Team.ViewModels.Resume
     public class ProjectSkillsViewModel : EntitiesDefaultViewModel<Guid, ProjectSkill, ProjectSkillViewModel, AddProjectSkillViewModel>
     {
         public ReactiveCommand<Unit, Unit> ExtractSkills { get; }
-        public ReactiveCommand<Unit, Unit> AssociateSkills { get; }
+        public ReactiveCommand<RawSkillViewModel, Unit> AddRawSkill { get; }
         public ICommand ToggleOpen => ReactiveCommand.Create(() => IsOpen = !IsOpen);
         protected IResumeEnricher Enricher { get; }
         protected IBusinessRepositoryFacade<Skill, Guid> SkillFacade { get; }
@@ -560,12 +560,45 @@ namespace Programming.Team.ViewModels.Resume
             IResumeEnricher enricher, IBusinessRepositoryFacade<PositionSkill, Guid> positionSkillFacade) : base(addViewModel, facade, logger)
         {
             ExtractSkills = ReactiveCommand.CreateFromTask(DoExtractSkills);
-            AssociateSkills = ReactiveCommand.CreateFromTask(DoAssociateSkills);
             Enricher = enricher;
             SkillFacade = skillFacade;
             SuggestAddSkillsVM = suggestAddSkillsVM;
             PositionSkillFacade = positionSkillFacade;
-
+            AddRawSkill = ReactiveCommand.CreateFromTask<RawSkillViewModel>(DoAddRawSkill);
+        }
+        protected async Task DoAddRawSkill(RawSkillViewModel raw, CancellationToken token)
+        {
+            try
+            {
+                var skillRes = await SkillFacade.Get(page: new Pager() { Page = 1, Size = 1 }, filter: q => q.Name == raw.Name, token: token);
+                var skill = skillRes.Entities.FirstOrDefault();
+                if (skill == null)
+                {
+                    skill = new Skill()
+                    {
+                        Name = raw.Name
+                    };
+                    await SkillFacade.Add(skill, token: token);
+                    await PositionSkillFacade.Add(new PositionSkill()
+                    {
+                        PositionId = PositionId,
+                        SkillId = skill.Id,
+                    }, token: token);
+                }
+                var ps = new ProjectSkill()
+                {
+                    ProjectId = ProjectId,
+                    SkillId = skill.Id
+                };
+                await Facade.Add(ps, token: token);
+                RawSkills.Remove(raw);
+                await Load.Execute().GetAwaiter();
+            }
+            catch(Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
+                await Alert.Handle(ex.Message).GetAwaiter();
+            }
         }
         private bool isOpen;
         public bool IsOpen
@@ -574,43 +607,6 @@ namespace Programming.Team.ViewModels.Resume
             set => this.RaiseAndSetIfChanged(ref isOpen, value);
         }
         public ObservableCollection<RawSkillViewModel> RawSkills { get; } = new ObservableCollection<RawSkillViewModel>();
-        protected async Task DoAssociateSkills(CancellationToken token)
-        {
-            try
-            {
-                foreach (var raw in RawSkills.Where(r => r.IsSelected).ToArray())
-                {
-                    var skillRes = await SkillFacade.Get(page: new Pager() { Page = 1, Size = 1 }, filter: q => q.Name == raw.Name, token: token);
-                    var skill = skillRes.Entities.FirstOrDefault();
-                    if (skill == null)
-                    {
-                        skill = new Skill()
-                        {
-                            Name = raw.Name
-                        };
-                        await SkillFacade.Add(skill, token: token);
-                        await PositionSkillFacade.Add(new PositionSkill()
-                        {
-                            PositionId = PositionId,
-                            SkillId = skill.Id,
-                        }, token: token);
-                    }
-                    var ps = new ProjectSkill()
-                    {
-                        ProjectId = ProjectId,
-                        SkillId = skill.Id
-                    };
-                    await Facade.Add(ps, token: token);
-                    RawSkills.Remove(raw);
-                }
-                await Load.Execute().GetAwaiter();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, ex.Message);
-                await Alert.Handle(ex.Message);
-            }
-        }
         protected async Task DoExtractSkills(CancellationToken token)
         {
             RawSkills.Clear();
@@ -621,7 +617,7 @@ namespace Programming.Team.ViewModels.Resume
                 {
                     var sks = skills.ToList();
                     sks.RemoveAll(s => Entities.Any(e => string.Compare(e.Skill.Name, s, StringComparison.OrdinalIgnoreCase) == 0));
-                    RawSkills.AddRange(sks.Select(s => new RawSkillViewModel(Logger, ProjectId, s)));
+                    RawSkills.AddRange(sks.Select(s => new RawSkillViewModel(Logger, ProjectId, s, AddRawSkill)));
                 }
             }
             catch (Exception ex)
