@@ -2695,8 +2695,8 @@ include-drop-zone {
 .rawSkillsDivs {
     display: flex !important;
     justify-content: center;
-  
-    padding:2%;
+
+    
 }
 .d-flex .skillDiv {
     display: flex !important;
@@ -2704,38 +2704,49 @@ include-drop-zone {
     justify-content: center !important;
     align-items: center !important;
     background-color:lightgray;
-    padding: 2%;
-    margin: 1%;
-    width: 30%;
-    border-radius: 10%;
+  
+    margin:2%;
+    border-radius: 20%;
+    
 
 }
 .d-flex .skillView{
-
-    margin-top:5%;
     
+    margin-top:10% !important;    
 }
-.d-flex .mud-input-control .mud-typography, .d-flex .skillView {
+.d-flex .skillDiv button, .d-flex .skillView {
     font-size: 1em;
     font-weight: bold !important;
     display: flex !important;
     flex-direction: row !important;
-    justify-content: center !important;
+    justify-content: space-around !important;
     align-items: center !important;
+    width:30%;
+    height:100%;
+    padding:0;
+    margin-left:12% !important;
+  
 
 }
+.d-flex .skillDiv button {
+    font-size: 2vmax;
+    border:none;
+    outline:none;
 
+   
+}
+.d-flex .skillDiv button:hover {
+    color:blue;
+}
 /* own skills */
-
 .ownSkillsDiv {
-
-    display:flex;
-    flex-direction:row;
-    justify-content:center;
-    align-items:center;
-    flex-wrap:wrap;
-    padding:1%;
-    gap:2%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 1%;
+    gap: 2%;
 }
 
 /* add project button */
