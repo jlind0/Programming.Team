@@ -23,6 +23,7 @@
                     <MudTextField @bind-Value="ViewModel.Name" Label="Name" Variant="Variant.Outlined" />
                     <MudTextField @bind-Value="ViewModel.Description" Label="Description" Variant="Variant.Outlined" Lines="10" />
                     <MudTextField @bind-Value="ViewModel.Url" Label="URL" Variant="Variant.Outlined" />
+                   
                     <MudStack Row="true">
                         <MudButton OnClick="ViewModel.Add.BindCommand<MouseEventArgs>()">Add Issuer</MudButton>
                         <MudButton OnClick="ViewModel.Cancel.BindCommand<MouseEventArgs>()">Cancel</MudButton>

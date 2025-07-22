@@ -1,95 +1,23 @@
-﻿@*@inherits ReactiveComponentBase<AddProjectViewModel>
-
-@if (ViewModel != null)
-{
-    <AlertView Alert="ViewModel.Alert" />
-
-
-    <MudOverlay ZIndex="5" Visible="@ViewModel.IsOpen"
-                Style="background-color: rgba(255,255,255,.3); padding: 20px"
-                AutoClose="false" />
-
-    <div class="d-flex justify-end">
-        <MudIconButton Icon="@Icons.Material.Filled.Close"
-                       OnClick="() => ViewModel.IsOpen = false"
-                       Color="Color.Default"
-                       Class="ml-auto" />
-    </div>
-
-    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4">
-        <div class="d-flex flex-column">
-            <div class="d-flex justify-end">
-                <MudIconButton Icon="@Icons.Material.Filled.Close"
-                               OnClick="() => ViewModel.IsOpen = false"
-                               Color="Color.Default"
-                               Class="ml-auto" />
-            </div>
-            <MudStack>
-                <SearchSelectEntityView TAddView="AddPositionView"
-                                        TEntity="Programming.Team.Core.Position" TKey="Guid" TAddViewModel="AddPositionViewModel"
-                                        TSearchSelectViewModel="SearchSelectPositionViewModel"
-                                        ViewModel="ViewModel.PositionSelector" />
-                <MudTextField @bind-Value="ViewModel.Name" Label="Name" Variant="Variant.Outlined" />
-                <MudTextField @bind-Value="ViewModel.ProjectUrl" Label="Project Url" Variant="Variant.Outlined"/>
-                <MudTextField @bind-Value="ViewModel.SourceUrl" Label="Source Url" Variant="Variant.Outlined"/>
-                <MudTextField @bind-Value="ViewModel.License" Label="License" Variant="Variant.Outlined"/>
-                <MudTextField Lines="10" @bind-Value="ViewModel.Description" Label="Description"
-                              Variant="Variant.Outlined" />
-                <MudTextField @bind-Value="ViewModel.SortOrder" Label="Sort Order" Variant="Variant.Outlined" />
-                <MudStack Row="true">
-                    <MudButton OnClick="ViewModel.Add.BindCommand<MouseEventArgs>()" Class="fw-bold"
-                               Variant="Variant.Filled" Color="Color.Primary">
-                        Add Position
-                    </MudButton>
-                    <MudButton OnClick="ViewModel.Cancel.BindCommand<MouseEventArgs>()" Class="fw-bold"
-                               Variant="Variant.Filled" Color="Color.Primary">
-                        Cancel
-                    </MudButton>
-                </MudStack>
-            </MudStack>
-
-        </div>
-    </MudPopover>
-
-}
-
-@code {
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender && ViewModel != null)
-        {
-            await ViewModel.Init.Execute().GetAwaiter();
-        }
-        await base.OnAfterRenderAsync(firstRender);
-    }
-}*@
-@inherits ReactiveComponentBase<AddProjectViewModel>
+﻿@inherits ReactiveComponentBase<AddProjectViewModel>
 
 <style>
-    .custom-dim {
-        z-index: 10000 !important; /* under autocomplete and popover */
-        position: fixed;
-    }
 
-    .popover-z {
-        z-index: 99999999 !important; /* above overlay, below autocomplete dropdown */
-        position: fixed !important;
-    }
 </style>
 
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
 
-    <MudOverlay Visible="@ViewModel.IsOpen" Class="custom-dim"
-                Style="background-color: rgba(0,0,0,.4); padding: 20px"
-                AutoClose="false" />
-
-    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4 popover-z" Style="min-width:400px;">
+      <MudDialog @bind-Visible="ViewModel.IsOpen" 
+           MaxWidth="MaxWidth.Medium" 
+           FullWidth="true" 
+           Class="px-4 pt-4 popover-z"
+           Style="min-width:400px;">
+    <DialogContent>
         <div class="d-flex flex-column">
             <div class="d-flex justify-end">
                 <MudIconButton Icon="@Icons.Material.Filled.Close"
-                               OnClick="() => ViewModel.IsOpen = false"
+                               OnClick="ViewModel.Cancel.BindCommand<MouseEventArgs>()"
                                Color="Color.Default"
                                Class="ml-auto" />
             </div>
@@ -98,107 +26,28 @@
                 <!-- Step 1: Company Details -->
                 <MudStep Title="Company" HasError="step1Error">
                     <MudStack Spacing="3">
-                   @*     <MudTextField T="string"
-                                      Label="Company Name"
-                                      @bind-Value="companyName"
-                                      Variant="Variant.Outlined" />
-
-                        <MudTextField T="string"
-                                      Label="Description"
-                                      @bind-Value="companyDescription"
-                                      Variant="Variant.Outlined" />
-
-                        <MudTextField T="string"
-                                      Label="City"
-                                      @bind-Value="companyCity"
-                                      Variant="Variant.Outlined" />
-
-                        <MudTextField T="string"
-                                      Label="State/Province"
-                                      @bind-Value="companyState"
-                                      Variant="Variant.Outlined" />
-
-                        <MudTextField T="string"
-                                      Label="Country"
-                                      @bind-Value="companyCountry"
-                                      Variant="Variant.Outlined" />
-
-                        <MudTextField T="string"
-                                      Label="Website URL"
-                                      @bind-Value="companyUrl"
-                                      Variant="Variant.Outlined" />*@
                         <SearchSelectEntityView TAddView="AddPositionView"
                                                 TEntity="Programming.Team.Core.Position" TKey="Guid" TAddViewModel="AddPositionViewModel"
                                                 TSearchSelectViewModel="SearchSelectPositionViewModel"
-                                                ViewModel="ViewModel.PositionSelector" />
+                                                ViewModel="ViewModel.PositionSelector" SupportAdd="false" />
                     </MudStack>
                 </MudStep>
-
-                <!-- Step 2: Position Details -->
-             @*   <MudStep Title="Position">
-                    <MudStack Spacing="3">
-                        <MudTextField T="string"
-                                      Label="Position Title"
-                                      @bind-Value="positionTitle"
-                                      Variant="Variant.Outlined" />
-
-                        <MudTextField T="string"
-                                      Label="Start Date (YYYY-MM-DD)"
-                                      @bind-Value="positionStartDate"
-                                      Variant="Variant.Outlined" />
-
-                        <MudTextField T="string"
-                                      Label="End Date (YYYY-MM-DD)"
-                                      @bind-Value="positionEndDate"
-                                      Variant="Variant.Outlined" />
-
-                        <MudTextField T="string"
-                                      Lines="3"
-                                      Label="Description"
-                                      @bind-Value="positionDescription"
-                                      Variant="Variant.Outlined" />
-
-                        <MudTextField T="int?"
-                                      Label="Sort Order"
-                                      @bind-Value="positionSortOrder"
-                                      Variant="Variant.Outlined" />
-                    </MudStack>
-                </MudStep>*@
 
                 <!-- Step 2: Project Details -->
                 <MudStep Title="Project" Disabled="step1Error">
                     <MudStack Spacing="3">
-                        <MudTextField T="string"
-                                      Label="Project Name"
-                                      @bind-Value="projectName"
-                                      Variant="Variant.Outlined" />
-
-                        <MudTextField T="string"
-                                      Label="Project URL"
-                                      @bind-Value="projectUrl"
-                                      Variant="Variant.Outlined" />
-
-                        <MudTextField T="string"
-                                      Label="Source URL"
-                                      @bind-Value="sourceUrl"
-                                      Variant="Variant.Outlined" />
-
-                        <MudTextField T="string"
-                                      Label="License"
-                                      @bind-Value="license"
-                                      Variant="Variant.Outlined" />
-
-                        <MudTextField T="string"
-                                      Lines="5"
-                                      Label="Description"
-                                      @bind-Value="projectDescription"
-                                      Variant="Variant.Outlined" />
-
-                        <MudTextField T="int?"
-                                      Label="Sort Order"
-                                      @bind-Value="projectSortOrder"
-                                      Variant="Variant.Outlined" />
-
+                            <MudTextField @bind-Value="ViewModel.Name" For="() => ViewModel.Name"
+                                          Label="Name" Variant="Variant.Outlined" />
+                            <MudTextField @bind-Value="ViewModel.Description" For="() => ViewModel.Description" 
+                                Label="Description" Variant="Variant.Outlined" Lines="10" />
+                            <MudTextField @bind-Value="ViewModel.ProjectUrl" For="() => ViewModel.ProjectUrl"
+                                          Label="Project URL" Variant="Variant.Outlined" />
+                            <MudTextField @bind-Value="ViewModel.SourceUrl" For="() => ViewModel.SourceUrl"
+                                          Label="Source URL" Variant="Variant.Outlined" />
+                            <MudTextField @bind-Value="ViewModel.License" For="() => ViewModel.License"
+                                          Label="License" Variant="Variant.Outlined" />
+                            <MudTextField @bind-Value="ViewModel.SortOrder" For="() => ViewModel.SortOrder"
+                                          Label="Sort Order" Variant="Variant.Outlined" />
                         <div class="step-actions">
 
                             <div>
@@ -216,7 +65,10 @@
 
    
         </div>
-    </MudPopover>
+        </DialogContent>
+        @*</MudPopover> *@
+    </MudDialog>
+
 }
 
 @code {
@@ -225,62 +77,6 @@
 
     // Stepper control
     private int activeStepIndex = 0;
-
-    private void NextStep() => activeStepIndex++;
-    private void PreviousStep() => activeStepIndex--;
-
-    // Company fields
-    private string companyName = "";
-    private string companyDescription = "";
-    private string companyCity = "";
-    private string companyState = "";
-    private string companyCountry = "";
-    private string companyUrl = "";
-
-    // Position fields
-    private string positionTitle = "";
-    private string positionStartDate = DateTime.Now.ToString("yyyy-MM-dd");
-    private string positionEndDate = "";
-    private string positionDescription = "";
-    private int? positionSortOrder = null;
-
-    // Project fields
-    private string projectName = "";
-    private string projectUrl = "";
-    private string sourceUrl = "";
-    private string license = "";
-    private string projectDescription = "";
-    private int? projectSortOrder = null;
-
-    private async Task SaveAllData()
-    {
-        // Convert string dates to DateOnly
-        DateOnly? startDate = null;
-        DateOnly? endDate = null;
-
-        if (DateOnly.TryParse(positionStartDate, out var parsedStart))
-            startDate = parsedStart;
-
-        if (DateOnly.TryParse(positionEndDate, out var parsedEnd))
-            endDate = parsedEnd;
-
-        // Save company data
-        // await SaveCompany(companyName, companyDescription, ...);
-
-        // Save position data
-        // await SavePosition(positionTitle, startDate, endDate, ...);
-
-        // Save project data
-        ViewModel.Name = projectName;
-        ViewModel.ProjectUrl = projectUrl;
-        ViewModel.SourceUrl = sourceUrl;
-        ViewModel.License = license;
-        ViewModel.Description = projectDescription;
-        //ViewModel.SortOrder = projectSortOrder;
-
-        await ViewModel.Add.Execute().GetAwaiter();
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && ViewModel != null)

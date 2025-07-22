@@ -6,18 +6,22 @@
     <MudButton OnClick="ViewModel.StartAdd.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
                Color="Color.Primary">Add Skill</MudButton>
     <AddProjectSkillView ViewModel="ViewModel.AddViewModel" />
-    <MudStack Row="true" Wrap="Wrap.Wrap">
+    <MudStack Row="true" Wrap="Wrap.Wrap" Class="ownSkillsDiv">
         @foreach (var e in ViewModel.Entities)
         {
+         
             <ProjectSkillView ViewModel="e" />
+     
         }
     </MudStack>
-    <SuggestAddSkillsForProjectView ViewModel="ViewModel.SuggestAddSkillsVM" />
-    <MudButton OnClick="ViewModel.ExtractSkills.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
-               Color="Color.Primary">Extract Skills</MudButton>
+    <div class="hover-wrapper">
+        <MudButton OnClick="ViewModel.ExtractSkills.BindCommand<MouseEventArgs>()" Class="fw-bold hover-button" Variant="Variant.Filled"
+                   Color="Color.Primary">Extract Skills</MudButton>
+        <span class="hover-tooltip">Extract skills is for extracting additional skills using AI.</span>
+    </div>
     @if (ViewModel.RawSkills.Count > 0)
     {
-        <MudStack Row="true" Wrap="Wrap.Wrap">
+        <MudStack Row="true" Wrap="Wrap.Wrap" Class="rawSkillsDivs">
             @foreach (var e in ViewModel.RawSkills)
             {
                 <RawSkillView ViewModel="e" />

@@ -30,7 +30,6 @@
         padding: 16px;
     }
 
-
 </style>
 @if (ViewModel != null)
 {
@@ -38,29 +37,37 @@
     <MudStack>
         @if(!ViewModel.AddViewModel.IsOpen)
         {
-          
-            <MudAutocomplete Class="autocomplete-left" Modal="false" T="TEntity" CoerceText="false" Label="@typeof(TEntity).Name" ToStringFunc="c => c?.Name"
-                         @bind-Value="ViewModel.Selected" DebounceInterval="250" SearchFunc="ViewModel.Search.BindCommand()" />
-        }
-        @if (ViewModel.CanAdd)
-        {
-            if (!ViewModel.AddViewModel.IsOpen)
-            {
-                <MudButton OnClick="ViewModel.StartAdd.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
-                           Color="Color.Primary">Add @typeof(TEntity).Name</MudButton>
-            }
-           <DynamicComponent Type="typeof(TAddView)" Parameters="@(new Dictionary<string, object> { { "ViewModel", ViewModel.AddViewModel },  })" />
-   
 
-       
-       
-  
+                <MudAutocomplete  
+                                 Modal="true"
+                                 T="TEntity"
+                                 CoerceText="false"
+                                 Label="@typeof(TEntity).Name"
+                                 ToStringFunc="c => c?.Name"
+                                 @bind-Value="ViewModel.Selected"
+                                 DebounceInterval="250"
+                                 SearchFunc="ViewModel.Search.BindCommand()"
+                                  />
+        }
+        @if(SupportAdd)
+        {
+            @if (ViewModel.CanAdd)
+            {
+                if (!ViewModel.AddViewModel.IsOpen)
+                {
+                    <MudButton OnClick="ViewModel.StartAdd.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
+                               Color="Color.Primary">Add @typeof(TEntity).Name</MudButton>
+                }
+               <DynamicComponent Type="typeof(TAddView)" Parameters="@(new Dictionary<string, object> { { "ViewModel", ViewModel.AddViewModel },  })" />
+            }
         }
     </MudStack>
 }
 
 @code{
     private readonly CompositeDisposable disposables = new CompositeDisposable();
+    [Parameter]
+    public bool SupportAdd { get; set; } = true;
     protected override void OnInitialized()
     {
         if(ViewModel != null)

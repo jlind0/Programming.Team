@@ -328,8 +328,9 @@ namespace Programming.Team.ViewModels.Resume
             if (string.IsNullOrWhiteSpace(text))
                 return [];
             SearchString = text;
+            var userId = await Facade.GetCurrentUserId();
             var result = await Facade.Get(page: new Pager() { Page = 1, Size = 5 },
-                filter: q => q.Company.Name.StartsWith(text), properites: PropertiesToLoad(), token: token);
+                filter: q => q.Company.Name.StartsWith(text) && q.UserId == userId, properites: PropertiesToLoad(), token: token);
             if (result != null)
                 return result.Entities;
             return [];

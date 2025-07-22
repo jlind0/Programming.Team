@@ -103,12 +103,12 @@
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
-
-    <MudOverlay Visible="@ViewModel.IsOpen" Class="custom-dim"
-                Style="background-color: rgba(0,0,0,.4); padding: 20px"
-                AutoClose="false" />
-
-    <MudPopover Open="ViewModel.IsOpen" Fixed="true" Class="px-4 pt-4 popover-z" Style="min-width:400px;">
+      <MudDialog @bind-Visible="ViewModel.IsOpen" 
+           MaxWidth="MaxWidth.Medium" 
+           FullWidth="true" 
+           Class="px-4 pt-4 popover-z"
+           Style="min-width:400px;">
+    <DialogContent>
         <div class="d-flex flex-column">
             <div class="d-flex justify-end">
                 <MudIconButton Icon="@Icons.Material.Filled.Close"
@@ -120,35 +120,6 @@
                 <!-- Step 1: Company Details -->
                 <MudStep Title="Company" HasError="step1Error">
                     <MudStack Spacing="3">
-                     @*   <MudTextField T="string"
-                                      Label="Company Name"
-                                      @bind-Value="companyName"
-                                      Variant="Variant.Outlined" />
-
-                        <MudTextField T="string"
-                                      Label="Description"
-                                      @bind-Value="companyDescription"
-                                      Variant="Variant.Outlined" />
-
-                        <MudTextField T="string"
-                                      Label="City"
-                                      @bind-Value="companyCity"
-                                      Variant="Variant.Outlined" />
-
-                        <MudTextField T="string"
-                                      Label="State/Province"
-                                      @bind-Value="companyState"
-                                      Variant="Variant.Outlined" />
-
-                        <MudTextField T="string"
-                                      Label="Country"
-                                      @bind-Value="companyCountry"
-                                      Variant="Variant.Outlined" />
-
-                        <MudTextField T="string"
-                                      Label="Website URL"
-                                      @bind-Value="companyUrl"
-                                      Variant="Variant.Outlined" />*@
                         <SearchSelectEntityView TAddView="AddCompanyView"
                                                 TEntity="Company" TKey="Guid" TAddViewModel="AddCompanyViewModel"
                                                 TSearchSelectViewModel="SearchSelectCompanyViewModel"
@@ -165,17 +136,14 @@
                                       Variant="Variant.Outlined" />
 
                         <div class="d-flex gap-3">
-                            <MudTextField T="string"
-                                          Label="Start Date (YYYY-MM-DD)"
-                                          @bind-Value="startDateString"
-                                          Class="flex-grow-1"
-                                          Variant="Variant.Outlined" />
-
-                            <MudTextField T="string"
-                                          Label="End Date (YYYY-MM-DD)"
-                                          @bind-Value="endDateString"
-                                          Class="flex-grow-1"
-                                          Variant="Variant.Outlined" />
+                            <MudDatePicker @bind-Date="ViewModel.StartDateTime"
+                                           Label="Start Date"
+                                           MinDate="new DateTime(1950, 1, 1)"
+                                               Class="flex-grow-1" />
+                            <MudDatePicker @bind-Date="ViewModel.EndDateTime"
+                                                Label="End Date"
+                                                MinDate="new DateTime(1950, 1, 1)"
+                                            Class="flex-grow-1" />
                         </div>
 
                         <MudTextField Lines="10"
@@ -184,11 +152,9 @@
                                       Label="Description"
                                       Variant="Variant.Outlined" />
 
-                        <MudTextField T="int?"
-                                   
+                        <MudTextField @bind-Value="ViewModel.SortOrder"
                                       Label="Sort Order"
                                       Variant="Variant.Outlined" />
-
                         <div class="step-actions">
 
                             <div>
@@ -204,7 +170,9 @@
             </MudStepper>
 
         </div>
-    </MudPopover>
+        </DialogContent>
+        @*</MudPopover> *@
+    </MudDialog>
 }
 
 @code {
@@ -213,43 +181,6 @@
 
     // Stepper control
     private int activeStepIndex = 0;
-
-    private void NextStep() => activeStepIndex++;
-    private void PreviousStep() => activeStepIndex--;
-
-    // Company fields
-    private string companyName = "";
-    private string companyDescription = "";
-    private string companyCity = "";
-    private string companyState = "";
-    private string companyCountry = "";
-    private string companyUrl = "";
-
-    // Date fields as strings
-    private string startDateString = DateTime.Now.ToString("yyyy-MM-dd");
-    private string endDateString = "";
-
-    private async Task SaveAllData()
-    {
-        // Save company data first
-        if (!string.IsNullOrWhiteSpace(companyName))
-        {
-            // await SaveCompany(companyName, companyDescription, ...);
-        }
-
-        // Parse dates and set to ViewModel
-        if (DateOnly.TryParse(startDateString, out var startDate))
-            ViewModel.StartDateTime = startDate.ToDateTime(TimeOnly.MinValue);
-
-        if (DateOnly.TryParse(endDateString, out var endDate))
-            ViewModel.EndDateTime = endDate.ToDateTime(TimeOnly.MinValue);
-        else
-            ViewModel.EndDateTime = null;
-
-        // Save position using ViewModel
-        await ViewModel.Add.Execute().GetAwaiter();
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && ViewModel != null)
