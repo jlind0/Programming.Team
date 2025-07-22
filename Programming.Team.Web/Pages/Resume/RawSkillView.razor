@@ -1,8 +1,6 @@
 ﻿@inherits ReactiveComponentBase<RawSkillViewModel>
 @if (ViewModel != null)
 {   
-    <div class="skillDiv">
-        <p class="skillView">@ViewModel.Name</p>
-        <MudCheckBox Label="Add Skill" @bind-Value="ViewModel.IsSelected" />
-    </div>
+    <MudChip T="string" OnClose="ViewModel.AddSkill.BindCommand<MudChip<string>>()" 
+        CloseIcon="@Icons.Material.Filled.Add">@ViewModel.Name</MudChip>
 }
