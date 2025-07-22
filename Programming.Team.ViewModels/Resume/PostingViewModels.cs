@@ -83,6 +83,8 @@ namespace Programming.Team.ViewModels.Resume
         public ReactiveCommand<Unit, Unit> RenderMarkdown { get; }
         public ReactiveCommand<Unit, Unit> ExtractCompanyName { get; }
         public ReactiveCommand<Unit, Unit> ResearchCompany { get; }
+        public ReactiveCommand<Unit, Unit> GenerateInterviewQuestions { get; }
+        public ReactiveCommand<Unit, Unit> GenerateEmployeerQuestions { get; }
         ~PostingViewModel()
         {
             disposables.Dispose();
@@ -102,6 +104,8 @@ namespace Programming.Team.ViewModels.Resume
             RenderMarkdown = ReactiveCommand.CreateFromTask(DoRenderMarkdown);
             ExtractCompanyName = ReactiveCommand.CreateFromTask(DoExtractCompanyName);
             ResearchCompany = ReactiveCommand.CreateFromTask(DoResearchCompany);
+            GenerateInterviewQuestions = ReactiveCommand.CreateFromTask(DoGenerateInterviewQuestions);
+            GenerateEmployeerQuestions = ReactiveCommand.CreateFromTask(DoGeneratEmployeerQuestions);
             CoverLetterConfigurationViewModel = coverConfig;
             WireUpEvents();
         }
@@ -120,6 +124,8 @@ namespace Programming.Team.ViewModels.Resume
             RenderMarkdown = ReactiveCommand.CreateFromTask(DoRenderMarkdown);
             ExtractCompanyName = ReactiveCommand.CreateFromTask(DoExtractCompanyName);
             ResearchCompany = ReactiveCommand.CreateFromTask(DoResearchCompany);
+            GenerateInterviewQuestions = ReactiveCommand.CreateFromTask(DoGenerateInterviewQuestions);
+            GenerateEmployeerQuestions = ReactiveCommand.CreateFromTask(DoGeneratEmployeerQuestions);
             WireUpEvents();
         }
         private bool isProcessing = false;
@@ -131,6 +137,14 @@ namespace Programming.Team.ViewModels.Resume
         public bool CanResearchCompany
         {
             get => !string.IsNullOrWhiteSpace(CompanyName);
+        }
+        public bool CanGenerateInterviewQuestions
+        {
+            get => !string.IsNullOrWhiteSpace(Details) && !string.IsNullOrWhiteSpace(RenderedLaTex);
+        }
+        public bool CanGenerateEmployeerQuestions
+        {
+            get => !string.IsNullOrWhiteSpace(Details);
         }
         protected async Task DoExtractCompanyName(CancellationToken token)
         {
@@ -158,6 +172,46 @@ namespace Programming.Team.ViewModels.Resume
                     throw new InvalidDataException("No Company Name Set");
                 IsProcessing = true;
                 CompanyResearch = await Enricher.ResearchCompany(CompanyName ?? throw new InvalidDataException("No Company Name Set"), token: token);
+                await Update.Execute().GetAwaiter();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
+                await Alert.Handle(ex.Message).GetAwaiter();
+            }
+            finally
+            {
+                IsProcessing = false;
+            }
+        }
+        protected async Task DoGenerateInterviewQuestions(CancellationToken token)
+        {
+            try
+            {
+                if (!CanGenerateInterviewQuestions)
+                    return;
+                IsProcessing = true;
+                InterviewQuestions = await Enricher.GenerateInterviewQuestions(Details, RenderedLaTex ?? throw new InvalidDataException("Must have a resume to generate interview questions."), token: token);
+                await Update.Execute().GetAwaiter();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
+                await Alert.Handle(ex.Message).GetAwaiter();
+            }
+            finally
+            {
+                IsProcessing = false;
+            }
+        }
+        protected async Task DoGeneratEmployeerQuestions(CancellationToken token)
+        {
+            try
+            {
+                if (!CanGenerateEmployeerQuestions)
+                    return;
+                IsProcessing = true;
+                QuestionsToAsk = await Enricher.GenerateEmployeerQuestions(Details, CompanyResearch, token: token);
                 await Update.Execute().GetAwaiter();
             }
             catch (Exception ex)
@@ -338,14 +392,22 @@ namespace Programming.Team.ViewModels.Resume
         public string Details
         {
             get => details;
-            set => this.RaiseAndSetIfChanged(ref details, value);
+            set
+            {
+                this.RaiseAndSetIfChanged(ref details, value);
+                this.RaisePropertyChanged(nameof(CanGenerateInterviewQuestions));
+            }
         }
 
         private string? renderedLaTex;
         public string? RenderedLaTex
         {
             get => renderedLaTex;
-            set => this.RaiseAndSetIfChanged(ref renderedLaTex, value);
+            set
+            {
+                this.RaiseAndSetIfChanged(ref renderedLaTex, value);
+                this.RaisePropertyChanged(nameof(CanGenerateInterviewQuestions));
+            }
         }
 
         private string? configuration;
@@ -419,6 +481,18 @@ namespace Programming.Team.ViewModels.Resume
             get => companyResearch;
             set => this.RaiseAndSetIfChanged(ref companyResearch, value);
         }
+        private string? interviewQuestions;
+        public string? InterviewQuestions
+        {
+            get => interviewQuestions;
+            set => this.RaiseAndSetIfChanged(ref interviewQuestions, value);
+        }
+        private string? questionsToAsk;
+        public string? QuestionsToAsk
+        {
+            get => questionsToAsk;
+            set => this.RaiseAndSetIfChanged(ref questionsToAsk, value);
+        }
 
         protected override async Task<Posting?> DoLoad(CancellationToken token)
         {
@@ -461,6 +535,8 @@ namespace Programming.Team.ViewModels.Resume
                 UserId = UserId,
                 CompanyName = CompanyName,
                 CompanyResearch = CompanyResearch,
+                InterviewQuestions = InterviewQuestions,
+                QuestionsToAsk = QuestionsToAsk,
             });
         }
 
@@ -478,6 +554,8 @@ namespace Programming.Team.ViewModels.Resume
             ResumeMarkdown = entity.ResumeMarkdown;
             CompanyName = entity.CompanyName;
             CompanyResearch = entity.CompanyResearch;
+            InterviewQuestions = entity.InterviewQuestions;
+            QuestionsToAsk = entity.QuestionsToAsk;
             await ConfigurationViewModel.Load(entity.Configuration);
             await CoverLetterConfigurationViewModel.Load(entity.CoverLetterConfiguration);
         }

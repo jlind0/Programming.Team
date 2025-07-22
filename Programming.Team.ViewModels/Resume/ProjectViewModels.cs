@@ -10,6 +10,7 @@ using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive;
@@ -57,6 +58,7 @@ namespace Programming.Team.ViewModels.Resume
         }
 
         private string? projectUrl;
+        [Url(ErrorMessage = "Project URL must be a valid URL")]
         public string? ProjectUrl
         {
             get => projectUrl;
@@ -64,6 +66,7 @@ namespace Programming.Team.ViewModels.Resume
         }
 
         private string? sourceUrl;
+        [Url(ErrorMessage = "Source URL must be a valid URL")]
         public string? SourceUrl
         {
             get => sourceUrl;
@@ -85,12 +88,18 @@ namespace Programming.Team.ViewModels.Resume
         }
 
         private string name = string.Empty;
+        [Required(ErrorMessage = "Name is required")]
         public string Name
         {
             get => name;
             set => this.RaiseAndSetIfChanged(ref name, value);
         }
-        public string? Liscence { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        private string? liscence;
+        public string? Liscence
+        {
+            get => liscence;
+            set => this.RaiseAndSetIfChanged(ref liscence, value);
+        }
 
         protected override Task Clear()
         {
@@ -270,6 +279,7 @@ namespace Programming.Team.ViewModels.Resume
             ProjectUrl = entity.ProjectUrl;
             PositionId = entity.PositionId;
             SkillsViewModel.ProjectId = entity.Id;
+            SkillsViewModel.PositionId = entity.PositionId;
             SkillsViewModel.InitialEntities = entity.ProjectSkills;
             SkillsViewModel.Description = entity.Description ?? "";
             Position = entity.Position;
@@ -419,14 +429,23 @@ namespace Programming.Team.ViewModels.Resume
         }
         protected override async Task<ProjectSkill?> DoAdd(CancellationToken token)
         {
-            var rs = await PositionSkillFacade.Get(page: new Pager() { Page = 1, Size = 1 }, 
-                filter: f => f.PositionId == PositionId && f.SkillId == SkillId, token: token);
-            if (rs.Count == 0)
-                await PositionSkillFacade.Add(new PositionSkill()
-                {
-                    SkillId = SkillId,
-                    PositionId = PositionId
-                }, token: token);
+            try
+            {
+                var rs = await PositionSkillFacade.Get(page: new Pager() { Page = 1, Size = 1 },
+                    filter: f => f.PositionId == PositionId && f.SkillId == SkillId, token: token);
+                if (rs.Count == 0)
+                    await PositionSkillFacade.Add(new PositionSkill()
+                    {
+                        SkillId = SkillId,
+                        PositionId = PositionId
+                    }, token: token);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
+                await Alert.Handle(ex.Message).GetAwaiter();
+                return null;
+            }
             return await base.DoAdd(token);
         }
 
@@ -519,7 +538,14 @@ namespace Programming.Team.ViewModels.Resume
                 SuggestAddSkillsVM.ProjectId = value;
             }
         }
-        public Guid PositionId { get; protected set; }
+        public Guid PositionId
+        {
+            get => AddViewModel.PositionId;
+            set
+            {
+                AddViewModel.PositionId = value;
+            }
+        }
         private string description = string.Empty;
         public string Description
         {
@@ -608,7 +634,6 @@ namespace Programming.Team.ViewModels.Resume
         {
             var vm = new ProjectSkillViewModel(Logger, Facade, entity);
             PositionId = entity.Project.PositionId;
-            AddViewModel.PositionId = PositionId;
             return vm;
         }
         protected override Func<IQueryable<ProjectSkill>, IOrderedQueryable<ProjectSkill>>? OrderBy()

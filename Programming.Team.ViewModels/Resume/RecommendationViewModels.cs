@@ -6,6 +6,7 @@ using Programming.Team.Core;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Disposables;
@@ -47,6 +48,7 @@ namespace Programming.Team.ViewModels.Resume
         }
 
         private string name = string.Empty;
+        [Required(ErrorMessage = "Name is required")]
         public string Name
         {
             get => name;
@@ -54,6 +56,7 @@ namespace Programming.Team.ViewModels.Resume
         }
 
         private string body = string.Empty;
+        [Required(ErrorMessage = "Body is required")]
         public string Body
         {
             get => body;
@@ -108,6 +111,7 @@ namespace Programming.Team.ViewModels.Resume
         }
 
         private string name = string.Empty;
+        [Required(ErrorMessage = "Name is required")]
         public string Name
         {
             get => name;
@@ -115,6 +119,7 @@ namespace Programming.Team.ViewModels.Resume
         }
 
         private string body = string.Empty;
+        [Required(ErrorMessage = "Body is required")]
         public string Body
         {
             get => body;
