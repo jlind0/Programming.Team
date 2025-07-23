@@ -1,24 +1,55 @@
 ﻿@inherits ReactiveComponentBase<ProjectSkillsViewModel>
 @attribute [Authorize]
+
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
-    <MudButton OnClick="ViewModel.StartAdd.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
-               Color="Color.Primary">Add Skill</MudButton>
+    <MudButton OnClick="ViewModel.StartAdd.BindCommand<MouseEventArgs>()"
+               Class="fw-bold"
+               Variant="Variant.Filled"
+               Color="Color.Primary">
+        Add Skill
+    </MudButton>
+
     <AddProjectSkillView ViewModel="ViewModel.AddViewModel" />
-    <MudStack Row="true" Wrap="Wrap.Wrap" Class="ownSkillsDiv">
-        @foreach (var e in ViewModel.Entities)
-        {
-         
-            <ProjectSkillView ViewModel="e" />
-     
-        }
-    </MudStack>
+
+    @if (ViewModel.Entities.Count > 0)
+    {
+        <MudStack Row="true" Wrap="Wrap.Wrap" Class="ownSkillsDiv">
+            @foreach (var e in ViewModel.Entities)
+            {
+                <ProjectSkillView ViewModel="e" />
+            }
+        </MudStack>
+    }
+    else
+    {
+        <MudPaper Class="pa-4 ma-4" Elevation="0">
+            <MudText Typo="Typo.body1" Color="Color.Secondary">
+                No skills added yet
+            </MudText>
+        </MudPaper>
+    }
+
     <div class="hover-wrapper">
-        <MudButton OnClick="ViewModel.ExtractSkills.BindCommand<MouseEventArgs>()" Disabled="!ViewModel.CanExtractSkills" Class="fw-bold hover-button" Variant="Variant.Filled"
-                   Color="Color.Primary" >Extract Skills</MudButton>
-        <span class="hover-tooltip">Extract skills is for extracting additional skills using AI.</span>
+        <MudButton OnClick="async () => {
+                   await ViewModel.ExtractSkills.Execute().GetAwaiter();
+                   if (ViewModel.RawSkills.Count == 0) {
+                       ShowNoResults = true;
+                       StateHasChanged();
+                   }
+               }"
+                   Disabled="!ViewModel.CanExtractSkills"
+                   Class="fw-bold hover-button"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary">
+            Extract Skills
+        </MudButton>
+        <span class="hover-tooltip">
+            Extract skills is for extracting additional skills using AI.
+        </span>
     </div>
+
     @if (ViewModel.RawSkills.Count > 0)
     {
         <MudStack Row="true" Wrap="Wrap.Wrap" Class="rawSkillsDivs">
@@ -28,35 +59,53 @@
             }
         </MudStack>
     }
-    <MudOverlay @bind-Visible="ViewModel.IsLoading" DarkBackground="true" AutoClose="false">
-        <MudProgressCircular Color="Color.Secondary" Size="Size.Large" Indeterminate="true" />
+    else if (ShowNoResults)
+    {
+        <MudPaper Class="pa-4 ma-4" Elevation="0">
+            <MudIcon Icon="@Icons.Material.Filled.Info" Class="mb-2" Color="Color.Warning" />
+            <MudText Typo="Typo.body1" Color="Color.Secondary">
+                No skills are available to extract
+            </MudText>
+        </MudPaper>
+    }
+
+    <MudOverlay @bind-Visible="ViewModel.IsLoading"
+                DarkBackground="true"
+                AutoClose="false"
+                Class="fullscreen-overlay"
+                Style="z-index: 10000;">
+        <MudProgressCircular Color="Color.Secondary"
+                             Size="Size.Large"
+                             Indeterminate="true" />
     </MudOverlay>
+}
+else
+{
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
 }
 
 @code {
+    private bool ShowNoResults { get; set; } = false;
 
-   
     protected override void OnInitialized()
     {
         if (ViewModel != null)
         {
-            ViewModel.Entities.CollectionChanged += (s, e) =>
-            {
-                InvokeAsync(StateHasChanged);
-            };
+            ViewModel.Entities.CollectionChanged += (s, e) => InvokeAsync(StateHasChanged);
             ViewModel.RawSkills.CollectionChanged += (s, e) =>
             {
+                ShowNoResults = false; // Reset when new skills arrive
                 InvokeAsync(StateHasChanged);
             };
         }
         base.OnInitialized();
     }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (ViewModel != null && firstRender)
+        if (firstRender && ViewModel != null)
         {
             await ViewModel.Load.Execute().GetAwaiter();
-
         }
         await base.OnAfterRenderAsync(firstRender);
     }
