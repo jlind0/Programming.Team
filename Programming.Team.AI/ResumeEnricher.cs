@@ -62,19 +62,41 @@ namespace Programming.Team.AI
                 {
                     skill.Name = skill.Name.Replace("#", "\\#").Replace("$", "\\$").Replace("&", "\\&").Replace("%", "\\%");
                 }
-                foreach(var rec in resume.Recommendations)
+                progress?.Report("Tailoring Recommendations");
+                foreach (var rec in resume.Recommendations)
                 {
-                    rec.Body = rec.Body.Replace("#", "\\#").Replace("$", "\\$").Replace("&", "\\&").Replace("%", "\\%");
                     rec.Name = rec.Name.Replace("#", "\\#").Replace("$", "\\$").Replace("&", "\\&").Replace("%", "\\%");
+                    if (string.IsNullOrWhiteSpace(rec.Body))
+                        continue;
+                    rec.Body = await ChatService.ConvertToLaTeX(rec.Body, rec.TextTypeId, token: token) ?? string.Empty;
+                    //rec.Body = rec.Body.Replace("#", "\\#").Replace("$", "\\$").Replace("&", "\\&").Replace("%", "\\%");
+
                 }
+                progress?.Report("Tailoring Education");
                 foreach (var edu in resume.Educations)
                 {
-                    edu.Description = edu.Description?.Replace("#", "\\#").Replace("$", "\\$").Replace("&", "\\&").Replace("%", "\\%");
+                    if(string.IsNullOrEmpty(edu.Description))
+                        continue;
+                    edu.Description = await ChatService.ConvertToLaTeX(edu.Description, edu.TextTypeId, token: token);
+                    //edu.Description = edu.Description?.Replace("#", "\\#").Replace("$", "\\$").Replace("&", "\\&").Replace("%", "\\%");
                 }
+                progress?.Report("Tailoring Publications");
                 foreach (var pub in resume.Publications)
                 {
                     pub.Title = pub.Title.Replace("#", "\\#").Replace("$", "\\$").Replace("&", "\\&").Replace("%", "\\%");
-                    pub.Description = pub.Description?.Replace("#", "\\#").Replace("$", "\\$").Replace("&", "\\&").Replace("%", "\\%");
+                    if(string.IsNullOrWhiteSpace(pub.Description))
+                        continue;
+                    pub.Description = await ChatService.ConvertToLaTeX(pub.Description, pub.TextTypeId, token: token);
+                    //pub.Description = pub.Description?.Replace("#", "\\#").Replace("$", "\\$").Replace("&", "\\&").Replace("%", "\\%");
+                }
+                progress?.Report("Tailoring Certs");
+                foreach(var cert in resume.Certificates)
+                {
+                    cert.Name = cert.Name.Replace("#", "\\#").Replace("$", "\\$").Replace("&", "\\&").Replace("%", "\\%");
+                    if (string.IsNullOrWhiteSpace(cert.Description))
+                        continue;
+                    cert.Description = await ChatService.ConvertToLaTeX(cert.Description, cert.TextTypeId, token: token);
+                    //cert.Description = cert.Description?.Replace("#", "\\#").Replace("$", "\\$").Replace("&", "\\&").Replace("%", "\\%");
                 }
                 int count = resume.Positions.Count;
                 int numberProcessed = 0;
@@ -91,7 +113,7 @@ namespace Programming.Team.AI
                             double bullets = (Math.Ceiling((mtch / 0.2) * (config.BulletsPer20Percent ?? 0.75)));
                             if (bullets < 2)
                                 bullets = 2;
-                            position.Description = await ChatService.TailorPosition(posting.Details, position.Description, bullets, Convert.ToInt32(length), token: token);
+                            position.Description = await ChatService.TailorPosition(posting.Details, position.Description, bullets, Convert.ToInt32(length), position.TextTypeId, token: token);
                             position.Description = position.Description?.Replace("#", "\\#").Replace("$", "\\$").Replace("&", "\\&").Replace("%", "\\%");
 
                         }

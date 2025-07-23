@@ -38,7 +38,7 @@ namespace Programming.Team.AI.Core
         Task<string?> ExtractSkills(string prompt, int maxTokens = 2048, CancellationToken token = default);
         Task<string?> TailorBio(string jd, string bio, int paragraphs = 3, int bullets = 6, int maxTokens = 2048, CancellationToken token = default);
         Task<double> PercentMatch(string jd, string position, int maxTokens = 2048, CancellationToken token = default);
-        Task<string?> TailorPosition(string jd, string position, double bullets, int length, int maxTokens = 2048, CancellationToken token = default);
+        Task<string?> TailorPosition(string jd, string position, double bullets, int length, TextType inputFormat = TextType.Text, int maxTokens = 2048, CancellationToken token = default);
         Task<string?> GenerateCoverLetter(string jd, string resume, int targetLength, int numberOfBullets, int maxTokens = 2048, CancellationToken token = default);
         Task<string?> ExtractCompanyName(string jd, int maxTokens = 2048, CancellationToken token = default);
         Task<string?> ResearchCompany(string companyName, int maxTokens = 2048, CancellationToken token = default);
@@ -46,6 +46,7 @@ namespace Programming.Team.AI.Core
         Task<string?> GenerateInterviewQuestions(string jd, string resume, int maxTokens = 2048, CancellationToken token = default);
         Task<string?> GenerateEmployeerQuestions(string jd, string? companyResearch = null, int maxTokens = 2048, CancellationToken token = default);
         Task<string?> SummarizeResume(string resume, int pages = 3, int maxTokens = 2048, CancellationToken token = default);
+        Task<string?> ConvertToLaTeX(string str, TextType inputFormat = TextType.Text, int maxTokens = 2048, CancellationToken token = default);
     }
     /// <summary>
     /// Provides natural language processing (NLP) functionality for identifying paragraphs in a given text.

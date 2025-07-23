@@ -147,12 +147,13 @@ namespace Programming.Team.AI.MCP
             [Description("Position Description")] string position,
             [Description("Bullet Count")] double bullets,
             [Description("Charchater Length")] int length,
+            [Description("Input Format")] TextType inputFormat = TextType.Text,
             [Description("Maximum number of tokens to generate")] int maxTokens = 2048,
             CancellationToken cancellationToken = default)
         {
             ChatMessage[] messages =
             [
-                new(ChatRole.User,$"Output a LaTex snippet, without special charachter escaping and the bullets properly itemized, that will be added to an existing latex document - do not generate opening or closing article, document sections or headers. Tailor user message - which is a description of a job experience, resulting in a total text length of no more than {length} characters, to the following job requirement sticking to the facts included in the user message, do not be creative IF A TECHNOLOGY IS NOT MENTIONED IN THE USER MESSAGE DO NOT INCLUDE IT IN THE SUMMARY!!!! include a short paragraph and {Math.Round(bullets)} bullet points which are LaTeX formated (written with itemize, no dashes - use itemize for bullets), do not bold anything or include any type of header - just the paragraph and bullets for the following job description: {jd};;;; targeting the follow position details {position}"),
+                new(ChatRole.User,$"Output a LaTex snippet, without special charachter escaping and the bullets properly itemized, that will be added to an existing latex document - do not generate opening or closing article, document sections or headers. Tailor user message - which is a description of a job experience, resulting in a total text length of no more than {length} characters, to the following job requirement sticking to the facts included in the user message, do not be creative IF A TECHNOLOGY IS NOT MENTIONED IN THE USER MESSAGE DO NOT INCLUDE IT IN THE SUMMARY!!!! include a short paragraph and {Math.Round(bullets)} bullet points which are LaTeX formated (written with itemize, no dashes - use itemize for bullets), do not bold anything or include any type of header - just the paragraph and bullets for the following job description: {jd};;;; targeting the following position details which are in {Enum.GetName(inputFormat)} format: {position}"),
             ];
 
             ChatOptions options = new()
@@ -354,7 +355,7 @@ namespace Programming.Team.AI.MCP
     [McpServerToolType]
     public sealed class SummarizeResumeTool
     {
-        [McpServerTool(Name = "summarizeResume"), Description("Generate Employer Questions")]
+        [McpServerTool(Name = "summarizeResume"), Description("Summarize Resume")]
         public static async Task<string?> GenerateCoverLetter(
         IMcpServer thisServer,
         [Description("Resume LaTeX")] string resume,
@@ -363,6 +364,37 @@ namespace Programming.Team.AI.MCP
         CancellationToken cancellationToken = default)
         {
             string userMessage = $"Summarize the following resume, provided in LaTeX, to {pages} pages: {resume};;; and output in LaTeX - just output the LaTeX document: DO NOT ADD ANY EXTRANEOUS DATA";
+            ChatMessage[] messages =
+            [
+                new(ChatRole.User, userMessage),
+            ];
+
+            ChatOptions options = new()
+            {
+                MaxOutputTokens = maxTokens,
+                Temperature = 1f,
+                TopP = 1,
+                FrequencyPenalty = 0,
+                PresencePenalty = 0,
+
+            };
+
+            var resp = await thisServer.AsSamplingChatClient().GetResponseAsync(messages, options, cancellationToken);
+            return resp.Messages.FirstOrDefault()?.Text;
+        }
+    }
+    [McpServerToolType]
+    public sealed class ConvertStringToLaTeXTool
+    {
+        [McpServerTool(Name = "convertToLaTeX"), Description("Convert to LaTeX")]
+        public static async Task<string?> GenerateCoverLetter(
+        IMcpServer thisServer,
+        [Description("Input String")] string str,
+        [Description("Input Format")] TextType inputFormat = TextType.Text,
+        [Description("Maximum number of tokens to generate")] int maxTokens = 2048,
+        CancellationToken cancellationToken = default)
+        {
+            string userMessage = $"Convert the following, provided in {Enum.GetName(inputFormat)} format, to a LaTex snippet that will be added to an existing latex document - do not generate opening or closing article, document sections or headers OR ESCAPE ANY SPECIAL CHARACTERS: {str};;;  just output the LaTeX snippet: DO NOT ADD ANY EXTRANEOUS DATA";
             ChatMessage[] messages =
             [
                 new(ChatRole.User, userMessage),

@@ -59,7 +59,7 @@ namespace Programming.Team.AI
             return await CallTool<string?>(msg => msg?.Text, "tailorBio", args, token);
         }
 
-        public async Task<string?> TailorPosition(string jd, string position, double bullets, int length, int maxTokens = 2048, CancellationToken token = default)
+        public async Task<string?> TailorPosition(string jd, string position, double bullets, int length, TextType inputFormat = TextType.Text, int maxTokens = 2048, CancellationToken token = default)
         {
             var args = new Dictionary<string, object?>
             {
@@ -67,6 +67,7 @@ namespace Programming.Team.AI
                 ["position"] = position,
                 ["bullets"] = bullets,
                 ["length"] = length,
+                ["inputFormat"] = inputFormat,
                 ["maxTokens"] = maxTokens
             };
             return await CallTool<string?>(msg => msg?.Text, "tailorPosition", args, token);
@@ -123,6 +124,18 @@ namespace Programming.Team.AI
             };
             var str = await CallTool<string?>(msg => msg?.Text, "researchCompany", args, token);
             str = str?.Replace("```markdown", "").Replace("```", "").Trim().ReplaceLineEndings();
+            return str;
+        }
+        public async Task<string?> ConvertToLaTeX(string input, TextType inputFormat = TextType.Text, int maxTokens = 2048, CancellationToken token = default)
+        {
+            var args = new Dictionary<string, object?>
+            {
+                ["str"] = input,
+                ["inputFormat"] = inputFormat,
+                ["maxTokens"] = maxTokens
+            };
+            var str = await CallTool<string?>(msg => msg?.Text, "convertToLaTeX", args, token);
+            str = str?.Replace("```latex", "").Replace("```", "").Trim().ReplaceLineEndings();
             return str;
         }
         public async Task<string?> GenerateInterviewQuestions(string jd, string resume, int maxTokens = 2048, CancellationToken token = default)
