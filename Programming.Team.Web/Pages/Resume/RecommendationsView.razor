@@ -11,10 +11,29 @@
 
     @if (ViewModel.Entities.Any())
     {
-        @foreach (var position in ViewModel.Entities)
-        {
-            <RecommendationView ViewModel="position" />
-        }
+         <div class="panels">
+            <MudExpansionPanels MultiExpansion="true" >
+                @foreach (var position in ViewModel.Entities)
+                {
+                    @if (ViewModel.Entities.First() == position)
+                    {
+                        <MudCard Class="thin-panel">
+                           <MudExpansionPanel @bind-Text="position.Title" Expanded="true">
+                              <RecommendationView ViewModel="position" />
+                           </MudExpansionPanel>
+                        </MudCard>
+                    }
+                    else
+                    {
+                        <MudCard Class="thin-panel">
+                            <MudExpansionPanel @bind-Text="position.Title">
+                                <RecommendationView ViewModel="position" />
+                            </MudExpansionPanel>
+                        </MudCard>
+                    }
+                }
+            </MudExpansionPanels>
+        </div>
     }
     else
     {

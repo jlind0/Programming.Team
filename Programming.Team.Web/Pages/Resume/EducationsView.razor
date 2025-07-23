@@ -8,12 +8,30 @@
     <MudButton OnClick="ViewModel.StartAdd.BindCommand<MouseEventArgs>()" Class="fw-bold buttonPosition " Variant="Variant.Filled"
         Color="Color.Primary">Add Education</MudButton>
     <AddEducationView ViewModel="ViewModel.AddViewModel" />
-    @if (ViewModel.Entities.Any())
-    {
-        @foreach (var position in ViewModel.Entities)
-        {
-            <EducationView ViewModel="position" />
-        }
+    @if (ViewModel.Entities.Any()){
+          <div class="panels">
+            <MudExpansionPanels MultiExpansion="true" >
+                @foreach (var position in ViewModel.Entities)
+                {
+                    @if (ViewModel.Entities.First() == position)
+                    {
+                        <MudCard Class="thin-panel">
+                           <MudExpansionPanel @bind-Text="position.Text" Expanded="true">
+                                <EducationView ViewModel="position" />
+                            </MudExpansionPanel>
+                        </MudCard>
+                    }
+                    else
+                    {
+                        <MudCard Class="thin-panel">
+                            <MudExpansionPanel @bind-Text="position.Text">
+                                <EducationView ViewModel="position" />
+                            </MudExpansionPanel>
+                        </MudCard>
+                    }
+                }
+             </MudExpansionPanels>
+            </div>
 
     }
     else

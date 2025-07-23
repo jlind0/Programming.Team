@@ -12,11 +12,30 @@
     <AddPublicationView ViewModel="ViewModel.AddViewModel" />
 
     @if (ViewModel.Entities.Any()){
+         <div class="panels">
+            <MudExpansionPanels MultiExpansion="true" >
      
             @foreach (var position in ViewModel.Entities)
             {
-                <PublicationView ViewModel="position" />
+                    @if (ViewModel.Entities.First() == position)
+                    {
+                        <MudCard Class="thin-panel">
+                           <MudExpansionPanel @bind-Text="position.Title" Expanded="true">
+                                <PublicationView ViewModel="position" />
+                           </MudExpansionPanel>
+                        </MudCard>
+                    }
+                    else
+                    {
+                        <MudCard Class="thin-panel">
+                            <MudExpansionPanel @bind-Text="position.Title">
+                                <PublicationView ViewModel="position" />
+                            </MudExpansionPanel>
+                        </MudCard>
+                    }
             }
+            </MudExpansionPanels>
+        </div>
 
     }
     else

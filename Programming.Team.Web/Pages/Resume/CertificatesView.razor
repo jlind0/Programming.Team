@@ -10,10 +10,30 @@
     <AddCertificateView ViewModel="ViewModel.AddViewModel" />
     @if (ViewModel.Entities.Any())
     {
-        @foreach (var position in ViewModel.Entities)
-        {
-            <CertificateView ViewModel="position" />
-        }
+        <div class="panels">
+            <MudExpansionPanels MultiExpansion="true" >
+                @foreach (var position in ViewModel.Entities)
+                {
+                    
+                    @if (ViewModel.Entities.First() == position)
+                    {
+                        <MudCard Class="thin-panel">
+                           <MudExpansionPanel @bind-Text="position.Text" Expanded="true">
+                                <CertificateView ViewModel="position" />
+                            </MudExpansionPanel>
+                        </MudCard>
+                    }
+                    else
+                    {
+                        <MudCard Class="thin-panel">
+                            <MudExpansionPanel @bind-Text="position.Text">
+                                <CertificateView ViewModel="position" />
+                            </MudExpansionPanel>
+                        </MudCard>
+                    }
+                }
+            </MudExpansionPanels>
+        </div>
 
     }
     else
