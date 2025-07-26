@@ -387,5 +387,6 @@ namespace Programming.Team.ViewModels.Resume
         {
             return e => e.Include(x => x.Company);
         }
+        
     }
 }

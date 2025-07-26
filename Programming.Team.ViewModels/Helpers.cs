@@ -737,7 +737,8 @@ namespace Programming.Team.ViewModels
             Load = ReactiveCommand.CreateFromTask(DoLoad);
             Pagination.WhenPropertyChanged(p => p.Pager).Subscribe(async p =>
             {
-                await Load.Execute().GetAwaiter();  
+                if(p.Value != null)
+                    await Load.Execute().GetAwaiter();  
             }).DisposeWith(disposable);
         }
         ~EntitiesViewModel() 
@@ -783,7 +784,8 @@ namespace Programming.Team.ViewModels
                 {
                     try
                     {
-                        Entities.Clear();
+                        if(Entities.Count > 0)
+                            Entities.Clear();
                         var rs = InitialEntities;
                         if (rs == null)
                         {

@@ -647,19 +647,22 @@ namespace Programming.Team.ViewModels.Resume
         }
         public Guid ProjectId
         {
-            get => AddViewModel.ProjectId;
+            get => AddViewModel?.ProjectId ?? Guid.Empty;
             set
             {
-                AddViewModel.ProjectId = value;
-                SuggestAddSkillsVM.ProjectId = value;
+                if(AddViewModel != null)
+                    AddViewModel.ProjectId = value;
+                if(SuggestAddSkillsVM != null)
+                    SuggestAddSkillsVM.ProjectId = value;
             }
         }
         public Guid PositionId
         {
-            get => AddViewModel.PositionId;
+            get => AddViewModel?.PositionId ?? Guid.Empty;
             set
             {
-                AddViewModel.PositionId = value;
+                if(AddViewModel != null)
+                    AddViewModel.PositionId = value;
             }
         }
         private string description = string.Empty;
@@ -689,11 +692,11 @@ namespace Programming.Team.ViewModels.Resume
         {
             Templator = templator;
             Config = config;
+            SuggestAddSkillsVM = suggestAddSkillsVM;
+            PositionSkillFacade = positionSkillFacade;
             ExtractSkills = ReactiveCommand.CreateFromTask(DoExtractSkills);
             Enricher = enricher;
             SkillFacade = skillFacade;
-            SuggestAddSkillsVM = suggestAddSkillsVM;
-            PositionSkillFacade = positionSkillFacade;
             AddRawSkill = ReactiveCommand.CreateFromTask<RawSkillViewModel>(DoAddRawSkill);
             
         }
@@ -779,6 +782,7 @@ namespace Programming.Team.ViewModels.Resume
         {
             var vm = new ProjectSkillViewModel(Logger, Templator, Config, Facade, entity);
             PositionId = entity.Project.PositionId;
+            
             return vm;
         }
         protected override Func<IQueryable<ProjectSkill>, IOrderedQueryable<ProjectSkill>>? OrderBy()
