@@ -6,10 +6,12 @@
     <AlertView Alert="ViewModel.Alert" />
     <MudButton OnClick="ViewModel.StartAdd.BindCommand<MouseEventArgs>()">Add Section Template</MudButton>
     <AddSectionTemplateView ViewModel="ViewModel.AddViewModel" />
+    <EntityPager ViewModel="ViewModel.Pagination" />
     @foreach (var position in ViewModel.Entities)
     {
         <SectionTemplateView ViewModel="position" />
     }
+    <EntityPager ViewModel="ViewModel.Pagination" />
 }
 
 @code {

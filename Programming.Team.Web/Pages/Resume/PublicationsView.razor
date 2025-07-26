@@ -143,7 +143,6 @@
     {
         if (ViewModel != null)
         {
-            ViewModel.Pagination.PageSize = 5;
             ViewModel.Entities.CollectionChanged += (s, e) =>
             {
                 InvokeAsync(StateHasChanged);
@@ -155,7 +154,6 @@
     {
         if (ViewModel != null && firstRender)
         {
-            ViewModel.Pagination.PageSize = 5;
             await ViewModel.Load.Execute().GetAwaiter();
         
 
