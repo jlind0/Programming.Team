@@ -5,6 +5,10 @@
     <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
     @*<MudNavLink Href="blog/" Target="_blank" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Notes">Blog</MudNavLink>*@
     <MudNavLink Href="https://blog.programming.team/support-portal/" Target="_blank" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.HelpCenter">Support</MudNavLink>
+    <MudNavLink Disabled="!isAuthenticated" Href="resumes/wizard" Match="NavLinkMatch.Prefix"
+                Icon="@Icons.Material.Filled.Architecture">
+        Setup Wizard
+    </MudNavLink>
     @if (isAdmin || isTemplator)
     {
         <MudNavGroup Title="Admin" Icon="@Icons.Material.Filled.ManageAccounts" Expanded="false">

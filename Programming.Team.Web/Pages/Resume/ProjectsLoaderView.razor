@@ -1,0 +1,10 @@
+﻿@page "/resume/projects"
+@attribute [Authorize]
+@inherits ReactiveInjectableComponentBase<ProjectsViewModel>
+@if(ViewModel != null)
+{
+    <ProjectsView ViewModel="ViewModel" />
+}
+@code {
+
+}

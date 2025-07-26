@@ -1,6 +1,4 @@
-﻿@page "/resume/profile"
-@attribute [Authorize]
-@inherits ReactiveInjectableComponentBase<UserProfileLoaderViewModel>
+﻿@inherits ReactiveComponentBase<UserProfileLoaderViewModel>
 @if(ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert"/>

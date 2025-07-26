@@ -1,0 +1,10 @@
+﻿@page "/resume/certificates"
+@attribute [Authorize]
+@inherits ReactiveInjectableComponentBase<CertificatesViewModel>
+@if(ViewModel != null)
+{
+    <CertificatesView ViewModel="ViewModel" />
+}
+@code {
+
+}

@@ -173,7 +173,6 @@ namespace Programming.Team.AI
                 posting.CoverLetterConfiguration = JsonSerializer.Serialize(config);
                 progress?.Report("Generating Cover Letter");
                 var coverLetter = await ChatService.GenerateCoverLetter(posting.Details, posting.RenderedLaTex, config.TargetLength ?? 2000, config.NumberOfBullets ?? 10, token: token);
-                coverLetter = coverLetter?.Replace("#", "\\#").Replace("$", "\\$").Replace("&", "\\&").Replace("%", "\\%").Replace("```latex", "").Replace("```", "");
                 progress?.Report("Cover Letter Generated Successfully");
                 return new CoverLetter() { Body = coverLetter ?? throw new InvalidOperationException() };
             }
