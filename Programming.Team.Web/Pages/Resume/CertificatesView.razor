@@ -19,7 +19,7 @@
                     @if (ViewModel.Entities.First() == position)
                     {
                         <MudCard Class="thin-panel">
-                           <MudExpansionPanel @bind-Text="position.Text" Expanded="true">
+                           <MudExpansionPanel @bind-Text="position.Name" Expanded="true">
                                 <CertificateView ViewModel="position" />
                             </MudExpansionPanel>
                         </MudCard>
@@ -27,7 +27,7 @@
                     else
                     {
                         <MudCard Class="thin-panel">
-                            <MudExpansionPanel @bind-Text="position.Text">
+                            <MudExpansionPanel @bind-Text="position.Name">
                                 <CertificateView ViewModel="position" />
                             </MudExpansionPanel>
                         </MudCard>
@@ -145,6 +145,7 @@
     {
         if (ViewModel != null && firstRender)
         {
+            ViewModel.Pagination.PageSize = 5;
             await ViewModel.Load.Execute().GetAwaiter();
 
         }
