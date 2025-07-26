@@ -641,7 +641,7 @@ namespace Programming.Team.ViewModels
     }
     public class PaginationViewModel : ReactiveObject
     {
-        private int? pageSize;
+        private int? pageSize = 5;
         public int? PageSize
         {
             get => pageSize;
@@ -789,7 +789,7 @@ namespace Programming.Team.ViewModels
                         {
                             var rse = await Facade.Get(filter: await FilterCondition(), page: GetPager(), orderBy: OrderBy(), properites: PropertiesToLoad(), token: token);
                             Pagination.ItemCount = rse?.Count ?? 0;
-                            Pagination.PageSize =  Pagination.PageSize ?? 5;
+                            Pagination.PageSize = rse?.PageSize;
                             rs = rse?.Entities;
                         }
                         else

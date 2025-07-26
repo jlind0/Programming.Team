@@ -6,10 +6,12 @@
     <AlertView Alert="ViewModel.Alert" />
     <MudButton OnClick="ViewModel.StartAdd.BindCommand<MouseEventArgs>()">Add Document Type</MudButton>
     <AddDocumentTypeView ViewModel="ViewModel.AddViewModel" />
+    <EntityPager ViewModel="ViewModel.Pagination" />
     @foreach (var position in ViewModel.Entities)
     {
         <DocumentTypeView ViewModel="position" />
     }
+    <EntityPager ViewModel="ViewModel.Pagination" />
 }
 
 @code {
