@@ -385,6 +385,10 @@ namespace Programming.Team.ViewModels.Resume
             get => isOpen;
             set => this.RaiseAndSetIfChanged(ref isOpen, value);
         }
+        protected override Pager? GetPager()
+        {
+            return null;
+        }
         public ObservableCollection<RawSkillViewModel> RawSkills { get; } = new ObservableCollection<RawSkillViewModel>();
         protected async Task DoAddRawSkill(RawSkillViewModel raw, CancellationToken token)
         {

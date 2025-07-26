@@ -695,6 +695,11 @@ namespace Programming.Team.ViewModels.Resume
             SuggestAddSkillsVM = suggestAddSkillsVM;
             PositionSkillFacade = positionSkillFacade;
             AddRawSkill = ReactiveCommand.CreateFromTask<RawSkillViewModel>(DoAddRawSkill);
+            
+        }
+        protected override Pager? GetPager()
+        {
+            return null;
         }
         protected async Task DoAddRawSkill(RawSkillViewModel raw, CancellationToken token)
         {
