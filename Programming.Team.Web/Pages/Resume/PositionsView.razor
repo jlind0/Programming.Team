@@ -10,6 +10,7 @@
     <AddPositionView ViewModel="ViewModel.AddViewModel" />
     @if (ViewModel.Entities.Any())
     {
+         <EntityPager ViewModel="ViewModel.Pagination"/>
          <div class="panels">
             <MudExpansionPanels MultiExpansion="true" >
                 @foreach (var position in ViewModel.Entities)
@@ -33,7 +34,7 @@
                 }
             </MudExpansionPanels>
         </div>
-
+        <EntityPager ViewModel="ViewModel.Pagination"/>
     }
     else
     {
@@ -130,10 +131,13 @@
     protected override void OnInitialized()
     {
         if (ViewModel != null)
+        {
+            ViewModel.Pagination.PageSize = 5;
             ViewModel.Entities.CollectionChanged += (s, e) =>
             {
                 InvokeAsync(StateHasChanged);
             };
+        }
         base.OnInitialized();
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)

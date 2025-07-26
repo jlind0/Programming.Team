@@ -1,0 +1,18 @@
+﻿@inherits ReactiveComponentBase<PaginationViewModel>
+@if(ViewModel != null)
+{
+    <MudStack Row="true">
+        <MudSelect Style="width: 5%;" T="int?" @bind-Value="ViewModel.PageSize" Label="Page Size">
+            <MudSelectItem T="int?" Value="5">5</MudSelectItem>
+            <MudSelectItem T="int?" Value="10">10</MudSelectItem>
+            <MudSelectItem T="int?" Value="15">15</MudSelectItem>
+            <MudSelectItem T="int?" Value="25">25</MudSelectItem>
+        </MudSelect>
+        <MudPagination Count="ViewModel.PageCount" @bind-Selected="ViewModel.CurrentPage" Variant="Variant.Filled" />
+    </MudStack>
+    
+}
+
+
+@code {
+}
