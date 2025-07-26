@@ -11,10 +11,30 @@
     @if (ViewModel.Entities.Any())
     {
         <EntityPager ViewModel="ViewModel.Pagination" />
-        @foreach (var position in ViewModel.Entities)
-        {
-            <CertificateView ViewModel="position" />
-        }
+        <div class="panels">
+            <MudExpansionPanels MultiExpansion="true" >
+                @foreach (var position in ViewModel.Entities)
+                {
+                    
+                    @if (ViewModel.Entities.First() == position)
+                    {
+                        <MudCard Class="thin-panel">
+                           <MudExpansionPanel @bind-Text="position.Name" Expanded="true">
+                                <CertificateView ViewModel="position" />
+                            </MudExpansionPanel>
+                        </MudCard>
+                    }
+                    else
+                    {
+                        <MudCard Class="thin-panel">
+                            <MudExpansionPanel @bind-Text="position.Name">
+                                <CertificateView ViewModel="position" />
+                            </MudExpansionPanel>
+                        </MudCard>
+                    }
+                }
+            </MudExpansionPanels>
+        </div>
         <EntityPager ViewModel="ViewModel.Pagination" />
     }
     else
@@ -125,6 +145,7 @@
     {
         if (ViewModel != null && firstRender)
         {
+            ViewModel.Pagination.PageSize = 5;
             await ViewModel.Load.Execute().GetAwaiter();
 
         }
