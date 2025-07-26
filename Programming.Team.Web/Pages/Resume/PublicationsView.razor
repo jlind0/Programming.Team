@@ -11,13 +11,15 @@
 
     <AddPublicationView ViewModel="ViewModel.AddViewModel" />
 
-    @if (ViewModel.Entities.Any()){
-     
-            @foreach (var position in ViewModel.Entities)
-            {
-                <PublicationView ViewModel="position" />
-            }
+    @if (ViewModel.Entities.Any())
+    {
 
+        <EntityPager ViewModel="ViewModel.Pagination" />
+        @foreach (var position in ViewModel.Entities)
+        {
+            <PublicationView ViewModel="position" />
+        }
+        <EntityPager ViewModel="ViewModel.Pagination" />
     }
     else
     {
@@ -123,10 +125,13 @@
     protected override void OnInitialized()
     {
         if (ViewModel != null)
+        {
+            ViewModel.Pagination.PageSize = 5;
             ViewModel.Entities.CollectionChanged += (s, e) =>
             {
                 InvokeAsync(StateHasChanged);
             };
+        }
         base.OnInitialized();
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)

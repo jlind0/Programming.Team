@@ -639,6 +639,84 @@ namespace Programming.Team.ViewModels
         {
         }
     }
+    public class PaginationViewModel : ReactiveObject
+    {
+        private int? pageSize;
+        public int? PageSize
+        {
+            get => pageSize;
+            set
+            {
+                bool changed = pageSize != value;
+                this.RaiseAndSetIfChanged(ref pageSize, value);
+                if (changed)
+                {
+                    this.RaisePropertyChanged(nameof(PageCount));
+                    this.RaisePropertyChanged(nameof(Pager));
+                }
+            }
+        }
+        private int itemCount = 0;
+        public int ItemCount
+        {
+            get => itemCount;
+            set
+            {
+                bool changed = itemCount != value;
+                this.RaiseAndSetIfChanged(ref itemCount, value);
+                if (changed)
+                {
+                    CurrentPage = 1;
+                    this.RaisePropertyChanged(nameof(PageCount));
+                    this.RaisePropertyChanged(nameof(Pager));
+                }
+            }
+        }   
+        public int PageCount
+        {
+            get
+            {
+                if (PageSize.HasValue && PageSize.Value > 0)
+                {
+                    return (int)Math.Ceiling((double)ItemCount / PageSize.Value);
+                }
+                return 0;
+            }
+        }
+        private int currentPage = 1;
+        public int CurrentPage
+        {
+            get => currentPage;
+            set
+            {
+                bool changed = currentPage != value;
+                if (value > 0 && value <= PageCount)
+                {
+                    this.RaiseAndSetIfChanged(ref currentPage, value);
+                }
+                else if (value <= 0)
+                {
+                    changed = currentPage != 1;
+                    this.RaiseAndSetIfChanged(ref currentPage, 1);
+                }
+                if(changed)
+                    this.RaisePropertyChanged(nameof(Pager));   
+            }
+        }
+        public Pager? Pager
+        {
+            get
+            {
+                if (PageSize == null)
+                    return null;
+                return new Pager()
+                {
+                    Size = PageSize.Value,
+                    Page = CurrentPage
+                };
+            }
+        }
+    }
     public abstract class EntitiesViewModel<TKey, TEntity, TViewModel, TFacade> : ReactiveObject
         where TKey : struct
         where TEntity : Entity<TKey>, new()
@@ -650,11 +728,25 @@ namespace Programming.Team.ViewModels
         protected TFacade Facade { get; }
         public ObservableCollection<TViewModel> Entities { get; } = new ObservableCollection<TViewModel>();
         public ReactiveCommand<Unit, Unit> Load { get; }
+        public PaginationViewModel Pagination { get; } = new PaginationViewModel();
+        private readonly CompositeDisposable disposable = new CompositeDisposable();
         public EntitiesViewModel(TFacade facade, ILogger<EntitiesViewModel<TKey, TEntity, TViewModel, TFacade>> logger)
         {
             Facade = facade;
             Logger = logger;
             Load = ReactiveCommand.CreateFromTask(DoLoad);
+            Pagination.WhenPropertyChanged(p => p.Pager).Subscribe(async p =>
+            {
+                await Load.Execute().GetAwaiter();  
+            }).DisposeWith(disposable);
+        }
+        ~EntitiesViewModel() 
+        {
+            disposable.Dispose();
+        }
+        protected virtual Pager? GetPager()
+        {
+            return Pagination.Pager;
         }
         protected virtual Func<IQueryable<TEntity>, IQueryable<TEntity>>? PropertiesToLoad()
         {
@@ -692,9 +784,21 @@ namespace Programming.Team.ViewModels
                     try
                     {
                         Entities.Clear();
-                        var rs = InitialEntities ?? (await Facade.Get(filter: await FilterCondition(), orderBy: OrderBy(), properites: PropertiesToLoad(), token: token)).Entities;
+                        var rs = InitialEntities;
+                        if (rs == null)
+                        {
+                            var rse = await Facade.Get(filter: await FilterCondition(), page: GetPager(), orderBy: OrderBy(), properites: PropertiesToLoad(), token: token);
+                            Pagination.ItemCount = rse?.Count ?? 0;
+                            Pagination.PageSize =  Pagination.PageSize ?? 5;
+                            rs = rse?.Entities;
+                        }
+                        else
+                        {
+                            Pagination.PageSize = null;
+                            Pagination.ItemCount = rs.Count();
+                        }
                         InitialEntities = null;
-                        foreach (var e in rs)
+                        foreach (var e in rs ?? [])
                         {
                             var vm = await Construct(e, token);
                             await vm.Load.Execute().GetAwaiter();
