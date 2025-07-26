@@ -1,7 +1,10 @@
 ﻿@page "/resume/publications"
 @attribute [Authorize]
 @inherits ReactiveInjectableComponentBase<PublicationsViewModel>
-
+@if(ViewModel != null)
+{
+    <PublicationsView ViewModel="ViewModel"/>
+}
 @code {
 
 }
