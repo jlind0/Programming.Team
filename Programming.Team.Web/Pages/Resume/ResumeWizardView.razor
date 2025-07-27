@@ -1,0 +1,31 @@
+﻿@page "/resumes/wizard"
+@inherits ReactiveInjectableComponentBase<ResumeWizardViewModel>
+@attribute [Authorize]
+
+@if (ViewModel != null)
+{
+    <MudStepper>
+        <MudStep Title="Profile">
+            <UserProfileLoaderView ViewModel="ViewModel.UserProfile" />
+        </MudStep>
+        <MudStep Title="Positions">
+            <PositionsView ViewModel="ViewModel.Positions" />
+        </MudStep>
+        <MudStep Title="Education">
+            <EducationsView ViewModel="ViewModel.Educations" />
+        </MudStep>
+        <MudStep Title="Recommendations">
+            <RecommendationsView ViewModel="ViewModel.Recommendations" />
+        </MudStep>
+        <MudStep Title="Projects">
+            <ProjectsView ViewModel="ViewModel.Projects" />
+        </MudStep>
+        <MudStep Title="Publications">
+            <PublicationsView ViewModel="ViewModel.Publications" />
+        </MudStep>
+    </MudStepper>   
+}
+
+@code {
+
+}

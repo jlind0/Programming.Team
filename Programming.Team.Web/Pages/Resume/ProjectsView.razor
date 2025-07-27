@@ -1,146 +1,143 @@
-﻿    @page "/resume/projects"
-    @attribute [Authorize]
-    @inherits ReactiveInjectableComponentBase<ProjectsViewModel>
-    @inject IJSRuntime JS
+﻿@inherits ReactiveComponentBase<ProjectsViewModel>
 
-    @if (ViewModel != null)
+@if (ViewModel != null)
+{
+    <AlertView Alert="ViewModel.Alert" />
+    <MudButton OnClick="ViewModel.StartAdd.BindCommand<MouseEventArgs>()" Class="fw-bold addProjectButton" Variant="Variant.Filled"
+                Color="Color.Primary">Add Project</MudButton>
+    <AddProjectView ViewModel="ViewModel.AddViewModel" />
+    @if (ViewModel.Entities.Any())
     {
-        <AlertView Alert="ViewModel.Alert" />
-        <MudButton OnClick="ViewModel.StartAdd.BindCommand<MouseEventArgs>()" Class="fw-bold addProjectButton" Variant="Variant.Filled"
-                   Color="Color.Primary">Add Project</MudButton>
-        <AddProjectView ViewModel="ViewModel.AddViewModel" />
-        @if (ViewModel.Entities.Any())
-        {
-            <EntityPager ViewModel="ViewModel.Pagination"/>
-            <div class="panels">
-            <MudExpansionPanels MultiExpansion="true" >
-                @foreach (var position in ViewModel.Entities)
-                {
-                    @if (ViewModel.Entities.First() == position)
-                    {
-                        <MudCard Class="thin-panel">
-
-                            <MudExpansionPanel @bind-Text="position.Name" Expanded="true">
-                                <ProjectView ViewModel="position" />
-                            </MudExpansionPanel>
-                        </MudCard>
-                    }
-                    else
-                    {
-                        <MudCard Class="thin-panel">
-
-                            <MudExpansionPanel @bind-Text="position.Name">
-                                <ProjectView ViewModel="position" />
-                            </MudExpansionPanel>
-                        </MudCard>
-                    }
-                }
-            </MudExpansionPanels>
-            </div>
-            <EntityPager ViewModel="ViewModel.Pagination"/>
-        }
-        else
-        {
-            <MudPaper Class="empty-state" Elevation="0">
-                <div class="empty-state-icon">
-                    <MudIcon Icon="@Icons.Material.Filled.Inbox"
-                             Size="Size.Large"
-                             Color="Color.Primary" />
-                </div>
-                <MudText Typo="Typo.h6" Class="empty-state-title">No project information found</MudText>
-                <MudText Class="empty-state-message mud-info-text">You haven't added any project information yet. Click the button above to add your first one.</MudText>
-            </MudPaper>
-        }
-    }
-
-    <style>
-        /* Add Certificate Button */
-        .add-certificate-btn {
-            font-weight: 600;
-            letter-spacing: 0.25px;
-            padding: 0.5rem 1.5rem;
-            margin-bottom: 2rem;
-            border-radius: 8px;
-            text-transform: uppercase;
-            box-shadow: 0 2px 4px rgba(var(--mud-palette-primary-rgb), 0.2);
-            transition: all 0.2s ease;
-        }
-
-            .add-certificate-btn:hover {
-                transform: translateY(-1px);
-                box-shadow: 0 4px 8px rgba(var(--mud-palette-primary-rgb), 0.25);
-            }
-
-        /* Certificates Container */
-        .certificates-container {
-            display: grid;
-            gap: 1.5rem;
-            margin-top: 1rem;
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            height: 30vmax;
-            border-radius: 12px;
-            background-color: var(--mud-palette-background-grey);
-            border: 1px dashed var(--mud-palette-primary);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            margin: 2%;
-        }
-
-        .empty-state-icon {
-            margin-bottom: 1.5rem;
-            opacity: 0.8;
-        }
-
-            .empty-state-icon .mud-icon {
-                font-size: 3.5rem;
-            }
-
-        .empty-state-title {
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: var(--mud-palette-primary);
-        }
-
-        .empty-state-message {
-            color: var(--mud-palette-text-secondary);
-            max-width: 400px;
-            margin: 0 auto 1.5rem;
-            line-height: 1.6;
-        }
-
-
-        .overlay {
-            background-color: black;
-        }
-
-        @@media (min-width: 600px) {
-            .certificates-container {
-                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            }
-
-            .empty-state {
-                padding: 4rem;
-            }
-        }
-    </style>
-
-    @code {
-    private string searchString = "";
-        protected override void OnInitialized()
-        {
-            if (ViewModel != null)
+        <EntityPager ViewModel="ViewModel.Pagination"/>
+        <div class="panels">
+        <MudExpansionPanels MultiExpansion="true" >
+            @foreach (var position in ViewModel.Entities)
             {
-                ViewModel.Entities.CollectionChanged += (s, e) =>
+                @if (ViewModel.Entities.First() == position)
                 {
-                    InvokeAsync(StateHasChanged);
-                };
+                    <MudCard Class="thin-panel">
+
+                        <MudExpansionPanel @bind-Text="position.Name" Expanded="true">
+                            <ProjectView ViewModel="position" />
+                        </MudExpansionPanel>
+                    </MudCard>
+                }
+                else
+                {
+                    <MudCard Class="thin-panel">
+
+                        <MudExpansionPanel @bind-Text="position.Name">
+                            <ProjectView ViewModel="position" />
+                        </MudExpansionPanel>
+                    </MudCard>
+                }
             }
-            base.OnInitialized();
+        </MudExpansionPanels>
+        </div>
+        <EntityPager ViewModel="ViewModel.Pagination"/>
+    }
+    else
+    {
+        <MudPaper Class="empty-state" Elevation="0">
+            <div class="empty-state-icon">
+                <MudIcon Icon="@Icons.Material.Filled.Inbox"
+                            Size="Size.Large"
+                            Color="Color.Primary" />
+            </div>
+            <MudText Typo="Typo.h6" Class="empty-state-title">No project information found</MudText>
+            <MudText Class="empty-state-message mud-info-text">You haven't added any project information yet. Click the button above to add your first one.</MudText>
+        </MudPaper>
+    }
+}
+
+<style>
+    /* Add Certificate Button */
+    .add-certificate-btn {
+        font-weight: 600;
+        letter-spacing: 0.25px;
+        padding: 0.5rem 1.5rem;
+        margin-bottom: 2rem;
+        border-radius: 8px;
+        text-transform: uppercase;
+        box-shadow: 0 2px 4px rgba(var(--mud-palette-primary-rgb), 0.2);
+        transition: all 0.2s ease;
+    }
+
+        .add-certificate-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(var(--mud-palette-primary-rgb), 0.25);
+        }
+
+    /* Certificates Container */
+    .certificates-container {
+        display: grid;
+        gap: 1.5rem;
+        margin-top: 1rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        height: 30vmax;
+        border-radius: 12px;
+        background-color: var(--mud-palette-background-grey);
+        border: 1px dashed var(--mud-palette-primary);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: 2%;
+    }
+
+    .empty-state-icon {
+        margin-bottom: 1.5rem;
+        opacity: 0.8;
+    }
+
+        .empty-state-icon .mud-icon {
+            font-size: 3.5rem;
+        }
+
+    .empty-state-title {
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--mud-palette-primary);
+    }
+
+    .empty-state-message {
+        color: var(--mud-palette-text-secondary);
+        max-width: 400px;
+        margin: 0 auto 1.5rem;
+        line-height: 1.6;
+    }
+
+
+    .overlay {
+        background-color: black;
+    }
+
+    @@media (min-width: 600px) {
+        .certificates-container {
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+
+        .empty-state {
+            padding: 4rem;
         }
     }
+</style>
+
+@code {
+    private string searchString = "";
+    protected override void OnInitialized()
+    {
+        if (ViewModel != null)
+        {
+            ViewModel.Entities.CollectionChanged += (s, e) =>
+            {
+                InvokeAsync(StateHasChanged);
+            };
+        }
+        base.OnInitialized();
+    }
+}

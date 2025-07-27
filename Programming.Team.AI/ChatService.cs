@@ -83,7 +83,9 @@ namespace Programming.Team.AI
                 ["numberOfBullets"] = numberOfBullets,
                 ["maxTokens"] = maxTokens
             };
-            return await CallTool<string?>(msg => msg?.Text, "generateCoverLetter", args, token);
+            var str = await CallTool<string?>(msg => msg?.Text, "generateCoverLetter", args, token);
+            str = str?.Replace("```latex", "").Replace("```", "");
+            return str;
         }
         public async Task<string?> ExtractCompanyName(string jd, int maxTokens = 2048, CancellationToken token = default)
         {
