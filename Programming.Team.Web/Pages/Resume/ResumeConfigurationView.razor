@@ -4,17 +4,63 @@
 {
     <MudStack Class="resumeBuilder">
         <div class="firstPart">
-        <MudNumericField Class="config-field" @bind-Value="ViewModel.BioParagraphs" Label="Bio Paragraphs" Variant="Variant.Outlined" />
-        <MudNumericField Class="config-field" @bind-Value="ViewModel.BioBullets" Label="Bio Bullets" Variant="Variant.Outlined" />
-        <MudNumericField Class="config-field" HelperTextOnFocus="true" HelperText="This lever will filter/collapse positions by the percentage match to the submitted job description." 
-        @bind-Value="ViewModel.MatchThreshold" Label="Match Threshold" Variant="Variant.Outlined"/>
-        <MudNumericField Class="config-field" @bind-Value="ViewModel.TargetLengthPer10Percent" Label="Target Length Per 10%" Variant="Variant.Outlined"/>
-        <MudNumericField Class="config-field" @bind-Value="ViewModel.BulletsPer20Percent" Label="Bullets Per 20%" Variant="Variant.Outlined"/>
-        <MudNumericField Class="config-field" @bind-Value="ViewModel.SkillsPer20Percent" Label="Skills Per 20%" Variant="Variant.Outlined" />
-        <MudCheckBox Class="config-checkbox" @bind-Value="ViewModel.HideSkillsNotInJD" Label="Hide Skills not in JD"/>
-        <MudCheckBox Class="config-checkbox" @bind-Value="ViewModel.HidePositionsNotInJD" Label="Hide Positions not in JD" />
-        <MudNumericField Class="config-field" @bind-Value="ViewModel.SummaryPageLength" Label="Resume Summary Page Length" Variant="Variant.Outlined"/>
-        </div>
+            <div class="postingDiv">
+                <MudNumericField Class="config-field" @bind-Value="ViewModel.BioParagraphs" Label="Bio Paragraphs" Variant="Variant.Outlined" />
+                <MudTooltip Text="First line&#10;Second line&#10;Third line" Placement="MudBlazor.Placement.Right">
+                    <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button"/>
+                </MudTooltip>
+            </div>
+            <div class="postingDiv">
+                <MudNumericField Class="config-field" @bind-Value="ViewModel.BioBullets" Label="Bio Bullets" Variant="Variant.Outlined" />
+                <MudTooltip Text="First line&#10;Second line&#10;Third line" Placement="MudBlazor.Placement.Right">
+                    <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
+                </MudTooltip>
+            </div>
+            <div class="postingDiv">
+                <MudNumericField Class="config-field" 
+                                 @bind-Value="ViewModel.MatchThreshold" Label="Match Threshold" Variant="Variant.Outlined" />
+                <MudTooltip Text="First line&#10;Second line&#10;Third line" Placement="MudBlazor.Placement.Right">
+                    <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
+                </MudTooltip>
+            </div>
+            <div class="postingDiv">    
+                <MudNumericField Class="config-field" @bind-Value="ViewModel.TargetLengthPer10Percent" Label="Target Length Per 10%" Variant="Variant.Outlined"/>
+                <MudTooltip Text="First line&#10;Second line&#10;Third line" Placement="MudBlazor.Placement.Right">
+                    <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
+                </MudTooltip>
+            </div>
+            <div class="postingDiv">    
+                <MudNumericField Class="config-field" @bind-Value="ViewModel.BulletsPer20Percent" Label="Bullets Per 20%" Variant="Variant.Outlined"/>
+                <MudTooltip Text="First line&#10;Second line&#10;Third line" Placement="MudBlazor.Placement.Right">
+                    <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
+                </MudTooltip>
+            </div>
+            <div class="postingDiv">    
+                <MudNumericField Class="config-field" @bind-Value="ViewModel.SkillsPer20Percent" Label="Skills Per 20%" Variant="Variant.Outlined" />
+                <MudTooltip Text="First line&#10;Second line&#10;Third line" Placement="MudBlazor.Placement.Right">
+                    <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
+                </MudTooltip>
+            </div>
+            <div class="postingDiv">    
+                <MudCheckBox Class="config-checkbox" @bind-Value="ViewModel.HideSkillsNotInJD" Label="Hide Skills not in JD"/>
+                <MudTooltip Text="First line&#10;Second line&#10;Third line" Placement="MudBlazor.Placement.Right">
+                    <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
+                </MudTooltip>
+            </div>
+            <div class="postingDiv">    
+                <MudCheckBox Class="config-checkbox" @bind-Value="ViewModel.HidePositionsNotInJD" Label="Hide Positions not in JD" />
+                <MudTooltip Text="First line&#10;Second line&#10;Third line" Placement="MudBlazor.Placement.Right">
+                    <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
+                </MudTooltip>
+            </div>
+            <div class="postingDiv">
+                <MudNumericField Class="config-field" @bind-Value="ViewModel.SummaryPageLength" Label="Resume Summary Page Length" Variant="Variant.Outlined"/>
+                <MudTooltip Text="First line&#10;Second line&#10;Third line" Placement="MudBlazor.Placement.Right">
+                    <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
+                </MudTooltip>
+            </div>      
+      </div>
+    
         <MudSelect Class="template-select" Label="Document Template" T="DocumentTemplate" @bind-Value="ViewModel.SelectedTemplate" ToStringFunc="e => e?.Name">
             @foreach (var template in ViewModel.DocumentTemplates)
             {

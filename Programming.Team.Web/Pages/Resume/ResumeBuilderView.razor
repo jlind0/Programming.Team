@@ -2,20 +2,8 @@
 @inherits ReactiveInjectableComponentBase<ResumeBuilderViewModel>
 @attribute [Authorize]
 @if (ViewModel != null)
-{   @*
+{
     <AlertView Alert="ViewModel.Alert" />
-    <MudTextField @bind-Value="ViewModel.Name" Label="Name" Variant="Variant.Outlined" />
-    <MudTextField Lines="10" @bind-Value="ViewModel.PostingText" Label="Posting Text" Variant="Variant.Outlined" />
-    <ResumeConfigurationView ViewModel="ViewModel.Configuration" />
-    <MudButton OnClick="ViewModel.Build.BindCommand<MouseEventArgs>()" Class="fw-bold" Variant="Variant.Filled"
-        Color="Color.Primary">Build Resume</MudButton>
-    <MudOverlay @bind-Visible="ViewModel.IsOverlayOpen" DarkBackground="true" AutoClose="false">
-        <MudProgressCircular Color="Color.Secondary" Size="Size.Large" Indeterminate="true" />
-        <h1>
-            <MudText Color="Color.Secondary">@ViewModel.Progress</MudText>
-        </h1>
-    </MudOverlay>
-    *@
     <MudContainer MaxWidth="MaxWidth.Medium">
         <MudCard>
             <MudCardHeader>
@@ -24,72 +12,68 @@
             </MudCardHeader>
 
             <MudCardContent>
-                <!-- Alert View -->
-                <div class="mb-6">
-                    <AlertView Alert="ViewModel.Alert" />
-                </div>
-
-                <!-- Form Section -->
-                <div class="space-y-6">
-                    <MudGrid Spacing="3" >
-                        <MudItem xs="12">
-                            <MudStack Row="true">
-                                <MudTextField @bind-Value="ViewModel.Name"
-                                          Label="Posting Name"
-                                          Variant="Variant.Outlined"
-                                          AdornmentIcon="@Icons.Material.Filled.Person"
-                                          Class="rounded-lg" />
-                                <MudButton OnClick="ViewModel.ExtractTitle.BindCommand<MouseEventArgs>()"
-                                           Variant="Variant.Filled"
-                                           Color="Color.Primary"
-                                           Size="Size.Small"
-                                       Class="ml-2">Extract Name</MudButton>
-                            </MudStack>
+            <!-- Form Section -->
+            <div class="space-y-6">
+                <MudGrid Spacing="3" >
+                    <MudItem xs="12">
+                        <MudStack Row="true">
+                            <MudTextField @bind-Value="ViewModel.Name"
+                                        Label="Posting Name"
+                                        Variant="Variant.Outlined"
+                                        AdornmentIcon="@Icons.Material.Filled.Person"
+                                        Class="rounded-lg" />
+                            <MudButton OnClick="ViewModel.ExtractTitle.BindCommand<MouseEventArgs>()"
+                                        Variant="Variant.Filled"
+                                        Color="Color.Primary"
+                                        Size="Size.Small"
+                                    Class="ml-2">Extract Name</MudButton>
+                        </MudStack>
                             
-                        </MudItem>
+                    </MudItem>
 
-                        <MudItem xs="12">
-                            <MudTextField Lines="8"
-                                          @bind-Value="ViewModel.PostingText"
-                                          Label="Job Description or Requirements"
-                                          Variant="Variant.Outlined"
-                                          AdornmentIcon="@Icons.Material.Filled.Description"
-                                          Class="rounded-lg" />
-                        </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField Lines="8"
+                                        @bind-Value="ViewModel.PostingText"
+                                        Label="Job Description or Requirements"
+                                        Variant="Variant.Outlined"
+                                        AdornmentIcon="@Icons.Material.Filled.Description"
+                                        Class="rounded-lg" />
+                    </MudItem>
 
-                        <MudItem xs="12">
-                            <ResumeConfigurationView ViewModel="ViewModel.Configuration" />
-                        </MudItem>
-                    </MudGrid>
-                </div>
-            </MudCardContent>
+                    <MudItem xs="12">
+                        <ResumeConfigurationView ViewModel="ViewModel.Configuration" />
+                    </MudItem>
+                </MudGrid>
+            </div>
+        </MudCardContent>
 
-            <MudCardActions Class="justify-center py-4">
-                <MudButton OnClick="ViewModel.Build.BindCommand<MouseEventArgs>()"
-                           Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           Size="Size.Large"
-                           EndIcon="@Icons.Material.Filled.Build"
-                           Class="px-10 py-4 rounded-full text-lg font-bold shadow-lg hover:shadow-xl transition-all">
-                    BUILD RESUME
-                </MudButton>
-            </MudCardActions>
-        </MudCard>
+        <MudCardActions Class="justify-center py-4">
+            <MudButton OnClick="ViewModel.Build.BindCommand<MouseEventArgs>()"
+                        Variant="Variant.Filled"
+                        Color="Color.Primary"
+                        Size="Size.Large"
+                        EndIcon="@Icons.Material.Filled.Build"
+                        Class="px-10 py-4 rounded-full text-lg font-bold shadow-lg hover:shadow-xl transition-all">
+                BUILD RESUME
+            </MudButton>
+        </MudCardActions>
+    </MudCard>
 
         <!-- Loading Overlay -->
+
         <MudOverlay @bind-Visible="ViewModel.IsOverlayOpen"
                     DarkBackground="true"
                     AutoClose="false"
-                    Class="d-flex flex-column align-center justify-center">
+                    Class="fullscreen-overlay"
+                    Style="z-index: 10000;">
             <div class="text-center">
-                <MudProgressCircular Color="Color.Secondary"
-                                     Size="Size.Large"
+                <MudProgressCircular Color="Color.Info"
                                      Indeterminate="true"
-                                     Class="mb-4" />
-                <MudText Typo="Typo.h5" Color="Color.Secondary" Class="animate-pulse">
+                                     Size="@Size.Large" />
+                <MudText Typo="Typo.h5" Color="Color.Info" Class="animate-pulse">
                     @ViewModel.Progress
                 </MudText>
-                <MudText  Class="mt-2">
+                <MudText  Class="mt-2 overlayText">
                     This usually takes 20-40 seconds
                 </MudText>
             </div>
