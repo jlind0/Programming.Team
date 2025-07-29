@@ -286,7 +286,7 @@
 
             <!-- Action Buttons -->
             <MudItem xs="12" Class="mt-6">
-                <MudStack Row="true" Justify="Justify.Center" Spacing="4">
+                <MudStack Row="true" Wrap="Wrap.Wrap" Justify="Justify.Center" Spacing="4">
                     <MudButton OnClick="ViewModel.Update.BindCommand<MouseEventArgs>()"
                                Class="fw-bold px-6 py-3"
                                Variant="Variant.Filled"
@@ -328,7 +328,54 @@
                                   ">
                         Generate Cover
                     </MudButton>
-
+                    @if (!string.IsNullOrWhiteSpace(ViewModel.CoverLetterLaTeX))
+                    {
+                        <MudButton OnClick="ViewModel.RenderCoverLetter.BindCommand<MouseEventArgs>()"
+                                   Class="fw-bold px-6 py-3"
+                                   Variant="Variant.Outlined"
+                                   Color="Color.Info"
+                                   EndIcon="@Icons.Material.Filled.Article"
+                                   Style="
+                                          min-width: 150px;
+                                          border-radius: 8px;
+                                          text-transform: none;
+                                          letter-spacing: 0.5px;
+                                          ">
+                            Render Cover
+                        </MudButton>
+                    }
+                    @if (ViewModel.CanGenerateInterviewQuestions)
+                    {
+                        <MudButton OnClick="ViewModel.GenerateInterviewQuestions.BindCommand<MouseEventArgs>()"
+                                   Class="fw-bold px-6 py-3"
+                                   Variant="Variant.Outlined"
+                                   Color="Color.Info"
+                                   EndIcon="@Icons.Material.Filled.QuestionMark"
+                                   Style="
+                                              min-width: 150px;
+                                              border-radius: 8px;
+                                              text-transform: none;
+                                              letter-spacing: 0.5px;
+                                                  ">
+                            Generate Interview Questions
+                        </MudButton>
+                    }
+                    @if(ViewModel.CanGenerateEmployeerQuestions)
+                    {
+                        <MudButton OnClick="ViewModel.GenerateEmployeerQuestions.BindCommand<MouseEventArgs>()"
+                                   Class="fw-bold px-6 py-3"
+                                   Variant="Variant.Outlined"
+                                   Color="Color.Info"
+                                   EndIcon="@Icons.Material.Filled.QuestionAnswer"
+                                   Style="
+                                                      min-width: 150px;
+                                                      border-radius: 8px;
+                                                      text-transform: none;
+                                                      letter-spacing: 0.5px;
+                                                          ">
+                            Generate Employer Questions
+                        </MudButton>                        
+                    }
                     @if (ViewModel.CanSummarizeResume)
                     {
                         <MudButton OnClick="ViewModel.SummarizeResume.BindCommand<MouseEventArgs>()"
