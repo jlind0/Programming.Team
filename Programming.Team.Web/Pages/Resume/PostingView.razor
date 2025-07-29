@@ -1,143 +1,478 @@
 ﻿@inherits ReactiveComponentBase<PostingViewModel>
-<style>
-        .scroll-wrapper {
-    max-height: 300px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    border: 1px solid rgba(0,0,0,0.12);
-    border-radius: 6px;
-    background-color: white;
-}
 
-.markdown-content {
-    word-wrap: break-word;
-    white-space: normal;
-    overflow-wrap: anywhere;
-}
-    </style>
-@if(ViewModel != null)
+@if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
-    <MudStack>
-        <MudTextField @bind-Value="ViewModel.Name" Label="Name" Variant="Variant.Outlined" />
-        <MudSelect Label="Document Template" T="DocumentTemplate" @bind-Value="ViewModel.SelectedTemplate" ToStringFunc="e => e?.Name">
-            @foreach (var doctype in ViewModel.DocumentTemplates)
-            {
-                <MudSelectItem T="DocumentTemplate" Value="doctype">@doctype.Name</MudSelectItem>
-            }
-        </MudSelect>
-        <ResumeConfigurationView ViewModel="ViewModel.ConfigurationViewModel"/>
-        <MudTextField Lines="10" @bind-Value="ViewModel.Details" Label="Details" Variant="Variant.Outlined" />
-        <MudStack Row="true">
-            <MudTextField @bind-Value="ViewModel.CompanyName" Label="Company Name" Variant="Variant.Outlined"/>
-            <MudButton OnClick="ViewModel.ExtractCompanyName.BindCommand<MouseEventArgs>()">Extract Company Name</MudButton>
-            @if (ViewModel.CanResearchCompany)
-            {
-                <MudButton OnClick="ViewModel.ResearchCompany.BindCommand<MouseEventArgs>()">Research Company</MudButton>
-            }
-        </MudStack>
-        <MudTextField Lines="10" @bind-Value="ViewModel.RenderedLaTex" Label="Resume LaTeX" Variant="Variant.Outlined" />
-        @{
-            var str = $"/api/resumes/{ViewModel.Id}";
-            string resumeUri = System.Web.HttpUtility.UrlEncode($"https://jobme.today/api/resumes/{ViewModel.Id}.tex");
-            string strResumeUri = $"https://www.overleaf.com/docs?snip_uri={resumeUri}";
-            <MudLink Href="@str" Target="_blank">Download Resume</MudLink>
-            <MudLink Href="@strResumeUri" Target="_blank">Edit Resume in Overleaf</MudLink>
-        }
-        @if(!string.IsNullOrWhiteSpace(ViewModel.CompanyResearch))
-        {
-            <MudPaper Class="scroll-wrapper p-4" Elevation="1">
-                <div class="markdown-content">
-                    <Markdown>@ViewModel.CompanyResearch</Markdown>
-                </div>
-            </MudPaper>
-        }
-        <CoverLetterConfigurationView ViewModel="ViewModel.CoverLetterConfigurationViewModel"/>
-        @if (!string.IsNullOrWhiteSpace(ViewModel.CoverLetterLaTeX))
-        {
-            var strCover = $"/api/coverletters/{ViewModel.Id}";
-            string coverUri = System.Web.HttpUtility.UrlEncode($"https://jobme.today/api/coverletters/{ViewModel.Id}.tex");
-            string strCoverUri = $"https://www.overleaf.com/docs?snip_uri={coverUri}";
-            <MudTextField Lines="10" @bind-Value="ViewModel.CoverLetterLaTeX" Label="Cover Letter LaTeX" Variant="Variant.Outlined" />
-            <MudLink Href="@strCover" Target="_blank">Download Cover Letter</MudLink>
-            <MudLink Href="@strCoverUri" Target="_blank">Edit Cover Letter in Overleaf</MudLink>
-        }
-        @if(!string.IsNullOrWhiteSpace(ViewModel.ResumeSummaryLatex))
-        {
-            var strSummary = $"/api/resumes/summary/{ViewModel.Id}";
-            string resumeSummaryUri = System.Web.HttpUtility.UrlEncode($"https://jobme.today/api/resumes/summary/{ViewModel.Id}.tex");
-            string strResumeSummaryUri = $"https://www.overleaf.com/docs?snip_uri={resumeSummaryUri}";
-            <MudTextField Lines="10" @bind-Value="ViewModel.ResumeSummaryLatex" Label="Resume Summary LaTeX" Variant="Variant.Outlined"/>
-            <MudLink Href="@strSummary" Target="_blank">Download Resume Summary</MudLink>
-            <MudLink Href="@strResumeSummaryUri" Target="_blank">Edit Summary in Overleaf</MudLink>
-        }
-        <MudStack Row="true">
-            <MudSelect Label="Text Template" T="DocumentTemplate" @bind-Value="ViewModel.SelectedMarkdownTemplate" ToStringFunc="e => e?.Name">
-                @foreach (var doctype in ViewModel.MarkdownTemplates)
-                {
-                    <MudSelectItem T="DocumentTemplate" Value="doctype">@doctype.Name</MudSelectItem>
-                }
-            </MudSelect>
-            @if(ViewModel.CanRenderMarkdown)
-            {
-                <MudButton OnClick="ViewModel.RenderMarkdown.BindCommand<MouseEventArgs>()">Render Text</MudButton>
-            }
-        </MudStack>
-        
-        @if (!string.IsNullOrWhiteSpace(ViewModel.ResumeMarkdown))
-        {
-            var strMarkdown = $"api/resumes/{ViewModel.Id}.txt";
-            <MudTextField Lines="10" @bind-Value="ViewModel.ResumeMarkdown" Label="Resume Text" Variant="Variant.Outlined"/>
-            <MudLink Href="@strMarkdown" Target="_blank">Download Text Version</MudLink>
-        }
 
-        <MudStack Row="true">
-            <MudButton OnClick="ViewModel.Update.BindCommand<MouseEventArgs>()">Update</MudButton>
-            <MudStack Row="true">
-                <MudCheckBox @bind-Value="ViewModel.Enrich" Label="Enrich?"/>
-                <MudCheckBox @bind-Value="ViewModel.RenderPDF" Label="RenderPDF?"/>
-                <MudButton OnClick="ViewModel.Rebuild.BindCommand<MouseEventArgs>()">Rebuild Resume</MudButton>
-            </MudStack>
-            <MudButton OnClick="ViewModel.Render.BindCommand<MouseEventArgs>()">Render Resume</MudButton>
-            <MudButton OnClick="ViewModel.GenerateCoverLetter.BindCommand<MouseEventArgs>()">Generate Cover Letter</MudButton>
-            <MudButton OnClick="ViewModel.RenderCoverLetter.BindCommand<MouseEventArgs>()">Render Cover Letter</MudButton>
-            @if (ViewModel.CanSummarizeResume)
+    <MudPaper Class="pa-8 rounded-xl" Elevation="10" Style="
+        background: white;
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.04), 0 2px 6px rgba(0,0,0,0.04), 0 0 1px rgba(0,0,0,0.04);
+        ">
+        <!-- Header with subtle accent -->
+        <div class="mb-6 pb-2" style="border-bottom: 1px solid rgba(var(--mud-palette-primary-rgb), 0.2);">
+            <MudText Typo="Typo.h4" Class="text-primary" Style="
+                font-weight: 600;
+                letter-spacing: -0.5px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                ">
+                <MudIcon Icon="@Icons.Material.Filled.Work" Size="Size.Medium" />
+                <span>Job Posting</span>
+            </MudText>
+        </div>
+
+        <MudGrid Spacing="4" Justify="Justify.Center">
+            <!-- Basic Information -->
+            <MudItem xs="12" md="6">
+                <MudTextField @bind-Value="ViewModel.Name"
+                              Label="Position Name"
+                              Variant="Variant.Outlined"
+                              AdornmentIcon="@Icons.Material.Filled.Title"
+                              Adornment="Adornment.Start"
+                              Class="fancy-input"
+                              InputStyle="padding-left: 8px;"
+                              LabelClass="font-weight-bold">
+                </MudTextField>
+            </MudItem>
+
+            <MudItem xs="12" md="6">
+                <MudSelect Label="Document Template"
+                           T="DocumentTemplate"
+                           @bind-Value="ViewModel.SelectedTemplate"
+                           ToStringFunc="e => e?.Name"
+                           Variant="Variant.Outlined"
+                           AdornmentIcon="@Icons.Material.Filled.Description"
+                           Class="fancy-input"
+                           LabelClass="font-weight-bold">
+                    @foreach (var doctype in ViewModel.DocumentTemplates)
+                    {
+                        <MudSelectItem T="DocumentTemplate" Value="doctype">@doctype.Name</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+
+            <!-- Resume Configuration -->
+            <MudItem xs="12">
+                <ResumeConfigurationView ViewModel="ViewModel.ConfigurationViewModel" />
+            </MudItem>
+
+            <!-- Details -->
+            <MudItem xs="12">
+                <MudTextField Lines="10"
+                              @bind-Value="ViewModel.Details"
+                              Label="Job Details"
+                              Variant="Variant.Outlined"
+                              AdornmentIcon="@Icons.Material.Filled.Description"
+                              Class="fancy-input"
+                              LabelClass="font-weight-bold">
+                </MudTextField>
+            </MudItem>
+
+            <!-- Company Information -->
+            <MudItem xs="12" md="8">
+                <MudTextField @bind-Value="ViewModel.CompanyName"
+                              Label="Company Name"
+                              Variant="Variant.Outlined"
+                              AdornmentIcon="@Icons.Material.Filled.Business"
+                              Class="fancy-input"
+                              LabelClass="font-weight-bold">
+                </MudTextField>
+            </MudItem>
+
+            <MudItem xs="12" md="4">
+                <MudStack Row="true" Spacing="2" Justify="Justify.SpaceEvenly">
+                    <MudButton OnClick="ViewModel.ExtractCompanyName.BindCommand<MouseEventArgs>()"
+                               Variant="Variant.Outlined"
+                               Color="Color.Primary"
+                               StartIcon="@Icons.Material.Filled.AutoFixHigh"
+                               Class="mr-2">
+                        Extract
+                    </MudButton>
+                    @if (ViewModel.CanResearchCompany)
+                    {
+                        <MudButton OnClick="ViewModel.ResearchCompany.BindCommand<MouseEventArgs>()"
+                                   Variant="Variant.Outlined"
+                                   Color="Color.Info"
+                                   StartIcon="@Icons.Material.Filled.Search">
+                            Research
+                        </MudButton>
+                    }
+                </MudStack>
+            </MudItem>
+
+            @if (!string.IsNullOrWhiteSpace(ViewModel.CompanyResearch))
             {
-                <MudButton OnClick="ViewModel.SummarizeResume.BindCommand<MouseEventArgs>()">Summarize Resume</MudButton>
+                <MudItem xs="12">
+                    <MudPaper Class="scroll-wrapper p-4 rounded-lg" Elevation="1" Style="border: 1px solid rgba(var(--mud-palette-primary-rgb), 0.1);">
+                        <div class="markdown-content">
+                            <Markdown>@ViewModel.CompanyResearch</Markdown>
+                        </div>
+                    </MudPaper>
+                </MudItem>
             }
-            @if(ViewModel.CanGenerateInterviewQuestions)
+
+            <!-- Resume LaTeX -->
+            <MudItem xs="12">
+                <MudTextField Lines="10"
+                              @bind-Value="ViewModel.RenderedLaTex"
+                              Label="Resume LaTeX"
+                              Variant="Variant.Outlined"
+                              AdornmentIcon="@Icons.Material.Filled.Code"
+                              Class="fancy-input"
+                              LabelClass="font-weight-bold">
+                </MudTextField>
+            </MudItem>
+
+            <!-- Resume Actions -->
+            <MudItem xs="12">
+                <MudStack Row="true" Spacing="2" Justify="Justify.Center">
+                    @{
+                        var str = $"/api/resumes/{ViewModel.Id}";
+                        string resumeUri = System.Web.HttpUtility.UrlEncode($"https://jobme.today/api/resumes/{ViewModel.Id}.tex");
+                        string strResumeUri = $"https://www.overleaf.com/docs?snip_uri={resumeUri}";
+                        <MudLink Href="@str" Target="_blank" Color="Color.Primary" Underline="Underline.Always" Class="mr-3">
+                            <MudIcon Icon="@Icons.Material.Filled.Download" Class="mr-1" /> Download Resume
+                        </MudLink>
+                        <MudLink Href="@strResumeUri" Target="_blank" Color="Color.Primary" Underline="Underline.Always">
+                            <MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-1" /> Edit in Overleaf
+                        </MudLink>
+                    }
+                </MudStack>
+            </MudItem>
+
+            <!-- Cover Letter Section -->
+            <MudItem xs="12">
+                <CoverLetterConfigurationView ViewModel="ViewModel.CoverLetterConfigurationViewModel" />
+            </MudItem>
+
+            @if (!string.IsNullOrWhiteSpace(ViewModel.CoverLetterLaTeX))
             {
-                <MudButton OnClick="ViewModel.GenerateInterviewQuestions.BindCommand<MouseEventArgs>()">Generate Interview Questions</MudButton>
+                <MudItem xs="12">
+                    <MudTextField Lines="10"
+                                  @bind-Value="ViewModel.CoverLetterLaTeX"
+                                  Label="Cover Letter LaTeX"
+                                  Variant="Variant.Outlined"
+                                  AdornmentIcon="@Icons.Material.Filled.Article"
+                                  Class="fancy-input"
+                                  LabelClass="font-weight-bold">
+                    </MudTextField>
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudStack Row="true" Spacing="2" Justify="Justify.Center">
+                        @{
+                            var strCover = $"/api/coverletters/{ViewModel.Id}";
+                            string coverUri = System.Web.HttpUtility.UrlEncode($"https://jobme.today/api/coverletters/{ViewModel.Id}.tex");
+                            string strCoverUri = $"https://www.overleaf.com/docs?snip_uri={coverUri}";
+                            <MudLink Href="@strCover" Target="_blank" Color="Color.Primary" Underline="Underline.Always" Class="mr-3">
+                                <MudIcon Icon="@Icons.Material.Filled.Download" Class="mr-1" /> Download Cover Letter
+                            </MudLink>
+                            <MudLink Href="@strCoverUri" Target="_blank" Color="Color.Primary" Underline="Underline.Always">
+                                <MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-1" /> Edit in Overleaf
+                            </MudLink>
+                        }
+                    </MudStack>
+                </MudItem>
             }
-            @if(ViewModel.CanGenerateEmployeerQuestions)
+
+            <!-- Resume Summary -->
+            @if (!string.IsNullOrWhiteSpace(ViewModel.ResumeSummaryLatex))
             {
-                <MudButton OnClick="ViewModel.GenerateEmployeerQuestions.BindCommand<MouseEventArgs>()">Generate Employeer Questions</MudButton>
+                <MudItem xs="12">
+                    <MudTextField Lines="10"
+                                  @bind-Value="ViewModel.ResumeSummaryLatex"
+                                  Label="Resume Summary LaTeX"
+                                  Variant="Variant.Outlined"
+                                  AdornmentIcon="@Icons.Material.Filled.Summarize"
+                                  Class="fancy-input"
+                                  LabelClass="font-weight-bold">
+                    </MudTextField>
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudStack Row="true" Spacing="2" Justify="Justify.Center">
+                        @{
+                            var strSummary = $"/api/resumes/summary/{ViewModel.Id}";
+                            string resumeSummaryUri = System.Web.HttpUtility.UrlEncode($"https://jobme.today/api/resumes/summary/{ViewModel.Id}.tex");
+                            string strResumeSummaryUri = $"https://www.overleaf.com/docs?snip_uri={resumeSummaryUri}";
+                            <MudLink Href="@strSummary" Target="_blank" Color="Color.Primary" Underline="Underline.Always" Class="mr-3">
+                                <MudIcon Icon="@Icons.Material.Filled.Download" Class="mr-1" /> Download Summary
+                            </MudLink>
+                            <MudLink Href="@strResumeSummaryUri" Target="_blank" Color="Color.Primary" Underline="Underline.Always">
+                                <MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-1" /> Edit in Overleaf
+                            </MudLink>
+                        }
+                    </MudStack>
+                </MudItem>
             }
-            <MudButton OnClick="ViewModel.Delete.BindCommand<MouseEventArgs>()">Delete</MudButton>
-        </MudStack>
-        @if(!string.IsNullOrWhiteSpace(ViewModel.InterviewQuestions))
-        {
-            <MudPaper Class="scroll-wrapper p-4" Elevation="1">
-               <div class="markdown-content"> <Markdown>@ViewModel.InterviewQuestions</Markdown></div>
-            </MudPaper>
-        }
-        @if(!string.IsNullOrWhiteSpace(ViewModel.QuestionsToAsk))
-        {
-            <MudPaper Class="scroll-wrapper p-4" Elevation="1">
-                <div class="markdown-content"><Markdown>@ViewModel.QuestionsToAsk</Markdown></div>
-            </MudPaper>
-        }
-    )
-    </MudStack>
+
+            <!-- Text Template -->
+            <MudItem xs="12" md="8">
+                <MudSelect Label="Text Template"
+                           T="DocumentTemplate"
+                           @bind-Value="ViewModel.SelectedMarkdownTemplate"
+                           ToStringFunc="e => e?.Name"
+                           Variant="Variant.Outlined"
+                           AdornmentIcon="@Icons.Material.Filled.TextFields"
+                           Class="fancy-input"
+                           LabelClass="font-weight-bold">
+                    @foreach (var doctype in ViewModel.MarkdownTemplates)
+                    {
+                        <MudSelectItem T="DocumentTemplate" Value="doctype">@doctype.Name</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+
+            <MudItem xs="12" md="4">
+                @if (ViewModel.CanRenderMarkdown)
+                {
+                    <MudButton OnClick="ViewModel.RenderMarkdown.BindCommand<MouseEventArgs>()"
+                               Variant="Variant.Outlined"
+                               Color="Color.Primary"
+                               FullWidth="true"
+                               StartIcon="@Icons.Material.Filled.TextFormat">
+                        Render Text
+                    </MudButton>
+                }
+            </MudItem>
+
+            @if (!string.IsNullOrWhiteSpace(ViewModel.ResumeMarkdown))
+            {
+                <MudItem xs="12">
+                    <MudTextField Lines="10"
+                                  @bind-Value="ViewModel.ResumeMarkdown"
+                                  Label="Resume Text"
+                                  Variant="Variant.Outlined"
+                                  AdornmentIcon="@Icons.Material.Filled.TextSnippet"
+                                  Class="fancy-input"
+                                  LabelClass="font-weight-bold">
+                    </MudTextField>
+                </MudItem>
+
+                <MudItem xs="12">
+                    @{
+                        var strMarkdown = $"api/resumes/{ViewModel.Id}.txt";
+                        <MudLink Href="@strMarkdown" Target="_blank" Color="Color.Primary" Underline="Underline.Always">
+                            <MudIcon Icon="@Icons.Material.Filled.Download" Class="mr-1" /> Download Text Version
+                        </MudLink>
+                    }
+                </MudItem>
+            }
+
+            <!-- Interview Questions -->
+            @if (!string.IsNullOrWhiteSpace(ViewModel.InterviewQuestions))
+            {
+                <MudItem xs="12">
+                    <MudPaper Class="scroll-wrapper p-4 rounded-lg" Elevation="1" Style="border: 1px solid rgba(var(--mud-palette-primary-rgb), 0.1);">
+                        <div class="markdown-content">
+                            <Markdown>@ViewModel.InterviewQuestions</Markdown>
+                        </div>
+                    </MudPaper>
+                </MudItem>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(ViewModel.QuestionsToAsk))
+            {
+                <MudItem xs="12">
+                    <MudPaper Class="scroll-wrapper p-4 rounded-lg" Elevation="1" Style="border: 1px solid rgba(var(--mud-palette-primary-rgb), 0.1);">
+                        <div class="markdown-content">
+                            <Markdown>@ViewModel.QuestionsToAsk</Markdown>
+                        </div>
+                    </MudPaper>
+                </MudItem>
+            }
+
+            <!-- Action Buttons -->
+            <MudItem xs="12" Class="mt-6">
+                <MudStack Row="true" Wrap="Wrap.Wrap" Justify="Justify.Center" Spacing="4">
+                    <MudButton OnClick="ViewModel.Update.BindCommand<MouseEventArgs>()"
+                               Class="fw-bold px-6 py-3"
+                               Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               EndIcon="@Icons.Material.Filled.Save"
+                               Style="
+                                  min-width: 150px;
+                                  border-radius: 8px;
+                                  text-transform: none;
+                                  letter-spacing: 0.5px;
+                                  ">
+                        Update
+                    </MudButton>
+
+                    <MudButton OnClick="ViewModel.Render.BindCommand<MouseEventArgs>()"
+                               Class="fw-bold px-6 py-3"
+                               Variant="Variant.Outlined"
+                               Color="Color.Info"
+                               EndIcon="@Icons.Material.Filled.PictureAsPdf"
+                               Style="
+                                  min-width: 150px;
+                                  border-radius: 8px;
+                                  text-transform: none;
+                                  letter-spacing: 0.5px;
+                                  ">
+                        Render Resume
+                    </MudButton>
+
+                    <MudButton OnClick="ViewModel.GenerateCoverLetter.BindCommand<MouseEventArgs>()"
+                               Class="fw-bold px-6 py-3"
+                               Variant="Variant.Outlined"
+                               Color="Color.Info"
+                               EndIcon="@Icons.Material.Filled.Article"
+                               Style="
+                                  min-width: 150px;
+                                  border-radius: 8px;
+                                  text-transform: none;
+                                  letter-spacing: 0.5px;
+                                  ">
+                        Generate Cover
+                    </MudButton>
+                    @if (!string.IsNullOrWhiteSpace(ViewModel.CoverLetterLaTeX))
+                    {
+                        <MudButton OnClick="ViewModel.RenderCoverLetter.BindCommand<MouseEventArgs>()"
+                                   Class="fw-bold px-6 py-3"
+                                   Variant="Variant.Outlined"
+                                   Color="Color.Info"
+                                   EndIcon="@Icons.Material.Filled.Article"
+                                   Style="
+                                          min-width: 150px;
+                                          border-radius: 8px;
+                                          text-transform: none;
+                                          letter-spacing: 0.5px;
+                                          ">
+                            Render Cover
+                        </MudButton>
+                    }
+                    @if (ViewModel.CanGenerateInterviewQuestions)
+                    {
+                        <MudButton OnClick="ViewModel.GenerateInterviewQuestions.BindCommand<MouseEventArgs>()"
+                                   Class="fw-bold px-6 py-3"
+                                   Variant="Variant.Outlined"
+                                   Color="Color.Info"
+                                   EndIcon="@Icons.Material.Filled.QuestionMark"
+                                   Style="
+                                              min-width: 150px;
+                                              border-radius: 8px;
+                                              text-transform: none;
+                                              letter-spacing: 0.5px;
+                                                  ">
+                            Generate Interview Questions
+                        </MudButton>
+                    }
+                    @if(ViewModel.CanGenerateEmployeerQuestions)
+                    {
+                        <MudButton OnClick="ViewModel.GenerateEmployeerQuestions.BindCommand<MouseEventArgs>()"
+                                   Class="fw-bold px-6 py-3"
+                                   Variant="Variant.Outlined"
+                                   Color="Color.Info"
+                                   EndIcon="@Icons.Material.Filled.QuestionAnswer"
+                                   Style="
+                                                      min-width: 150px;
+                                                      border-radius: 8px;
+                                                      text-transform: none;
+                                                      letter-spacing: 0.5px;
+                                                          ">
+                            Generate Employer Questions
+                        </MudButton>                        
+                    }
+                    @if (ViewModel.CanSummarizeResume)
+                    {
+                        <MudButton OnClick="ViewModel.SummarizeResume.BindCommand<MouseEventArgs>()"
+                                   Class="fw-bold px-6 py-3"
+                                   Variant="Variant.Outlined"
+                                   Color="Color.Info"
+                                   EndIcon="@Icons.Material.Filled.Summarize"
+                                   Style="
+                                      min-width: 150px;
+                                      border-radius: 8px;
+                                      text-transform: none;
+                                      letter-spacing: 0.5px;
+                                          ">
+                            Summarize
+                        </MudButton>
+                    }
+
+                    <MudButton OnClick="ViewModel.Delete.BindCommand<MouseEventArgs>()"
+                               Class="fw-bold px-6 py-3"
+                               Variant="Variant.Outlined"
+                               Color="Color.Error"
+                               EndIcon="@Icons.Material.Filled.Delete"
+                               Style="
+                                  min-width: 150px;
+                                  border-radius: 8px;
+                                  text-transform: none;
+                                  letter-spacing: 0.5px;
+                                  border-width: 2px;
+                                  ">
+                        Delete
+                    </MudButton>
+                </MudStack>
+            </MudItem>
+
+            <!-- Rebuild Options -->
+            <MudItem xs="12" Class="mt-4">
+                <MudStack Row="true" Justify="Justify.Center" Spacing="4">
+                    <MudCheckBox @bind-Value="ViewModel.Enrich" Label="Enrich?" Class="mr-2" Color="Color.Primary" />
+                    <MudCheckBox @bind-Value="ViewModel.RenderPDF" Label="Render PDF?" Class="mr-2" Color="Color.Primary" />
+                    <MudButton OnClick="ViewModel.Rebuild.BindCommand<MouseEventArgs>()"
+                               Variant="Variant.Outlined"
+                               Color="Color.Warning"
+                               StartIcon="@Icons.Material.Filled.Build"
+                               Style="min-width: 180px;">
+                        Rebuild Resume
+                    </MudButton>
+                </MudStack>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
     <MudOverlay @bind-Visible="ViewModel.IsOverlayOpen" DarkBackground="true" AutoClose="false">
-        <MudProgressCircular Color="Color.Secondary" Size="Size.Large" Indeterminate="true"/>
+        <MudProgressCircular Color="Color.Secondary" Size="Size.Large" Indeterminate="true" />
         <h1><MudText Color="Color.Secondary">@ViewModel.Progress</MudText></h1>
     </MudOverlay>
+
     <MudOverlay @bind-Visible="ViewModel.IsProcessing" DarkBackground="true" AutoClose="false">
         <MudProgressCircular Color="Color.Secondary" Size="Size.Large" Indeterminate="true" />
     </MudOverlay>
-    
 }
+
+<style>
+    .fancy-input .mud-input-outlined-border {
+        border-radius: 8px;
+        border-width: 1.5px;
+        transition: border-color 0.2s ease;
+    }
+
+    .fancy-input:hover .mud-input-outlined-border {
+        border-color: var(--mud-palette-primary) !important;
+    }
+
+    .mud-input-label-outlined {
+        background: white !important;
+        padding: 0 8px !important;
+        left: 8px !important;
+    }
+
+    .mud-input-control-outlined .mud-input-slot {
+        padding-left: 8px;
+    }
+
+    .scroll-wrapper {
+        max-height: 300px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        border: 1px solid rgba(0,0,0,0.12);
+        border-radius: 6px;
+        background-color: white;
+    }
+
+    .markdown-content {
+        word-wrap: break-word;
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+</style>
 
 @code {
 

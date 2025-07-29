@@ -791,7 +791,7 @@ namespace Programming.Team.ViewModels
                         {
                             var rse = await Facade.Get(filter: await FilterCondition(), page: GetPager(), orderBy: OrderBy(), properites: PropertiesToLoad(), token: token);
                             Pagination.ItemCount = rse?.Count ?? 0;
-                            Pagination.PageSize =  rse?.PageSize;
+                            Pagination.PageSize = rse?.PageSize;
                             rs = rse?.Entities;
                         }
                         else

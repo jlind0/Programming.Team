@@ -56,7 +56,9 @@ namespace Programming.Team.AI
                 ["bullets"] = bullets,
                 ["maxTokens"] = maxTokens
             };
-            return await CallTool<string?>(msg => msg?.Text, "tailorBio", args, token);
+            var str = await CallTool<string?>(msg => msg?.Text, "tailorBio", args, token);
+            str = str?.Replace("```latex", "").Replace("```", "").Trim().ReplaceLineEndings();
+            return str;
         }
 
         public async Task<string?> TailorPosition(string jd, string position, double bullets, int length, TextType inputFormat = TextType.Text, int maxTokens = 2048, CancellationToken token = default)
