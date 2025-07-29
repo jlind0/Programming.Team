@@ -22,11 +22,17 @@
                                         Variant="Variant.Outlined"
                                         AdornmentIcon="@Icons.Material.Filled.Person"
                                         Class="rounded-lg" />
-                            <MudButton OnClick="ViewModel.ExtractTitle.BindCommand<MouseEventArgs>()"
-                                        Variant="Variant.Filled"
-                                        Color="Color.Primary"
-                                        Size="Size.Small"
-                                    Class="ml-2">Extract Name</MudButton>
+                        
+                                <div class="resumeDiv">
+                                    <MudButton OnClick="ViewModel.ExtractTitle.BindCommand<MouseEventArgs>()"
+                                               Variant="Variant.Filled"
+                                               Color="Color.Primary"
+                                               Size="Size.Small"
+                                               Class="fw-bold px-6 py-3">Extract Name</MudButton>
+                                    <MudTooltip Text="The Percentage Match Required from a JD to Display a Position" Placement="MudBlazor.Placement.Right">
+                                        <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
+                                    </MudTooltip>
+                                </div>
                         </MudStack>
                             
                     </MudItem>

@@ -1,51 +1,142 @@
 ﻿@page "/resume/postings"
 @attribute [Authorize]
 @inherits ReactiveInjectableComponentBase<PostingsViewModel>
+
+<style>
+    .main-content {
+        background-color: var(--mud-palette-background);
+        border-radius: 8px;
+        box-shadow: var(--mud-elevation-1);
+        padding: 16px;
+    }
+
+    .no-content-container {
+        background-color: transparent;
+        border: 1px dashed var(--mud-palette-primary);
+        border-radius: 8px;
+    }
+
+    .action-button {
+        margin: 0 4px;
+        transition: transform 0.2s;
+    }
+
+        .action-button:hover {
+            transform: scale(1.1);
+        }
+
+    .column-header {
+        font-weight: 600;
+        color: var(--mud-palette-primary-darken);
+        border-right: 1px solid var(--mud-palette-lines-default) !important;
+    }
+
+    /* Vertical lines between columns */
+    .mud-table-cell {
+        border-right: 1px solid var(--mud-palette-lines-default);
+    }
+
+        /* Remove right border from last column */
+        .mud-table-cell:last-child {
+            border-right: none !important;
+        }
+
+    /* Header divider */
+    .mud-table-header .mud-table-cell {
+        border-right: 1px solid var(--mud-palette-lines-default);
+    }
+
+        /* Last header column divider */
+        .mud-table-header .mud-table-cell:last-child {
+            border-right: none !important;
+        }
+</style>
+
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
-    <MudDataGrid @ref="grid" T="Posting" ServerData="ViewModel.Fetch.BindServerDataCommand()" RowsPerPage="10"
-        Filterable="true" FilterMode="DataGridFilterMode.ColumnFilterMenu" SortMode="SortMode.Multiple" Class="main-content">
+
+    <MudDataGrid @ref="grid"
+                 T="Posting"
+                 ServerData="ViewModel.Fetch.BindServerDataCommand()"
+                 RowsPerPage="10"
+                 Filterable="true"
+                 FilterMode="DataGridFilterMode.ColumnFilterMenu"
+                 SortMode="SortMode.Multiple"
+                 Class="main-content"
+                 Hover="true"
+                 Striped="true">
+
         <Columns>
-            <PropertyColumn Property="x => x.Name" Title="Name" />
-            <PropertyColumn Property="x => x.DocumentTemplate.Name" Title="Document Template" Sortable="false"
-                Filterable="false" />
-            <TemplateColumn Title="Edit Posting">
+            <PropertyColumn Property="x => x.Name"
+                            Title="Name"
+                            HeaderClass="column-header" />
+
+            <PropertyColumn Property="x => x.DocumentTemplate.Name"
+                            Title="Document Template"
+                            Sortable="false"
+                            Filterable="false"
+                            HeaderClass="column-header" />
+
+            <TemplateColumn Title="Edit Posting" HeaderClass="column-header">
                 <CellTemplate>
                     @{
                         var strHref = $"/resume/postings/{context.Item.Id}";
-                        <MudIconButton Href="@strHref" Icon="@Icons.Material.Filled.Edit" Color="Color.Primary"
-                            aria-label="edit" />
+                        <MudIconButton Class="action-button"
+                                       Href="@strHref"
+                                       Icon="@Icons.Material.Filled.Edit"
+                                       Color="Color.Primary"
+                                       Title="Edit posting"
+                                       aria-label="edit" />
                     }
                 </CellTemplate>
             </TemplateColumn>
-            <TemplateColumn Title="Download Resume">
+
+            <TemplateColumn Title="Download Resume" HeaderClass="column-header">
                 <CellTemplate>
                     @{
                         var strHref = $"api/resumes/{context.Item.Id}";
-                        <MudIconButton Href="@strHref" Icon="@Icons.Material.Filled.Download" Color="Color.Primary"
-                            aria-label="download" />
+                        <MudIconButton Class="action-button"
+                                       Href="@strHref"
+                                       Icon="@Icons.Material.Filled.Download"
+                                       Color="Color.Primary"
+                                       Title="Download resume"
+                                       aria-label="download" />
                     }
                 </CellTemplate>
             </TemplateColumn>
         </Columns>
-        <NoRecordsContent>  
-            <MudPaper Class="pa-8 text-center my-4 noContent" Elevation="0" Style="background-color: transparent;">
-                <MudIcon Icon="@Icons.Material.Filled.PostAdd" Size="Size.Large" Color="Color.Primary" Class="mb-3" />
-                <MudText Typo="Typo.h5" Class="mb-2" Color="Color.Primary">No Postings Found</MudText>
-                <MudText Typo="Typo.body1" Class="mb-4" Color="Color.Info">
-                    Your postiong history is empty. Try adjusting filters or check back later.
+
+        <NoRecordsContent>
+            <MudPaper Class="pa-8 text-center my-4 no-content-container" Elevation="0">
+                <MudIcon Icon="@Icons.Material.Filled.PostAdd"
+                         Size="Size.Large"
+                         Color="Color.Primary"
+                         Class="mb-3" />
+
+                <MudText Typo="Typo.h5" Class="mb-2" Color="Color.Primary">
+                    No Postings Found
                 </MudText>
-                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">
+
+                <MudText Typo="Typo.body1" Class="mb-4" Color="Color.Secondary">
+                    Your posting history is empty. Try adjusting filters or check back later.
+                </MudText>
+
+                <MudButton Variant="Variant.Outlined"
+                           Color="Color.Primary"
+                           Size="Size.Small"
+                           OnClick="() => grid.ReloadServerData()">
                     Refresh Data
                 </MudButton>
             </MudPaper>
         </NoRecordsContent>
+
         <PagerContent>
             <MudDataGridPager T="Posting" />
         </PagerContent>
     </MudDataGrid>
 }
+
 @code {
     private MudDataGrid<Posting> grid = null!;
 }

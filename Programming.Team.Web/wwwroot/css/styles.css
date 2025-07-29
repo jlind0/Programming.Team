@@ -2873,3 +2873,24 @@ include-drop-zone {
     
     margin-top:10% !important;
 }
+.posting-check{
+
+}
+.position-info-button {
+
+    margin:0 !important;
+    padding:0 !important;
+}
+.resumeDiv{
+
+    display:flex;
+    flex-direction:row;
+    justify-content:center;
+    align-items:center;
+    gap:3%;
+
+
+}
+.extractButton{
+    margin-top:7% !important;
+}
