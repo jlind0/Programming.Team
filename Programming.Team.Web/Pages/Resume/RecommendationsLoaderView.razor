@@ -1,0 +1,10 @@
+﻿@page "/resume/recommendations"
+@attribute [Authorize]
+@inherits ReactiveInjectableComponentBase<RecommendationsViewModel>
+@if(ViewModel != null)
+{
+    <RecommendationsView ViewModel="ViewModel" />
+}
+@code {
+
+}

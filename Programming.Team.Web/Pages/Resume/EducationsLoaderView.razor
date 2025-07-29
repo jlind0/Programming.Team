@@ -1,0 +1,10 @@
+﻿@page "/resume/education"
+@attribute [Authorize]
+@inherits ReactiveInjectableComponentBase<EducationsViewModel>
+@if(ViewModel != null)
+{
+    <EducationsView ViewModel="ViewModel" />
+}
+@code {
+
+}

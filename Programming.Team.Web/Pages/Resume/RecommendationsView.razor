@@ -1,6 +1,4 @@
-﻿@page "/resume/recommendations"
-@attribute [Authorize]
-@inherits ReactiveInjectableComponentBase<RecommendationsViewModel>
+﻿@inherits ReactiveComponentBase<RecommendationsViewModel>
 
 @if (ViewModel != null)
 {
@@ -142,7 +140,6 @@
     {
         if (ViewModel != null)
         {
-            //ViewModel.Pagination.PageSize = 5;
             ViewModel.Entities.CollectionChanged += (s, e) =>
             {
                 InvokeAsync(StateHasChanged);

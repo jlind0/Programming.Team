@@ -336,11 +336,13 @@ namespace Programming.Team.ViewModels.Resume
         protected IBusinessRepositoryFacade<Skill, Guid> SkillFacade { get; }
         public Guid PositionId
         {
-            get => AddViewModel.PositionId;
+            get => AddViewModel?.PositionId ?? Guid.Empty;
             set
             {
-                AddViewModel.PositionId = value;
-                SuggestAddSkillsVM.PositionId = value;
+                if(AddViewModel != null)
+                    AddViewModel.PositionId = value;
+                if (SuggestAddSkillsVM != null)
+                    SuggestAddSkillsVM.PositionId = value;
             }
         }
         private string description = string.Empty;
@@ -384,6 +386,10 @@ namespace Programming.Team.ViewModels.Resume
         {
             get => isOpen;
             set => this.RaiseAndSetIfChanged(ref isOpen, value);
+        }
+        protected override Pager? GetPager()
+        {
+            return null;
         }
         public ObservableCollection<RawSkillViewModel> RawSkills { get; } = new ObservableCollection<RawSkillViewModel>();
         protected async Task DoAddRawSkill(RawSkillViewModel raw, CancellationToken token)

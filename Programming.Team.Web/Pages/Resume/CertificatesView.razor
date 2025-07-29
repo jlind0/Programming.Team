@@ -1,6 +1,4 @@
-﻿@page "/resume/certificates"
-@attribute [Authorize]
-@inherits ReactiveInjectableComponentBase<CertificatesViewModel>
+﻿@inherits ReactiveComponentBase<CertificatesViewModel>
 
 @if (ViewModel != null)
 {
@@ -133,7 +131,6 @@
     {
         if (ViewModel != null)
         {
-            //ViewModel.Pagination.PageSize = 5;
             ViewModel.Entities.CollectionChanged += (s, e) =>
             {
                 InvokeAsync(StateHasChanged);

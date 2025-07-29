@@ -392,6 +392,8 @@ builder.Services.AddTransient<ProjectSkillsViewModel>();
 builder.Services.AddTransient<LayoutViewModel>();
 builder.Services.AddTransient<AddPageViewModel>();
 builder.Services.AddTransient<PagesViewModel>();
+
+builder.Services.AddTransient<ResumeWizardViewModel>();
 builder.Services.AddSingleton(provider =>
 {
     return new MarkdownPipelineBuilder()
