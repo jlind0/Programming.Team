@@ -6,56 +6,56 @@
         <div class="firstPart">
             <div class="postingDiv">
                 <MudNumericField Class="config-field" @bind-Value="ViewModel.BioParagraphs" Label="Bio Paragraphs" Variant="Variant.Outlined" />
-                <MudTooltip Text="First line&#10;Second line&#10;Third line" Placement="MudBlazor.Placement.Right">
+                <MudTooltip Text="Number of Text Paragraphs in Bio" Placement="MudBlazor.Placement.Right">
                     <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button"/>
                 </MudTooltip>
             </div>
             <div class="postingDiv">
                 <MudNumericField Class="config-field" @bind-Value="ViewModel.BioBullets" Label="Bio Bullets" Variant="Variant.Outlined" />
-                <MudTooltip Text="First line&#10;Second line&#10;Third line" Placement="MudBlazor.Placement.Right">
+                <MudTooltip Text="Number of Bullet Points in Bio" Placement="MudBlazor.Placement.Right">
                     <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
                 </MudTooltip>
             </div>
             <div class="postingDiv">
                 <MudNumericField Class="config-field" 
                                  @bind-Value="ViewModel.MatchThreshold" Label="Match Threshold" Variant="Variant.Outlined" />
-                <MudTooltip Text="First line&#10;Second line&#10;Third line" Placement="MudBlazor.Placement.Right">
+                <MudTooltip Text="The Percentage Match Required from a JD to Display a Position" Placement="MudBlazor.Placement.Right">
                     <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
                 </MudTooltip>
             </div>
             <div class="postingDiv">    
                 <MudNumericField Class="config-field" @bind-Value="ViewModel.TargetLengthPer10Percent" Label="Target Length Per 10%" Variant="Variant.Outlined"/>
-                <MudTooltip Text="First line&#10;Second line&#10;Third line" Placement="MudBlazor.Placement.Right">
+                <MudTooltip Text="Length (in Characters) per 10% Match of JD to Position" Placement="MudBlazor.Placement.Right">
                     <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
                 </MudTooltip>
             </div>
             <div class="postingDiv">    
                 <MudNumericField Class="config-field" @bind-Value="ViewModel.BulletsPer20Percent" Label="Bullets Per 20%" Variant="Variant.Outlined"/>
-                <MudTooltip Text="First line&#10;Second line&#10;Third line" Placement="MudBlazor.Placement.Right">
+                <MudTooltip Text="Number of Bullets (per 20% match to JD, minimum 2) for Position" Placement="MudBlazor.Placement.Right">
                     <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
                 </MudTooltip>
             </div>
             <div class="postingDiv">    
                 <MudNumericField Class="config-field" @bind-Value="ViewModel.SkillsPer20Percent" Label="Skills Per 20%" Variant="Variant.Outlined" />
-                <MudTooltip Text="First line&#10;Second line&#10;Third line" Placement="MudBlazor.Placement.Right">
+                <MudTooltip Text="Number of Skills (per 20%) for Match to JD for Position" Placement="MudBlazor.Placement.Right">
                     <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
                 </MudTooltip>
             </div>
             <div class="postingDiv">    
                 <MudCheckBox Class="config-checkbox" @bind-Value="ViewModel.HideSkillsNotInJD" Label="Hide Skills not in JD"/>
-                <MudTooltip Text="First line&#10;Second line&#10;Third line" Placement="MudBlazor.Placement.Right">
+                <MudTooltip Text="Hides Skills that are not a match to JD" Placement="MudBlazor.Placement.Right">
                     <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
                 </MudTooltip>
             </div>
             <div class="postingDiv">    
                 <MudCheckBox Class="config-checkbox" @bind-Value="ViewModel.HidePositionsNotInJD" Label="Hide Positions not in JD" />
-                <MudTooltip Text="First line&#10;Second line&#10;Third line" Placement="MudBlazor.Placement.Right">
+                <MudTooltip Text="Completly Hides Positions that do not meet Match Threshold" Placement="MudBlazor.Placement.Right">
                     <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
                 </MudTooltip>
             </div>
             <div class="postingDiv">
                 <MudNumericField Class="config-field" @bind-Value="ViewModel.SummaryPageLength" Label="Resume Summary Page Length" Variant="Variant.Outlined"/>
-                <MudTooltip Text="First line&#10;Second line&#10;Third line" Placement="MudBlazor.Placement.Right">
+                <MudTooltip Text="Number of Pages for Summarization Option" Placement="MudBlazor.Placement.Right">
                     <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
                 </MudTooltip>
             </div>      
