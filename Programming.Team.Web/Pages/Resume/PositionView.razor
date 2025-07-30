@@ -40,8 +40,7 @@
                               AdornmentIcon="@Icons.Material.Filled.Title"
                               Adornment="Adornment.Start"
                               Class="fancy-input"
-                              InputStyle="padding-left: 8px;"
-                              LabelClass="font-weight-bold">
+                              >
                 </MudTextField>
             </MudItem>
             
@@ -53,8 +52,7 @@
                               AdornmentIcon="@Icons.Material.Filled.Sort"
                               Adornment="Adornment.Start"
                               Class="fancy-input"
-                              InputStyle="padding-left: 8px;"
-                              LabelClass="font-weight-bold">
+                             >
                 </MudTextField>
             </MudItem>
             
@@ -63,11 +61,10 @@
             <MudDatePicker @bind-Date="ViewModel.StartDateTime" 
                               Label="Start Date" 
                               MinDate="new DateTime(1950, 1, 1)"
-                              InputVariant="Variant.Outlined"
+                            
                               AdornmentIcon="@Icons.Material.Filled.CalendarToday"
                               Class="fancy-input"
-                              InputStyle="padding-left: 8px;"
-                              LabelClass="font-weight-bold">
+                            >
                 </MudDatePicker>
             </MudItem>
             
@@ -75,11 +72,10 @@
                 <MudDatePicker @bind-Date="ViewModel.EndDateTime" 
                               Label="End Date" 
                               MinDate="new DateTime(1950, 1, 1)"
-                              InputVariant="Variant.Outlined"
+                              
                               AdornmentIcon="@Icons.Material.Filled.EventAvailable"
                               Class="fancy-input"
-                              InputStyle="padding-left: 8px;"
-                              LabelClass="font-weight-bold">
+                              >
                 </MudDatePicker>
 
             </MudItem>

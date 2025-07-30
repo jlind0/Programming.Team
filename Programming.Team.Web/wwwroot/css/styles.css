@@ -2894,3 +2894,64 @@ include-drop-zone {
 .extractButton{
     margin-top:7% !important;
 }
+
+/* popover */
+.custom-dim {
+    z-index: 10000 !important;
+    position: fixed;
+ 
+}
+
+.popover-z {
+    z-index: 99999999 !important;
+    position: fixed !important;
+
+}
+
+.add-skill-dialog{
+   
+}
+.add-name-popups{
+
+    width:15vmax;
+    height:10vmax;
+    display:flex;
+    flex-direction:row;
+    justify-content:center;
+    align-items:center;
+    position:absolute;
+    z-index:9999999999999999999;
+}
+.close-button {
+
+    width:1vmax;
+    height:1vmax;
+    position:absolute;
+
+}
+
+/* Pager */
+.pager {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.page-number-selection {
+    min-width: 200px;
+    max-width: 500px;
+    border-radius: 8px;
+
+
+}
+
+.pagination {
+
+    width: 20vmax;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
