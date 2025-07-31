@@ -127,11 +127,11 @@
         <MudContainer>
             <h2 class="section-title">Frequently Asked Questions</h2>
 
-            <MudGrid>
+            <MudGrid Class="faq-grid">
                 @foreach (var faqGroup in ViewModel.FAQs.ToList().Chunk(FAQGroupSize))
                 {
                     <MudItem>
-                        <MudExpansionPanels>
+                        <MudExpansionPanels Class="home-page-faq-panel">
                                 @foreach (var faq in faqGroup)
                                 {
                                     <MudExpansionPanel Text="@faq.Question">
