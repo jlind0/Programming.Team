@@ -2946,6 +2946,7 @@ include-drop-zone {
     margin-bottom: 1.5rem;
     color: var(--dark);
     position: relative;
+    
 }
 
 .section-title::after {
@@ -2964,6 +2965,14 @@ include-drop-zone {
     padding:0 !important;
     margin:0 !important;
 
+    
+
+}
+.faq-grid .mud-expand-panel-text {
+
+    color:white !important;
+
+    height:2vmax;
 }
 .home-page-faq-panel{
 
@@ -2973,4 +2982,5 @@ include-drop-zone {
     justify-content:center;
     align-items:center;
     padding:1%;
+    color:white;
 }
