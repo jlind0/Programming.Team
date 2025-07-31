@@ -134,7 +134,12 @@
                         <MudExpansionPanels>
                                 @foreach (var faq in faqGroup)
                                 {
-                                    <MudExpansionPanel Text="@faq.Question">
+                                    <MudExpansionPanel Text="@faq.DisplayTitle">
+                                        @if(faq.DisplayTitle != faq.Title)
+                                        {
+                                           @faq.Question
+                                            
+                                        }
                                         @faq.Answer
                                     </MudExpansionPanel>
                                 }

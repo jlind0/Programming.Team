@@ -11,9 +11,10 @@
                                    Color="Color.Default"
                                    Class="ml-auto" />
                 </div>
+                <MudTextField Label="Title" @bind-Value="ViewModel.Title" Variant="Variant.Outlined" />
                 <MudTextField Label="Question" @bind-Value="ViewModel.Question" Lines="10" Variant="Variant.Outlined" />
                 <MudTextField Label="Answer" @bind-Value="ViewModel.Answer" Lines="10" Variant="Variant.Outlined" />
-                <MudTextField Label="SortOrder" @bind-Value="ViewModel.SortOrder" Variant="Variant.Outlined" />
+                <MudTextField Label="Sort Order" @bind-Value="ViewModel.SortOrder" Variant="Variant.Outlined" />
                 <MudStack Row="true">
 
                     <MudIconButton OnClick="ViewModel.Add.BindCommand<MouseEventArgs>()" Icon="@Icons.Material.Filled.AddBox"

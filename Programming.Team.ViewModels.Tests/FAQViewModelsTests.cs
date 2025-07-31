@@ -16,12 +16,13 @@ public class FAQViewModelsTests
     {
         var facade = new Mock<IBusinessRepositoryFacade<FAQ, Guid>>();
         var logger = new Mock<ILogger<AddEntityViewModel<Guid, FAQ, IBusinessRepositoryFacade<FAQ, Guid>>>>();
-        facade.Setup(p => p.Add(It.Is<FAQ>(f => "Some Question" == f.Question && "Some Answer" == f.Answer && "1" == f.SortOrder ), It.IsAny<IUnitOfWork>(), It.IsAny<CancellationToken>())).Verifiable(Times.Once());
+        facade.Setup(p => p.Add(It.Is<FAQ>(f => "Some Question" == f.Question && "Some Answer" == f.Answer && "1" == f.SortOrder && "My Title" == f.Title ), It.IsAny<IUnitOfWork>(), It.IsAny<CancellationToken>())).Verifiable(Times.Once());
         var vm = new AddFAQViewModel(facade.Object, logger.Object);
         Assert.IsFalse(vm.CanAdd);
         vm.Question = "Some Question";
         vm.Answer = "Some Answer";
         vm.SortOrder = "1";
+        vm.Title = "My Title";
         Assert.IsTrue(vm.CanAdd);
         var e = await vm.Add.Execute().GetAwaiter();
         Assert.AreEqual("Some Question", e.Question);
@@ -31,6 +32,7 @@ public class FAQViewModelsTests
         Assert.AreEqual(string.Empty, vm.Question);
         Assert.AreEqual(string.Empty, vm.Answer);
         Assert.IsNull(vm.SortOrder);
+        Assert.IsNull(vm.Title);
         Assert.IsFalse(vm.CanAdd);
         facade.Verify();
     }

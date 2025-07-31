@@ -46,12 +46,19 @@ namespace Programming.Team.ViewModels.Admin
             get => sortOrder;
             set => this.RaiseAndSetIfChanged(ref sortOrder, value);
         }
+        private string? title;
+        public string? Title
+        {
+            get => title;
+            set => this.RaiseAndSetIfChanged(ref title, value);
+        }
 
         protected override Task Clear()
         {
             Question = string.Empty;
             Answer = string.Empty;
             SortOrder = null;
+            Title = null;
             return Task.CompletedTask;
         }
 
@@ -61,7 +68,8 @@ namespace Programming.Team.ViewModels.Admin
             {
                 Question = Question,
                 Answer = Answer,
-                SortOrder = SortOrder
+                SortOrder = SortOrder,
+                Title = Title
             });
         }
     }
@@ -78,12 +86,25 @@ namespace Programming.Team.ViewModels.Admin
         public FAQViewModel(ILogger logger, IBusinessRepositoryFacade<FAQ, Guid> facade, FAQ entity) : base(logger, facade, entity)
         {
         }
-
+        private string? title;
+        public string? Title
+        {
+            get => title;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref title, value);
+                this.RaisePropertyChanged(nameof(DisplayTitle));
+            }
+        }
         // Properties with Notification
         public string Question
         {
             get => question;
-            set => this.RaiseAndSetIfChanged(ref question, value);
+            set
+            {
+                this.RaiseAndSetIfChanged(ref question, value);
+                this.RaisePropertyChanged(nameof(DisplayTitle));
+            }
         }
 
         public string Answer
@@ -91,7 +112,10 @@ namespace Programming.Team.ViewModels.Admin
             get => answer;
             set => this.RaiseAndSetIfChanged(ref answer, value);
         }
-
+        public string DisplayTitle
+        {
+            get => Title ?? Question;
+        }
         public string? SortOrder
         {
             get => sortOrder;
@@ -105,7 +129,8 @@ namespace Programming.Team.ViewModels.Admin
                 Question = question,
                 Answer = answer,
                 SortOrder = sortOrder,
-                Id = Id
+                Id = Id,
+                Title = Title
             });
         }
 
@@ -115,6 +140,7 @@ namespace Programming.Team.ViewModels.Admin
             Question = entity.Question;
             Answer = entity.Answer;
             SortOrder = entity.SortOrder;
+            Title = entity.Title;
             return Task.CompletedTask;
         }
     }
