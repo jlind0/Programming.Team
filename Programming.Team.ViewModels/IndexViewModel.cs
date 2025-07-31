@@ -287,12 +287,14 @@ namespace Programming.Team.ViewModels
                 var faqs = await FAQFacade.Get(orderBy: e => e.OrderBy(x => x.SortOrder), token: token);
                 foreach (var faq in faqs.Entities)
                 {
-                    //faq.Answer = string.Join(' ', (await NLP.IdentifyParagraphs(faq.Answer)).Select(x => $"<p>{x}</p>"));
-                    //faq.Question = string.Join(' ', (await NLP.IdentifyParagraphs(faq.Question)).Select(x => $"<p>{x}</p>"));
+                    if(!string.IsNullOrWhiteSpace(faq.Title))
+                        faq.Title = string.Join(' ', (await NLP.IdentifyParagraphs(faq.Title)).Select(x => $"<p>{x}</p>"));
+                    faq.Answer = string.Join(' ', (await NLP.IdentifyParagraphs(faq.Answer)).Select(x => $"<p>{x}</p>"));
+                    faq.Question = string.Join(' ', (await NLP.IdentifyParagraphs(faq.Question)).Select(x => $"<p>{x}</p>"));
                     var vm = new FAQViewModel(Logger, FAQFacade, faq);
                     
                     FAQs.Add(vm);
-                    await vm.Load.GetAwaiter();
+                    await vm.Load.Execute().GetAwaiter();
                 }
             }
             catch (Exception ex)
