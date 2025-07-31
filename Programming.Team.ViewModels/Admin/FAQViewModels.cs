@@ -15,6 +15,7 @@ namespace Programming.Team.ViewModels.Admin
         public AddFAQViewModel(IBusinessRepositoryFacade<FAQ, Guid> facade, ILogger<AddEntityViewModel<Guid, FAQ, IBusinessRepositoryFacade<FAQ, Guid>>> logger) : base(facade, logger)
         {
         }
+        public override bool CanAdd => !string.IsNullOrWhiteSpace(Answer) && !string.IsNullOrWhiteSpace(Question);
         private string question = string.Empty;
         private string answer = string.Empty;
         private string? sortOrder;
@@ -23,13 +24,21 @@ namespace Programming.Team.ViewModels.Admin
         public string Question
         {
             get => question;
-            set => this.RaiseAndSetIfChanged(ref question, value);
+            set
+            {
+                this.RaiseAndSetIfChanged(ref question, value);
+                this.RaisePropertyChanged(nameof(CanAdd));
+            }
         }
 
         public string Answer
         {
             get => answer;
-            set => this.RaiseAndSetIfChanged(ref answer, value);
+            set
+            {
+                this.RaiseAndSetIfChanged(ref answer, value);
+                this.RaisePropertyChanged(nameof(CanAdd));
+            }
         }
 
         public string? SortOrder
