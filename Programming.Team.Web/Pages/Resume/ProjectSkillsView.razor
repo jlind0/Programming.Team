@@ -45,9 +45,10 @@
                    Color="Color.Primary">
             Extract Skills
         </MudButton>
-        <span class="hover-tooltip">
-            Extract skills is for extracting additional skills using AI.
-        </span>
+      
+        <MudTooltip Text="Extract skills is for extracting additional skills using AI." Placement="MudBlazor.Placement.Right">
+            <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
+        </MudTooltip>
     </div>
 
     @if (ViewModel.RawSkills.Count > 0)

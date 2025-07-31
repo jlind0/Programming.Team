@@ -1089,25 +1089,7 @@ include-drop-zone {
     margin: 0 auto;
 }
 
-.section-title {
-    text-align: center;
-    font-size: 2.2rem;
-    margin-bottom: 3.5rem;
-    color: var(--dark);
-    position: relative;
-}
 
-    .section-title::after {
-        content: '';
-        position: absolute;
-        bottom: -1.2rem;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 90px;
-        height: 5px;
-        background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
-        border-radius: 3px;
-    }
 
 .pricing-cards {
     display: grid;
@@ -2872,4 +2854,136 @@ include-drop-zone {
 .position-info-button{
     
     margin-top:10% !important;
+}
+.posting-check{
+
+}
+.position-info-button {
+
+    margin:0 !important;
+    padding:0 !important;
+}
+.resumeDiv{
+
+    display:flex;
+    flex-direction:row;
+    justify-content:center;
+    align-items:center;
+    gap:3%;
+
+
+}
+.extractButton{
+    margin-top:7% !important;
+}
+
+/* popover */
+.custom-dim {
+    z-index: 10000 !important;
+    position: fixed;
+ 
+}
+
+.popover-z {
+    z-index: 99999999 !important;
+    position: fixed !important;
+
+}
+
+.add-skill-dialog{
+   
+}
+.add-name-popups{
+
+    width:15vmax;
+    height:10vmax;
+    display:flex;
+    flex-direction:row;
+    justify-content:center;
+    align-items:center;
+    position:absolute;
+    z-index:9999999999999999999;
+}
+.close-button {
+
+    width:1vmax;
+    height:1vmax;
+    position:absolute;
+
+}
+
+/* Pager */
+.pager {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.page-number-selection {
+    min-width: 200px;
+    max-width: 500px;
+    border-radius: 8px;
+
+
+}
+
+.pagination {
+
+    width: 20vmax;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+/****  FAQ Panel *****/
+
+.section-title {
+    text-align: center;
+    font-size: 2.2rem;
+    margin-bottom: 1.5rem;
+    color: var(--dark);
+    position: relative;
+    
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -1.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90px;
+    height: 5px;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+    border-radius: 3px;
+}
+.faq-grid{
+
+    padding:0 !important;
+    margin:0 !important;
+
+    
+
+}
+.faq-grid .mud-expand-panel-text div p {
+    color: white !important;
+
+    margin: 0 auto !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+.home-page-faq-panel{
+
+    width:100vmax !important;
+    display:flex;
+    flex-direction:row;
+    justify-content:center;
+    align-items:center;
+    padding:1%;
+    color:white;
 }

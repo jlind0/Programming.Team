@@ -1,25 +1,17 @@
 ﻿@inherits ReactiveComponentBase<AddPositionViewModel>
 
 <style>
-    .custom-dim {
-        z-index: 10000 !important; /* under autocomplete and popover */
-        position: fixed;
-    }
 
-    .popover-z {
-        z-index: 99999999 !important; /* above overlay, below autocomplete dropdown */
-        position: fixed !important;
-    }
 </style>
 
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
-      <MudDialog @bind-Visible="ViewModel.IsOpen" 
-           MaxWidth="MaxWidth.Medium" 
-           FullWidth="true" 
-           Class="px-4 pt-4 popover-z"
-           Style="min-width:400px;">
+    <MudDialog @bind-Visible="ViewModel.IsOpen" 
+        MaxWidth="MaxWidth.Medium" 
+        FullWidth="true" 
+        Class="px-4 pt-4 popover-z"
+        >
     <DialogContent>
         <div class="d-flex flex-column">
             <div class="d-flex justify-end">

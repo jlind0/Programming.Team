@@ -2,6 +2,7 @@
 @inherits ReactiveLayoutComponentBase<LayoutViewModel>
 @inject NavigationManager NavMan
 @inject IServiceProvider ServiceProvider
+@inject IDialogService Dialog
 
 <PageTitle>Jobeme.Today - The Resume Tailor</PageTitle>
 
@@ -72,7 +73,7 @@
         </MudDrawer>
   
         <MudMainContent Class="main-content">
-
+          @*  <MudDialogProvider />*@
             @Body
             <Footer />
 
@@ -203,4 +204,6 @@
                 DrawerWidthLeft = "280px"
             }
         };
+
+
 }

@@ -82,22 +82,37 @@
             </MudItem>
 
             <MudItem xs="12" md="4">
+
                 <MudStack Row="true" Spacing="2" Justify="Justify.SpaceEvenly">
+                         <div class="resumeDiv">
                     <MudButton OnClick="ViewModel.ExtractCompanyName.BindCommand<MouseEventArgs>()"
                                Variant="Variant.Outlined"
                                Color="Color.Primary"
                                StartIcon="@Icons.Material.Filled.AutoFixHigh"
-                               Class="mr-2">
+                               Class="fw-bold px-6 py-3 extractButton">
+                        
                         Extract
                     </MudButton>
+                        <MudTooltip Text="The Percentage Match Required from a JD to Display a Position" Placement="MudBlazor.Placement.Right">
+                            <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
+                        </MudTooltip>
+                        </div>
+               
+
                     @if (ViewModel.CanResearchCompany)
                     {
+                             <div class="resumeDiv">
                         <MudButton OnClick="ViewModel.ResearchCompany.BindCommand<MouseEventArgs>()"
                                    Variant="Variant.Outlined"
                                    Color="Color.Info"
-                                   StartIcon="@Icons.Material.Filled.Search">
+                                   StartIcon="@Icons.Material.Filled.Search"
+                        Class="fw-bold px-6 py-3">
                             Research
                         </MudButton>
+                        <MudTooltip Text="The Percentage Match Required from a JD to Display a Position" Placement="MudBlazor.Placement.Right">
+                            <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
+                        </MudTooltip>
+                        </div>
                     }
                 </MudStack>
             </MudItem>
@@ -228,15 +243,22 @@
             <MudItem xs="12" md="4">
                 @if (ViewModel.CanRenderMarkdown)
                 {
+                    <div class="resumeDiv">
                     <MudButton OnClick="ViewModel.RenderMarkdown.BindCommand<MouseEventArgs>()"
                                Variant="Variant.Outlined"
                                Color="Color.Primary"
                                FullWidth="true"
-                               StartIcon="@Icons.Material.Filled.TextFormat">
+                               StartIcon="@Icons.Material.Filled.TextFormat"
+                                   Class="fw-bold px-6 py-3">
+                        
                         Render Text
                     </MudButton>
+                    <MudTooltip Text="The Percentage Match Required from a JD to Display a Position" Placement="MudBlazor.Placement.Right">
+                        <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
+                    </MudTooltip>
+                    </div>
                 }
-            </MudItem>
+            </MudItem>noski
 
             @if (!string.IsNullOrWhiteSpace(ViewModel.ResumeMarkdown))
             {
@@ -314,7 +336,7 @@
                                   ">
                         Render Resume
                     </MudButton>
-
+                         <div class="resumeDiv">
                     <MudButton OnClick="ViewModel.GenerateCoverLetter.BindCommand<MouseEventArgs>()"
                                Class="fw-bold px-6 py-3"
                                Variant="Variant.Outlined"
@@ -328,8 +350,13 @@
                                   ">
                         Generate Cover
                     </MudButton>
+                    <MudTooltip Text="The Percentage Match Required from a JD to Display a Position" Placement="MudBlazor.Placement.Right">
+                        <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
+                    </MudTooltip>
+                    </div>
                     @if (!string.IsNullOrWhiteSpace(ViewModel.CoverLetterLaTeX))
                     {
+                             <div class="resumeDiv">
                         <MudButton OnClick="ViewModel.RenderCoverLetter.BindCommand<MouseEventArgs>()"
                                    Class="fw-bold px-6 py-3"
                                    Variant="Variant.Outlined"
@@ -343,6 +370,10 @@
                                           ">
                             Render Cover
                         </MudButton>
+                        <MudTooltip Text="The Percentage Match Required from a JD to Display a Position" Placement="MudBlazor.Placement.Right">
+                            <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
+                        </MudTooltip>
+                        </div>
                     }
                     @if (ViewModel.CanGenerateInterviewQuestions)
                     {
@@ -378,19 +409,25 @@
                     }
                     @if (ViewModel.CanSummarizeResume)
                     {
+                        <div class="resumeDiv">
                         <MudButton OnClick="ViewModel.SummarizeResume.BindCommand<MouseEventArgs>()"
                                    Class="fw-bold px-6 py-3"
                                    Variant="Variant.Outlined"
                                    Color="Color.Info"
                                    EndIcon="@Icons.Material.Filled.Summarize"
-                                   Style="
-                                      min-width: 150px;
-                                      border-radius: 8px;
-                                      text-transform: none;
-                                      letter-spacing: 0.5px;
+                                       Style="
+                                  min-width: 150px;
+                                  border-radius: 8px;
+                                  text-transform: none;
+                                  letter-spacing: 0.5px;
+                                  border-width: 2px;
                                           ">
                             Summarize
                         </MudButton>
+                        <MudTooltip Text="The Percentage Match Required from a JD to Display a Position" Placement="MudBlazor.Placement.Right">
+                            <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
+                        </MudTooltip>
+                        </div>
                     }
 
                     <MudButton OnClick="ViewModel.Delete.BindCommand<MouseEventArgs>()"
@@ -413,27 +450,54 @@
             <!-- Rebuild Options -->
             <MudItem xs="12" Class="mt-4">
                 <MudStack Row="true" Justify="Justify.Center" Spacing="4">
-                    <MudCheckBox @bind-Value="ViewModel.Enrich" Label="Enrich?" Class="mr-2" Color="Color.Primary" />
-                    <MudCheckBox @bind-Value="ViewModel.RenderPDF" Label="Render PDF?" Class="mr-2" Color="Color.Primary" />
-                    <MudButton OnClick="ViewModel.Rebuild.BindCommand<MouseEventArgs>()"
-                               Variant="Variant.Outlined"
-                               Color="Color.Warning"
-                               StartIcon="@Icons.Material.Filled.Build"
-                               Style="min-width: 180px;">
-                        Rebuild Resume
-                    </MudButton>
+     
+                        <MudButton OnClick="ViewModel.Rebuild.BindCommand<MouseEventArgs>()"
+                                   Class="fw-bold px-6 py-3"
+                                   Variant="Variant.Outlined"
+                                   Color="Color.Warning"
+                                   StartIcon="@Icons.Material.Filled.Build"
+                                   Style="
+                                  min-width: 150px;
+                                  border-radius: 8px;
+                                  text-transform: none;
+                                  letter-spacing: 0.5px;
+                                  border-width: 2px;
+                                      ">
+                            Rebuild Resume
+                        </MudButton>
+        
                 </MudStack>
             </MudItem>
         </MudGrid>
     </MudPaper>
 
-    <MudOverlay @bind-Visible="ViewModel.IsOverlayOpen" DarkBackground="true" AutoClose="false">
-        <MudProgressCircular Color="Color.Secondary" Size="Size.Large" Indeterminate="true" />
-        <h1><MudText Color="Color.Secondary">@ViewModel.Progress</MudText></h1>
+    <MudOverlay @bind-Visible="ViewModel.IsOverlayOpen"
+                DarkBackground="true"
+                AutoClose="false"
+                Class="fullscreen-overlay"
+                Style="z-index: 10000;">
+           <div class="text-center">
+                <MudProgressCircular Color="Color.Info"
+                                     Indeterminate="true"
+                                     Size="@Size.Large" />
+        <MudText Typo="Typo.h5" Color="Color.Info" Class="animate-pulse">
+            @ViewModel.Progress
+        </MudText>
+        </div>
     </MudOverlay>
 
-    <MudOverlay @bind-Visible="ViewModel.IsProcessing" DarkBackground="true" AutoClose="false">
-        <MudProgressCircular Color="Color.Secondary" Size="Size.Large" Indeterminate="true" />
+
+
+    <MudOverlay @bind-Visible="ViewModel.IsProcessing" DarkBackground="true" AutoClose="false"
+                Class="fullscreen-overlay"
+                Style="z-index: 10000;">
+        >
+               <div class="text-center">
+                <MudProgressCircular Color="Color.Info"
+                                     Indeterminate="true"
+                                     Size="@Size.Large" />
+  
+        </div>
     </MudOverlay>
 }
 

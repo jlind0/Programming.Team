@@ -3,7 +3,7 @@
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
-    <MudDialog Visible="ViewModel.IsOpen" Class="px-4 pt-4">
+    <MudDialog @bind-Visible="ViewModel.IsOpen" Class="add-skill-dialog">
         <DialogContent>
             <div class="d-flex flex-column">
                 <MudStack>
