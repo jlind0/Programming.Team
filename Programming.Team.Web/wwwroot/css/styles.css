@@ -2968,11 +2968,14 @@ include-drop-zone {
     
 
 }
-.faq-grid .mud-expand-panel-text {
+.faq-grid .mud-expand-panel-text div p {
+    color: white !important;
 
-    color:white !important;
-
-    height:2vmax;
+    margin: 0 auto !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
 }
 .home-page-faq-panel{
 
