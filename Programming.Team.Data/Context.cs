@@ -767,6 +767,7 @@ public partial class ResumesContext : DbContext
         modelBuilder.Entity<FAQ>(entity =>
         {
             entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.Title).HasMaxLength(100);
             entity.Property(e => e.CreateDate)
                 .HasDefaultValueSql("(getutcdate())")
                 .HasColumnType("datetime");

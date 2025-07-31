@@ -2,6 +2,7 @@
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert"></AlertView>
+    <MudTextField Label="Title" @bind-Value="ViewModel.Title" Variant="Variant.Outlined" />
     <MudTextField Label="Question" @bind-Value="ViewModel.Question" Lines="10" Variant="Variant.Outlined" />
     <MudTextField Label="Answer" @bind-Value="ViewModel.Answer" Lines="10" Variant="Variant.Outlined" />
     <MudTextField Label="SortOrder" @bind-Value="ViewModel.SortOrder" Variant="Variant.Outlined" />

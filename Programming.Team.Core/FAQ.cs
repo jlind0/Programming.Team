@@ -8,6 +8,7 @@ namespace Programming.Team.Core
 {
     public interface IFAQ : IEntity<Guid>
     {
+        string? Title { get; set; }
         string Question { get; set; }
         string Answer { get; set; }
         string? SortOrder { get; set; }
@@ -17,5 +18,6 @@ namespace Programming.Team.Core
         public string Question { get; set; } = null!;
         public string Answer { get; set; } = null!;
         public string? SortOrder { get; set; }
+        public string? Title { get; set; }
     }
 }

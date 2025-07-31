@@ -7,6 +7,7 @@ using Programming.Team.AI.Core;
 using Programming.Team.Business.Core;
 using Programming.Team.Core;
 using Programming.Team.PurchaseManager.Core;
+using Programming.Team.ViewModels.Admin;
 using Programming.Team.ViewModels.Purchase;
 using ReactiveUI;
 using System;
@@ -228,7 +229,7 @@ namespace Programming.Team.ViewModels
         public ReactiveCommand<Unit, Unit> Load { get; }
         public ObservableCollection<Posting> Postings { get; } = new ObservableCollection<Posting>();
         public ObservableCollection<PackageViewModel> Packages { get; } = new ObservableCollection<PackageViewModel>();
-        public ObservableCollection<FAQ> FAQs { get; } = new ObservableCollection<FAQ>();
+        public ObservableCollection<FAQViewModel> FAQs { get; } = new ObservableCollection<FAQViewModel>();
         protected INLP NLP { get; }
         protected IMemoryCache Cache { get; }
         protected NavigationManager NavMan { get; }
@@ -287,8 +288,11 @@ namespace Programming.Team.ViewModels
                 foreach (var faq in faqs.Entities)
                 {
                     //faq.Answer = string.Join(' ', (await NLP.IdentifyParagraphs(faq.Answer)).Select(x => $"<p>{x}</p>"));
-                    //faq.Question = string.Join(' ', (await NLP.IdentifyParagraphs(faq.Answer)).Select(x => $"<p>{x}</p>"));
-                    FAQs.Add(faq);
+                    //faq.Question = string.Join(' ', (await NLP.IdentifyParagraphs(faq.Question)).Select(x => $"<p>{x}</p>"));
+                    var vm = new FAQViewModel(Logger, FAQFacade, faq);
+                    
+                    FAQs.Add(vm);
+                    await vm.Load.GetAwaiter();
                 }
             }
             catch (Exception ex)

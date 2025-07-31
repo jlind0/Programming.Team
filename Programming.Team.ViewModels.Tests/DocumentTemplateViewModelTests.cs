@@ -1,4 +1,4 @@
-/*using DynamicData.Binding;
+using DynamicData.Binding;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Programming.Team.Business.Core;
@@ -14,7 +14,7 @@ namespace Programming.Team.ViewModels.Tests;
 [TestClass]
 public class DocumentTemplateViewModelTests
 {
-    [TestMethod]
+   /* [TestMethod]
     public async Task DocumentTemplateViewModelTests_AddDocumentTemplateViewModel_Init()
     {
         var logger = new Mock<ILogger<AddEntityViewModel<Guid, DocumentTemplate, IBusinessRepositoryFacade<DocumentTemplate, Guid>>>>();
@@ -156,31 +156,54 @@ public class DocumentTemplateViewModelTests
         Assert.AreEqual("Some name", documentTemplate.Name);
         Assert.AreEqual("Some template", documentTemplate.Template);
         facade.Verify();
-    }
+    }*/
     [TestMethod]
     public async Task DocumentTemplateViewModelTests_DocumentTemplateViewModel_Update()
     {
         var logger = new Mock<ILogger>();
         var facade = new Mock<IBusinessRepositoryFacade<DocumentTemplate, Guid>>();
+        var uow = new Mock<IUnitOfWork>();
+        
+        facade.Setup(f => f.CreateUnitOfWork()).Returns(uow.Object).Verifiable(Times.Once);
+        var contextFactory = new Mock<IContextFactory>();
+        var sectionFacade = new Mock<IBusinessRepositoryFacade<SectionTemplate, Guid>>();
+        sectionFacade.Setup(f => f.Get(It.IsAny<IUnitOfWork>(), It.IsAny<Pager?>(), It.IsAny<Expression<Func<SectionTemplate, bool>>?>()
+            , It.IsAny<Func<IQueryable<SectionTemplate>, IOrderedQueryable<SectionTemplate>>?>(),
+            It.IsAny<Func<IQueryable<SectionTemplate>, IQueryable<SectionTemplate>>?>(), It.IsAny<CancellationToken>())).ReturnsAsync(new RepositoryResultSet<Guid, SectionTemplate>()
+            {
+                Count = 1,
+                Page = 1,
+                PageSize = null,
+                Entities = [
+                    new SectionTemplate() {
+                SectionId = ResumePart.Bio,
+                Id = Guid.NewGuid(),
+                Name = "Default Bio"
+
+            }]
+            }).Verifiable(Times.Once);
+        var documentSectionTemplate = new Mock<IBusinessRepositoryFacade<DocumentSectionTemplate, Guid>>();
+        var sectionLogger = new Mock<ILogger<SelectEntitiesViewModel<Guid, SectionTemplate, SectionTemplateViewModel, IBusinessRepositoryFacade<SectionTemplate, Guid>>>>();
+        var selectSectionTemplatesViewModel = new SelectSectionTemplatesViewModel(contextFactory.Object, sectionFacade.Object, sectionLogger.Object);
         facade.Setup(f => f.Update(It.IsAny<DocumentTemplate>(), It.IsAny<IUnitOfWork>(),
             It.IsAny<Func<IQueryable<DocumentTemplate>, IQueryable<DocumentTemplate>>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new DocumentTemplate()
             {
                 Id = Guid.NewGuid(),
-                DocumentTypeId = 1,
+                DocumentTypeId = DocumentTypes.Resume,
                 Name = "Some other name",
                 Template = "Some template"
             }).Verifiable(Times.Once);
-        var vm = new DocumentTemplateViewModel(logger.Object, facade.Object, new DocumentTemplate()
+        var vm = new DocumentTemplateViewModel(logger.Object, selectSectionTemplatesViewModel, documentSectionTemplate.Object, contextFactory.Object, facade.Object, new DocumentTemplate()
         {
             Id = Guid.NewGuid(),
-            DocumentTypeId = 1,
+            DocumentTypeId = DocumentTypes.Resume,
             Name = "Some name",
             Template = "Some template"
         });
         await vm.Load.Execute().GetAwaiter();
         IDocumentTemplate documentTemplate = vm;
-        Assert.AreEqual(1, documentTemplate.DocumentTypeId);
+        Assert.AreEqual(DocumentTypes.Resume, documentTemplate.DocumentTypeId);
         Assert.AreEqual("Some name", documentTemplate.Name);
         Assert.AreEqual("Some template", documentTemplate.Template);
         
@@ -194,7 +217,8 @@ public class DocumentTemplateViewModelTests
         Assert.AreEqual("Some other name", documentTemplate.Name);
         Assert.IsTrue(updateEventRaised);
         facade.Verify();
-    }
+        uow.Verify();
+    }/*
     [TestMethod]
     public async Task DocumentTemplateViewModelTests_DocumentTemplateViewModel_Delete()
     {
@@ -290,6 +314,5 @@ public class DocumentTemplateViewModelTests
         Assert.AreEqual(3, vm.Entities.Count);
         docTypesFacade.Verify();
         facade.Verify();
-    }
+    }*/
 }
-*/
