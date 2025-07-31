@@ -134,13 +134,19 @@
                         <MudExpansionPanels Class="home-page-faq-panel">
                                 @foreach (var faq in faqGroup)
                                 {
-                                    <MudExpansionPanel Text="@faq.DisplayTitle">
-                                        @if(faq.DisplayTitle != faq.Title)
-                                        {
-                                           @faq.Question
-                                            
-                                        }
-                                        @faq.Answer
+                                    <MudExpansionPanel>
+                                        <TitleContent>
+                                            <div style="color:white">@((MarkupString)faq.DisplayTitle)</div>
+                                        </TitleContent>
+                                        <ChildContent>
+                                            @if (faq.DisplayTitle == faq.Title)
+                                            {
+                                                @((MarkupString)faq.Question)
+
+                                            }
+                                            @((MarkupString)faq.Answer)
+                                        </ChildContent>
+                                       
                                     </MudExpansionPanel>
                                 }
                         </MudExpansionPanels>
@@ -149,63 +155,7 @@
             </MudGrid>
         </MudContainer>
         }
-        <!-- Contact Form Section -->
-       @* <div class="contact-container">
-            <!-- Decorative elements -->
-            <div class="contact-decoration decoration-1"></div>
-            <div class="contact-decoration decoration-2"></div>
-
-            <!-- Header -->
-            <div class="contact-header">
-              
-                <h2 class="section-title">Have Questions? Contact Us!</h2>
-            </div>
-
-            <!-- Form -->
-            <div class="contact-body">
-                <div class="contact-form">
-                    <MudGrid Justify="Justify.Center">
-                        <MudItem xs="12">
-                            <MudCard>
-                                <MudCardContent>
-                                    <MudForm @ref="contactForm" Model="@contactModel">
-                                        <MudGrid>
-                                            <MudItem xs="12">
-                                                <label class="mud-input-label">Email Address</label>
-                                                <MudTextField @bind-Value="contactModel.Email"
-                                                              Required="true"
-                                                              RequiredError="Email is required"
-                                                              Validation="@(new Func<string, bool>(ValidateEmail))"
-                                                              For="@(() => contactModel.Email)"
-                                                              Variant="Variant.Outlined"
-                                                              Margin="Margin.Dense" />
-                                            </MudItem>
-                                            <MudItem xs="12" Class="mt-4">
-                                                <label class="mud-input-label">Your Question</label>
-                                                <MudTextField @bind-Value="contactModel.Question"
-                                                              Lines="5"
-                                                              Required="true"
-                                                              RequiredError="Please enter your question"
-                                                              Variant="Variant.Outlined"
-                                                              Multiline="true"
-                                                              Margin="Margin.Dense" />
-                                            </MudItem>
-                                        </MudGrid>
-                                    </MudForm>
-                                </MudCardContent>
-                                <MudCardActions Class="justify-end">
-                                    <MudButton Class="fw-bold" Href="MicrosoftIdentity/Account/SignOut" Variant="Variant.Filled" onclick="SubmitQuestion()"
-                                               Color="Color.Primary">
-                                        Send Question
-                                    </MudButton>
-                                
-                                </MudCardActions>
-                            </MudCard>
-                        </MudItem>
-                    </MudGrid>
-                </div>
-            </div>
-        </div>*@
+       
 
         
         <MudText Typo="Typo.body1">
@@ -249,6 +199,13 @@
             };
             ViewModel.FAQs.CollectionChanged += (s, e) =>
             {
+                e.NewItems?.OfType<FAQViewModel>().ToList().ForEach(faq =>
+                {
+                    faq.PropertyChanged += (sender, args) =>
+                    {
+                        InvokeAsync(StateHasChanged);
+                    };
+                });
                 InvokeAsync(StateHasChanged);
             };
         }
