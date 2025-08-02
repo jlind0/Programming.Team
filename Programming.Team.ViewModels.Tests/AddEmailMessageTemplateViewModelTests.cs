@@ -13,8 +13,13 @@ using System.Reactive.Linq;
 using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 
 namespace Programming.Team.ViewModels.Tests;
+
+// This test verifies that adding a new email message template using the AddEmailMessageTemplateViewModel works as expected.
+// It sets the required properties, checks that adding is allowed, executes the add command, and asserts that the returned entity has the correct values.
+// It also confirms that the view model properties are reset after adding and that the repository's Add method was called exactly once.
+
 [TestClass]
-public class MessagingViewModelsTests
+public class AddEmailMessageTemplateViewModelTests
 {
     private Mock<IBusinessRepositoryFacade<EmailMessageTemplate, Guid>>? facade;
     private Mock<ILogger<AddEntityViewModel<Guid, EmailMessageTemplate, IBusinessRepositoryFacade<EmailMessageTemplate, Guid>>>>? logger;
