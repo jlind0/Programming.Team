@@ -9,6 +9,7 @@ using Stripe.Events;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -207,7 +208,7 @@ namespace Programming.Team.PurchaseManager
         protected decimal CreatorFeePercentage { get; }
         public DocumentTemplatePurchaseManager(IConfiguration config, IUserRepository userRepository, IRepository<DocumentTemplate, Guid> packageRepository, IRepository<DocumentTemplatePurchase, Guid> purchaseRepository, ProductService productService, PriceService priceService, PaymentLinkService paymentLinkService, SessionService sessionService, AccountService accountService, PayoutService payoutService) : base(config, userRepository, packageRepository, purchaseRepository, productService, priceService, paymentLinkService, sessionService, accountService, payoutService)
         {
-            CreatorFeePercentage = decimal.Parse(config["Stripe:CreatorFeePercentage"] ?? throw new InvalidDataException()); // Default to 10% if not set
+            CreatorFeePercentage = decimal.Parse(config["Stripe:CreatorFeePercentage"] ?? throw new InvalidDataException(), CultureInfo.InvariantCulture); // Default to 10% if not set
         }
 
         protected override Task HandleFinalPurchase(DocumentTemplatePurchase purchase, CancellationToken token = default)
