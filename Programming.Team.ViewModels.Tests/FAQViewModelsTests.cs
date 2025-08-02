@@ -25,6 +25,10 @@ public class FAQViewModelsTests
         vm.Title = "My Title";
         Assert.IsTrue(vm.CanAdd);
         var e = await vm.Add.Execute().GetAwaiter();
+        // Assert result
+        Assert.IsNotNull(e);
+        Assert.IsInstanceOfType(e, typeof(FAQ));
+
         Assert.AreEqual("Some Question", e.Question);
         Assert.AreEqual("Some Answer", e.Answer);
         Assert.AreEqual("1", e.SortOrder);

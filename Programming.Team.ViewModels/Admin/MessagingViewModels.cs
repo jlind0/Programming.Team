@@ -68,7 +68,7 @@ namespace Programming.Team.ViewModels.Admin
                 IsHtml = IsHtml,
                 Name = Name,
                 SubjectTemplate = SubjectTemplate,
-                MessageTemplate = messageTemplate
+                MessageTemplate = messageTemplate // this is mapping the field and not the property - intended?
             });
         }
     }
