@@ -93,7 +93,7 @@
                         
                         Extract
                     </MudButton>
-                        <MudTooltip Text="The Percentage Match Required from a JD to Display a Position" Placement="MudBlazor.Placement.Right">
+                        <MudTooltip Text="Extracts the Company Name from JD" Placement="MudBlazor.Placement.Right">
                             <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
                         </MudTooltip>
                         </div>
@@ -109,7 +109,7 @@
                         Class="fw-bold px-6 py-3">
                             Research
                         </MudButton>
-                        <MudTooltip Text="The Percentage Match Required from a JD to Display a Position" Placement="MudBlazor.Placement.Right">
+                        <MudTooltip Text="Attempts to research the provided company name" Placement="MudBlazor.Placement.Right">
                             <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
                         </MudTooltip>
                         </div>
@@ -350,7 +350,7 @@
                                   ">
                         Generate Cover
                     </MudButton>
-                    <MudTooltip Text="The Percentage Match Required from a JD to Display a Position" Placement="MudBlazor.Placement.Right">
+                    <MudTooltip Text="Generates a Cover Letter based on the rendered Resume" Placement="MudBlazor.Placement.Right">
                         <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
                     </MudTooltip>
                     </div>
@@ -370,7 +370,7 @@
                                           ">
                             Render Cover
                         </MudButton>
-                        <MudTooltip Text="The Percentage Match Required from a JD to Display a Position" Placement="MudBlazor.Placement.Right">
+                        <MudTooltip Text="Renders the Cover Letter to PDF based on the provided LaTeX" Placement="MudBlazor.Placement.Right">
                             <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
                         </MudTooltip>
                         </div>
@@ -390,6 +390,9 @@
                                                   ">
                             Generate Interview Questions
                         </MudButton>
+                        <MudTooltip Text="Generates Interview Questions and Answers based on the JD and Resume" Placement="MudBlazor.Placement.Right">
+                            <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
+                        </MudTooltip>
                     }
                     @if(ViewModel.CanGenerateEmployeerQuestions)
                     {
@@ -405,7 +408,10 @@
                                                       letter-spacing: 0.5px;
                                                           ">
                             Generate Employer Questions
-                        </MudButton>                        
+                        </MudButton>
+                        <MudTooltip Text="Generates Suggested Questions for the Employer based on JD and Company Research" Placement="MudBlazor.Placement.Right">
+                            <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
+                        </MudTooltip>
                     }
                     @if (ViewModel.CanSummarizeResume)
                     {
@@ -424,7 +430,7 @@
                                           ">
                             Summarize
                         </MudButton>
-                        <MudTooltip Text="The Percentage Match Required from a JD to Display a Position" Placement="MudBlazor.Placement.Right">
+                        <MudTooltip Text="Summarizes the Resume to Configured Page Size based on Resume" Placement="MudBlazor.Placement.Right">
                             <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
                         </MudTooltip>
                         </div>
@@ -444,6 +450,9 @@
                                   ">
                         Delete
                     </MudButton>
+                    <MudTooltip Text="Soft Deletes Resume from System" Placement="MudBlazor.Placement.Right">
+                        <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
+                    </MudTooltip>
                 </MudStack>
             </MudItem>
 
@@ -465,7 +474,9 @@
                                       ">
                             Rebuild Resume
                         </MudButton>
-        
+                    <MudTooltip Text="Rebuilds the resume from the JD and selected levers" Placement="MudBlazor.Placement.Right">
+                        <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
+                    </MudTooltip>
                 </MudStack>
             </MudItem>
         </MudGrid>
@@ -491,7 +502,7 @@
     <MudOverlay @bind-Visible="ViewModel.IsProcessing" DarkBackground="true" AutoClose="false"
                 Class="fullscreen-overlay"
                 Style="z-index: 10000;">
-        >
+        
                <div class="text-center">
                 <MudProgressCircular Color="Color.Info"
                                      Indeterminate="true"

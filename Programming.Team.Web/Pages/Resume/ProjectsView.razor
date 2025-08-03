@@ -133,9 +133,13 @@
     {
         if (ViewModel != null)
         {
-            ViewModel.Entities.CollectionChanged += (s, e) =>
+            ViewModel.Entities.CollectionChanged += async (s, e) =>
             {
-                InvokeAsync(StateHasChanged);
+                foreach (var item in e?.NewItems?.OfType<ProjectViewModel>() ?? [])
+                {
+                    await item.Load.Execute().GetAwaiter();
+                }
+                await InvokeAsync(StateHasChanged);
             };
         }
         base.OnInitialized();

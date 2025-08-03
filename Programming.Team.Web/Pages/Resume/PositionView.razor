@@ -150,4 +150,15 @@
 </style>
 
 @code {
+    protected async override Task OnInitializedAsync()
+    {
+        if (ViewModel != null)
+        {
+            ViewModel.SkillsViewModel.Entities.CollectionChanged += async (s, e) =>
+            {
+                await InvokeAsync(StateHasChanged);
+            };
+        }
+        await base.OnInitializedAsync();
+    }
 }
