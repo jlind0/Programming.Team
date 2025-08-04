@@ -717,7 +717,11 @@ namespace Programming.Team.ViewModels
             }
         }
     }
-    public abstract class EntitiesViewModel<TKey, TEntity, TViewModel, TFacade> : ReactiveObject
+    public interface IInitializable
+    {
+        void Initialize();
+    }
+    public abstract class EntitiesViewModel<TKey, TEntity, TViewModel, TFacade> : ReactiveObject, IInitializable
         where TKey : struct
         where TEntity : Entity<TKey>, new()
         where TFacade : IBusinessRepositoryFacade<TEntity, TKey>
@@ -728,17 +732,22 @@ namespace Programming.Team.ViewModels
         protected TFacade Facade { get; }
         public ObservableCollection<TViewModel> Entities { get; } = new ObservableCollection<TViewModel>();
         public ReactiveCommand<Unit, Unit> Load { get; }
-        public PaginationViewModel Pagination { get; } = new PaginationViewModel();
+        public PaginationViewModel Pagination { get; } 
         private readonly CompositeDisposable disposable = new CompositeDisposable();
         public EntitiesViewModel(TFacade facade, ILogger<EntitiesViewModel<TKey, TEntity, TViewModel, TFacade>> logger)
         {
             Facade = facade;
             Logger = logger;
             Load = ReactiveCommand.CreateFromTask(DoLoad);
+            Pagination = new PaginationViewModel();
+            
+        }
+        public virtual void Initialize()
+        {
             Pagination.WhenPropertyChanged(p => p.Pager).Subscribe(async p =>
             {
-                if(p.Value != null)
-                    await Load.Execute().GetAwaiter();  
+                if (p.Value != null)
+                    await Load.Execute().GetAwaiter();
             }).DisposeWith(disposable);
         }
         ~EntitiesViewModel() 
