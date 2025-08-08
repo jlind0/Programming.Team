@@ -3,9 +3,17 @@
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
-    <MudDialog @bind-Visible="ViewModel.IsOpen" Class="add-skill-dialog">
+    <MudDialog @bind-Visible="ViewModel.IsOpen"
+               Class="dialogs-design">
         <DialogContent>
             <div class="d-flex flex-column">
+
+                <div class="d-flex justify-content-end">
+                    <MudIconButton Icon="@Icons.Material.Filled.Close"
+                                   Class="close-button"
+                                   Color="Color.Default"
+                                   OnClick="CloseDialog" />
+                </div>
                 <MudStack>
                     <SearchSelectEntityView TAddView="AddSkillView"
                                             TEntity="Skill" TKey="Guid" TAddViewModel="AddSkillViewModel"
@@ -32,4 +40,10 @@
 
 
 
+}
+@code {
+    private void CloseDialog()
+    {
+        ViewModel.IsOpen = false;
+    }
 }

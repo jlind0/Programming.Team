@@ -3,10 +3,8 @@
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
-    <MudDialog 
-        @bind-Visible="ViewModel.IsOpen"
-               DisableBackdropClick="true"
-               Class="add-skill-dialog">
+    <MudDialog @bind-Visible="ViewModel.IsOpen"
+               Class="dialogs-design">
         <DialogContent>
             <div class="d-flex flex-column">
                 <div class="d-flex justify-content-end">

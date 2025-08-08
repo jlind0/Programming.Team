@@ -1288,9 +1288,11 @@ include-drop-zone {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    height: 5vmax !important;
+ 
     position: relative;
-    min-width: 100px; /* Prevent items from shrinking too much */
+    width:30vmax !important;
+    height:10vmin !important;
+
 }
 .stat-item:hover {
     transform: translateY(-7px);
@@ -2181,6 +2183,7 @@ include-drop-zone {
         align-items: center !important;
         justify-content: center !important;
         text-align: center !important;
+
     }
     .footer-brand{
    
@@ -2298,6 +2301,7 @@ include-drop-zone {
     .stat-item {
         width: 100%;
         margin-bottom: 1rem;
+
     }
 
     .panel-container {
@@ -2852,17 +2856,13 @@ include-drop-zone {
     width:1vmax;
 }
 .position-info-button{
-    
-    margin-top:10% !important;
+
+
 }
 .posting-check{
 
 }
-.position-info-button {
 
-    margin:0 !important;
-    padding:0 !important;
-}
 .resumeDiv{
 
     display:flex;
@@ -2979,11 +2979,177 @@ include-drop-zone {
 }
 .home-page-faq-panel{
 
-    width:100vmax !important;
+    width:84vmax !important;
+    color:white;
+
+    display:grid !important;
+    grid-template-rows:1fr;
+    gap:1%;
+}
+.mud-expand-panel-content{
+    display: flex !important;
+    flex-direction:column !important;
+    justify-content:center !important;
+    align-items:center !important;
+
+}
+.mud-expand-panel-content p{
+    width:80% !important;
+    overflow-wrap:break-word;
+    font-size:2vmin !important;
+
+
+
+}
+
+/* Tooltip */
+.tooltip-area{
+    font-size:1em !important;
+    width:10vmax;
+    overflow-wrap:break-word;
+
+}
+
+/* postion buttons */
+
+.posting-buttons-div{
+
+   display:grid;
+   grid-template-rows: 1fr 1fr 1fr;
+    gap:2% !important;
+    justify-items:center;
+    height:5vmax;
+    margin-top:0.5% !important;
+}
+
+.posting-buttons {
+    min-width: 150px !important;
+    border-radius: 8px !important;
+    text-transform: none !important;
+    letter-spacing: 0.5px !important;
+    min-height: 3vmax !important;
+    padding:0 !important;
+    margin-top: 0 !important;
+
+
+}
+.postion-buttons:hover {
+    transform: translateY(-2px); 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    opacity: 0.9;
+}
+
+.fancy-input .mud-input-outlined-border {
+    border-radius: 8px;
+    border-width: 1.5px;
+    transition: border-color 0.2s ease;
+}
+
+.fancy-input:hover .mud-input-outlined-border {
+    border-color: var(--mud-palette-primary) !important;
+}
+
+.mud-input-label-outlined {
+    background: white !important;
+    padding: 0 8px !important;
+    left: 8px !important;
+}
+
+.mud-input-control-outlined .mud-input-slot {
+    padding-left: 8px;
+}
+
+.scroll-wrapper {
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 6px;
+    background-color: white;
+}
+
+.markdown-content {
+    word-wrap: break-word;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+/* dialogs */
+.dialogs-design{
+ 
+
+    width:700px !important;
+    display:flex !important;
+    flex-direction:column !important;
+    justify-content:center !important;
+    align-items:center !important;
+    overflow-y:scroll;
+    overflow-y:hidden;
+
+
+    
+
+}
+.dialogs-design .mud-focus-trap .flex-column {
+
+}
+.dialogs-design .mud-focus-trap .flex-column .d-flex:nth-child(2) {
+    padding: 1%;
+ 
+    width:25vmax;
+}
+.mud-switch-button{
+
+    width:1vmax !important;
+}
+.build-card{
+
     display:flex;
     flex-direction:row;
     justify-content:center;
     align-items:center;
-    padding:1%;
-    color:white;
+    gap:2%;
+
+
+}
+.speech-bubble {
+    position: relative;
+    width: 20vmax;
+    height: 15vmax;
+    border: 1px solid rgba(0, 0, 0, 0.7);
+    border-radius: 8px;
+    background: transparent;
+}
+
+
+.speech-bubble .icon {
+    font-weight: bold;
+    color: #F3EEC3;
+    font-size: 2vmax;
+    position: absolute;
+    top: 2%;
+    left: 80%;
+    border-radius: 50%;
+    width: 3vmax;
+    height: 3vmax;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.speech-bubble .text {
+    font-weight: bold;
+    color: black;
+    font-size: 1em;
+    position: absolute;
+
+    width:80%;
+    overflow-wrap:break-word;
+    position:absolute;
+    top:20%;
+    left:10%;
+    word-spacing:2px;
+ 
+
+    
+
 }

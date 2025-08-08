@@ -2,7 +2,8 @@
 @if (ViewModel != null)
 {
     <AlertView Alert="ViewModel.Alert" />
-    <MudDialog Visible="ViewModel.IsOpen" Class="px-4 pt-4">
+    <MudDialog @bind-Visible="ViewModel.IsOpen"
+               Class="dialogs-design">
         <DialogContent>
             <div class="d-flex flex-column">
                 <div class="d-flex justify-end">

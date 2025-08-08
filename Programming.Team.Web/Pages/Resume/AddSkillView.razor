@@ -11,7 +11,13 @@
                    Class="add-name-dialog">
            <DialogContent>
             <div class="d-flex flex-column">
-    
+                
+                    <div class="d-flex justify-content-end">
+                        <MudIconButton Icon="@Icons.Material.Filled.Close"
+                                       Class="close-button"
+                                       Color="Color.Default"
+                                       OnClick="CloseDialog" />
+                    </div>
                 <MudStack>
                     <MudTextField @bind-Value="ViewModel.Name" Label="Name" Variant="Variant.Outlined" />
                     <MudStack Row="true">
@@ -39,4 +45,9 @@
         }
         await base.OnAfterRenderAsync(firstRender);
     }
+    private void CloseDialog()
+    {
+        ViewModel.IsOpen = false;
+    }
+
 }
