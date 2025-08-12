@@ -22,11 +22,17 @@
                                         Variant="Variant.Outlined"
                                         AdornmentIcon="@Icons.Material.Filled.Person"
                                         Class="rounded-lg" />
-                            <MudButton OnClick="ViewModel.ExtractTitle.BindCommand<MouseEventArgs>()"
-                                        Variant="Variant.Filled"
-                                        Color="Color.Primary"
-                                        Size="Size.Small"
-                                    Class="ml-2">Extract Name</MudButton>
+                        
+                                <div class="resumeDiv">
+                                    <MudButton OnClick="ViewModel.ExtractTitle.BindCommand<MouseEventArgs>()"
+                                               Variant="Variant.Filled"
+                                               Color="Color.Primary"
+                                               Size="Size.Small"
+                                               Class="fw-bold px-6 py-3">Extract Name</MudButton>
+                                    <MudTooltip Text="The Percentage Match Required from a JD to Display a Position" Placement="MudBlazor.Placement.Top">
+                                        <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Dark" Class="position-info-button" />
+                                    </MudTooltip>
+                                </div>
                         </MudStack>
                             
                     </MudItem>
@@ -47,7 +53,7 @@
             </div>
         </MudCardContent>
 
-        <MudCardActions Class="justify-center py-4">
+        <MudCardActions Class="build-card">
             <MudButton OnClick="ViewModel.Build.BindCommand<MouseEventArgs>()"
                         Variant="Variant.Filled"
                         Color="Color.Primary"
@@ -56,15 +62,22 @@
                         Class="px-10 py-4 rounded-full text-lg font-bold shadow-lg hover:shadow-xl transition-all">
                 BUILD RESUME
             </MudButton>
+                <div class="speech-bubble">
+                    <span class="icon">?</span>
+                    <span class="text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies tincidunt, nisl nisl aliquam nisl.
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies tincidunt, nisl nisl aliquam nisl.
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies tincidunt, nisl nisl aliquam nisl.
+                    </span>
+                </div>
         </MudCardActions>
     </MudCard>
-
+    
         <!-- Loading Overlay -->
 
         <MudOverlay @bind-Visible="ViewModel.IsOverlayOpen"
                     DarkBackground="true"
                     AutoClose="false"
-                    Class="fullscreen-overlay"
+                    Class="fullscreen-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies tincidunt, nisl nisl aliquam nisl."
                     Style="z-index: 10000;">
             <div class="text-center">
                 <MudProgressCircular Color="Color.Info"

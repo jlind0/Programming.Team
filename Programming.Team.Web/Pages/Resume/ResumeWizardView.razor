@@ -27,5 +27,39 @@
 }
 
 @code {
-
+    protected override Task OnInitializedAsync()
+    {
+        if(ViewModel != null)
+        {
+            ViewModel.Positions.Entities.CollectionChanged += async (s, e) =>
+            {
+                foreach(var pos in e?.NewItems?.OfType<PositionViewModel>() ?? [])
+                {
+                    await pos.Load.Execute().GetAwaiter();
+                }
+                await InvokeAsync(StateHasChanged);
+            };
+            ViewModel.Educations.Entities.CollectionChanged += async (s, e) =>
+            {
+                await InvokeAsync(StateHasChanged);
+            };
+            ViewModel.Recommendations.Entities.CollectionChanged += async (s, e) =>
+            {
+                await InvokeAsync(StateHasChanged);
+            };
+            ViewModel.Projects.Entities.CollectionChanged += async (s, e) =>
+            {
+                foreach (var pos in e?.NewItems?.OfType<ProjectViewModel>() ?? [])
+                {
+                    await pos.Load.Execute().GetAwaiter();
+                }
+                await InvokeAsync(StateHasChanged);
+            };
+            ViewModel.Publications.Entities.CollectionChanged += async (s, e) =>
+            {
+                await InvokeAsync(StateHasChanged);
+            };
+        }
+        return base.OnInitializedAsync();
+    }
 }

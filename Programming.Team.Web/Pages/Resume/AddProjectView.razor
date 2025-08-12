@@ -8,11 +8,8 @@
 {
     <AlertView Alert="ViewModel.Alert" />
 
-      <MudDialog @bind-Visible="ViewModel.IsOpen" 
-           MaxWidth="MaxWidth.Medium" 
-           FullWidth="true" 
-           Class="px-4 pt-4 popover-z"
-           Style="min-width:400px;">
+    <MudDialog @bind-Visible="ViewModel.IsOpen"
+               Class="dialogs-design">
     <DialogContent>
         <div class="d-flex flex-column">
             <div class="d-flex justify-end">

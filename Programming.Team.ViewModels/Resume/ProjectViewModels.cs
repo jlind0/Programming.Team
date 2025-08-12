@@ -343,9 +343,6 @@ namespace Programming.Team.ViewModels.Resume
             SkillsViewModel.InitialEntities = entity.ProjectSkills;
             SkillsViewModel.Description = entity.Description ?? "";
             Position = entity.Position;
-
-       
-
             await SkillsViewModel.Load.Execute().GetAwaiter();
         }
     }

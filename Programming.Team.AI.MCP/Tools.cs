@@ -330,7 +330,7 @@ namespace Programming.Team.AI.MCP
         [Description("Maximum number of tokens to generate")] int maxTokens = 2048,
         CancellationToken cancellationToken = default)
         {
-            string userMessage = $"Suggest questions to ask during the interview, outputted in markdown based on the following job description: {jd};;;";
+            string userMessage = $"Suggest questions for the user to ask during the interview, outputted in markdown based on the following job description: {jd};;;";
             if (!string.IsNullOrWhiteSpace(companyResearch))
                 userMessage += $" and the following company research: {companyResearch}";
             ChatMessage[] messages =
