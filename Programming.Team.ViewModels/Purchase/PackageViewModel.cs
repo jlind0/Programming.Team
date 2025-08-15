@@ -11,10 +11,12 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
 using P = Programming.Team.Core.Purchase;
+[assembly: InternalsVisibleTo("Programming.Team.ViewModels.Tests")]
 
 namespace Programming.Team.ViewModels.Purchase
 {
@@ -145,6 +147,7 @@ namespace Programming.Team.ViewModels.Purchase
             return new PackageViewModel(NavMan, PurchaseManager, Logger, Facade, entity);
         }
     }
+
     public class PackageViewModel : EntityViewModel<Guid, Package>, IPackage
     {
         public ReactiveCommand<Unit, Unit> Purchase { get; }
