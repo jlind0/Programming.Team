@@ -95,6 +95,8 @@
     private Breakpoint mobileBreakPoint = Breakpoint.SmAndDown;
     private Breakpoint mainBreakPoint = Breakpoint.MdAndUp;
     private bool _isDarkMode = false;
+  
+
     [CascadingParameter] private RouteData? RouteData { get; set; }
 /*    MudTheme CustomTheme = new MudTheme
         {
@@ -137,31 +139,33 @@
     private readonly CompositeDisposable disposables = new CompositeDisposable();
     protected override void OnInitialized()
     {
-    base.OnInitialized();
+        base.OnInitialized();
 
-    _theme = LightGlassTheme;
-    var relativePath = NavMan.ToBaseRelativePath(NavMan.Uri);
+        _theme = LightGlassTheme;
+        var relativePath = NavMan.ToBaseRelativePath(NavMan.Uri);
 
-    if(relativePath == "/" || relativePath == "")
-    {
-        mobileBreakPoint = Breakpoint.None;
-        mainBreakPoint = Breakpoint.Always;
-    }
-    ViewModel ??= ServiceProvider.GetRequiredService<LayoutViewModel>();
-    ViewModel.Page.WhenAnyPropertyChanged().Subscribe(_ =>
+        if(relativePath == "/" || relativePath == "")
+        {
+            mobileBreakPoint = Breakpoint.None;
+            mainBreakPoint = Breakpoint.Always;
+        }
+        ViewModel ??= ServiceProvider.GetRequiredService<LayoutViewModel>();
+        ViewModel.Page.WhenAnyPropertyChanged().Subscribe(_ =>
         {
             StateHasChanged();
             }).DisposeWith(disposables);
+
+    
     }
     
-        protected override void Dispose(bool disposing)
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
         {
-            if (disposing)
-            {
-                disposables.Dispose();
+            disposables.Dispose();
         }
-            base.Dispose(disposing);
-        }
+        base.Dispose(disposing);
+    }
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
@@ -178,26 +182,26 @@
     }
 
     public static MudTheme LightGlassTheme = new MudTheme()
+    {
+        PaletteLight = new PaletteLight()
         {
-            PaletteLight = new PaletteLight()
-            {
-                Primary = "#3a56d4",             // Deep Blue
-                PrimaryDarken = "#2f4ac0",       // Darker Blue
-                Secondary = "#6c757d",           // Neutral Gray
-                Tertiary = "#4cc9f0",            // Bright Cyan (Accent)
-                Dark = "#212529",                // Almost Black
-                TextPrimary = "#212529",         // Dark Text
-                Background = "#f8f9fa",          // Light Gray Background
-                Surface = "rgba(255,255,255,0.9)", // Slightly transparent white
-                AppbarBackground = "rgba(255,255,255,0.85)",
-                DrawerBackground = "rgba(245,245,245,0.8)",
-                AppbarText = "#212529",
-                DrawerText = "#212529",
-                Success = "#4bbf73",             // Green
-                Warning = "#f0ad4e",             // Yellow-Orange
-                Error = "#d9534f",               // Red
-                Info = "#5bc0de"                 // Light Blue
-            },
+            Primary = "#3a56d4",             // Deep Blue
+            PrimaryDarken = "#2f4ac0",       // Darker Blue
+            Secondary = "#6c757d",           // Neutral Gray
+            Tertiary = "#4cc9f0",            // Bright Cyan (Accent)
+            Dark = "#212529",                // Almost Black
+            TextPrimary = "#212529",         // Dark Text
+            Background = "#f8f9fa",          // Light Gray Background
+            Surface = "rgba(255,255,255,0.9)", // Slightly transparent white
+            AppbarBackground = "rgba(255,255,255,0.85)",
+            DrawerBackground = "rgba(245,245,245,0.8)",
+            AppbarText = "#212529",
+            DrawerText = "#212529",
+            Success = "#4bbf73",             // Green
+            Warning = "#f0ad4e",             // Yellow-Orange
+            Error = "#d9534f",               // Red
+            Info = "#5bc0de"                 // Light Blue
+        },
             LayoutProperties = new LayoutProperties()
             {
                 DefaultBorderRadius = "8px",

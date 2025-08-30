@@ -2261,7 +2261,7 @@ include-drop-zone {
     .main-content {
         margin: 1%;
     }
-
+    
     .header {
         padding: 0.8rem 1.5rem;
     }
@@ -3152,4 +3152,25 @@ include-drop-zone {
 
     
 
+}
+.not-authorized-area{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    height:24vmax;
+
+}
+.not-authorized-icon{
+    color:red;
+    font-size:3vmax;
+    border:3px solid black;
+    padding:1%;
+ 
+    border-radius:50%;
+}
+.not-authorized-text {
+    font-size: 1vmax;
+    font-weight: bold;
+    overflow-wrap: break-word;
 }
